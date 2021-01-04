@@ -1,0 +1,6 @@
+[submodule "Velocity/vendor/spdlog"]
+	path = Velocity/vendor/spdlog
+	url = https://github.com/gabime/spdlog
+[submodule "Velocity/vendor/GLFW"]
+	path = Velocity/vendor/GLFW
+	url = https://github.com/MGrime/glfw
