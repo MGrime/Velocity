@@ -10,20 +10,22 @@
 
 namespace Velocity
 {
+	std::shared_ptr<Window> Application::s_Window = nullptr;
+	
 	Application::Application(const std::string& windowTitle,const uint32_t width, const uint32_t height)
 	{
-		m_Window = std::make_unique<Window>(WindowProps( windowTitle,width,height ));
-		m_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		s_Window = std::make_shared<Window>(WindowProps( windowTitle,width,height ));
+		s_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
 
 		// This will init everything
-		m_Renderer = Renderer::GetRenderer();
+		r_Renderer = Renderer::GetRenderer();
 	}
 
 	void Application::Run()
 	{
 		while (m_Running)
 		{
-			m_Window->OnUpdate();
+			s_Window->OnUpdate();
 		}
 	}
 

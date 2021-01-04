@@ -23,10 +23,18 @@ namespace Velocity
 		// Events
 		bool OnWindowClose(WindowCloseEvent& e);
 
+		static std::shared_ptr<Window>& GetWindow()
+		{
+			return s_Window;
+		}
 
 	private:
-		std::unique_ptr<Window> m_Window;
-		std::unique_ptr<Renderer>* m_Renderer;
+		// Window is a singleton init by Application
+		// This is only done as Application::GetWindow() makes sense
+		static std::shared_ptr<Window>		 s_Window;
+
+		// Store a reference to the renderer to save calling GetRenderer() all the time, even though we could
+		std::shared_ptr<Renderer>			 r_Renderer;
 
 		bool m_Running = true;
 	};

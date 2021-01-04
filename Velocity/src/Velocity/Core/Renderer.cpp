@@ -5,7 +5,7 @@
 
 namespace Velocity
 {
-	std::unique_ptr<Renderer> Renderer::s_Renderer = nullptr;
+	std::shared_ptr<Renderer> Renderer::s_Renderer = nullptr;
 
 	// Initalises Vulkan so it is ready to render
 	Renderer::Renderer()
@@ -15,8 +15,7 @@ namespace Velocity
 		PickPhysicalDevice();
 	}
 
-	// -- INITALISATION FUNCTIONS -- //
-
+	#pragma region INITALISATION FUNCTIONS
 	// Creates the primary vulkan instance and prints out supported system extensions
 	void Renderer::CreateInstance()
 	{
@@ -107,11 +106,11 @@ namespace Velocity
 		// Create and verify the messenger
 		try
 		{
-			m_DebugMessenger = m_Instance.createDebugUtilsMessengerEXT(createInfo,nullptr, m_InstanceLoader);
+			m_DebugMessenger = m_Instance.createDebugUtilsMessengerEXT(createInfo, nullptr, m_InstanceLoader);
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create debug messenger! Error {0}",e.what());
+			VEL_CORE_ASSERT(false, "Failed to create debug messenger! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in Renderer: {0}", e.what());
 		}
 	}
@@ -154,14 +153,11 @@ namespace Velocity
 		}
 
 		VEL_CORE_INFO("Selected GPU {0}", m_PhysicalDevice);
-
-
 	}
+	
+	#pragma endregion 
 
-	// -- INITALISATION FUNCTIONS -- //
-
-	// -- HELPER FUNCTIONS -- //
-
+	#pragma region HELPER FUNCTIONS
 	// Checks for required validation layers
 	bool Renderer::CheckValidationLayerSupport()
 	{
@@ -262,7 +258,7 @@ namespace Velocity
 		return true;
 	}
 
-	// -- HELPER FUNCTIONS -- //
+	#pragma endregion
 
 	// Destroys all vulkan data
 	Renderer::~Renderer()

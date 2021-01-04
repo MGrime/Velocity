@@ -4,6 +4,8 @@
 
 #include <GLFW/glfw3.h>
 
+#include "Window.hpp"
+
 namespace Velocity {
 
 	// This is the BIG class. Contains all vulkan related code
@@ -13,22 +15,30 @@ namespace Velocity {
 		Renderer();
 
 		virtual ~Renderer();
-
-		static std::unique_ptr<Renderer>* GetRenderer()
+		
+		static std::shared_ptr<Renderer>& GetRenderer()
 		{
 			if (!s_Renderer)
 			{
-				s_Renderer = std::make_unique<Renderer>();
+				s_Renderer = std::make_shared<Renderer>();
 			}
-			return &s_Renderer;
+			return s_Renderer;
 		}
 
 	private:
 		// Renderer is a singleton
-		static std::unique_ptr<Renderer> s_Renderer;
+		static std::shared_ptr<Renderer> s_Renderer;
 
-		// -- INITALISATION FUNCTIONS -- //
+		#pragma region TYPEDEFS AND STRUCTS
 
+		struct QueueFamilyIndices
+		{
+			uint32_t GraphicsFamily;
+		};
+		
+		#pragma endregion 
+
+		#pragma region INITALISATION FUNCTIONS
 		// Creates the instance to Vulkan. Basically initalises Vulkan itself.
 		void CreateInstance();
 
@@ -38,10 +48,9 @@ namespace Velocity {
 		// Selects a physical GPU from the PC
 		void PickPhysicalDevice();
 
-		// -- INITALISATION FUNCTIONS -- //
-
-		// -- HELPER FUNCTIONS -- //
-
+		#pragma endregion
+		
+		#pragma region HELPER FUNCTIONS
 		// Checks for required validation layers
 		bool CheckValidationLayerSupport();
 
@@ -61,10 +70,9 @@ namespace Velocity {
 		// Checks if a physical device is suitable
 		bool IsDeviceSuitable(vk::PhysicalDevice device);
 
-		// -- HELPER FUNCTIONS -- //
+		#pragma endregion
 
-		// -- MEMBER VARIABLES -- //
-
+		#pragma region MEMBER VARIABLES
 		// Loads extenstion functions dynamically at runtime
 		vk::DispatchLoaderDynamic	m_InstanceLoader;
 
@@ -76,22 +84,20 @@ namespace Velocity {
 
 		// Debug messaging callback
 		vk::DebugUtilsMessengerEXT	m_DebugMessenger;
+		
+		#pragma endregion
 
-		// -- MEMBER VARIABLES -- //
-
-		// -- CONSTANT DATA -- //
-
+		#pragma region CONSTANT DATA
 		const std::array<const char*, 1> m_ValidationLayers = {
 			"VK_LAYER_KHRONOS_validation"
 		};
-
-#ifdef VEL_DEBUG
+		#ifdef VEL_DEBUG
 		const bool ENABLE_VALIDATION_LAYERS = true;
-#else
+		#else
 		const bool ENABLE_VALIDATION_LAYERS = false;
-#endif
-
-		// -- CONSTANT DATA -- //
+		#endif
+		
+		#pragma endregion 
 
 	};
 

@@ -37,6 +37,7 @@ namespace Velocity
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.EventCallback = callback; }
 
 	private:
+		
 		GLFWwindow* m_Window;
 
 		struct WindowData
