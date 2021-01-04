@@ -5,7 +5,7 @@
 class EditorApplication : public Velocity::Application
 {
 public:
-	EditorApplication() = default;
+	EditorApplication() : Application("Velocity Editor",1280u,720u) {}
 
 	~EditorApplication() = default;
 

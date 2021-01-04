@@ -6,8 +6,8 @@
 
 namespace Velocity
 {
-	Ref<spdlog::logger> Log::s_CoreLogger;
-	Ref<spdlog::logger> Log::s_ClientLogger;
+	std::shared_ptr<spdlog::logger> Log::s_CoreLogger;
+	std::shared_ptr<spdlog::logger> Log::s_ClientLogger;
 
 	void Log::Init()
 	{
@@ -21,13 +21,13 @@ namespace Velocity
 		logSinks.at(1)->set_pattern("[%T] [%l] %n: %v");
 
 		// Create logger and register
-		s_CoreLogger = CreateRef<spdlog::logger>("VELOCITY", begin(logSinks), end(logSinks));
+		s_CoreLogger = std::make_shared<spdlog::logger>("VELOCITY", begin(logSinks), end(logSinks));
 		spdlog::register_logger(s_CoreLogger);
 		s_CoreLogger->set_level(spdlog::level::trace);
 		s_CoreLogger->flush_on(spdlog::level::trace);
 
 		// Now create client logger
-		s_ClientLogger = CreateRef<spdlog::logger>("APPLICATION", begin(logSinks), end(logSinks));
+		s_ClientLogger = std::make_shared<spdlog::logger>("APPLICATION", begin(logSinks), end(logSinks));
 		spdlog::register_logger(s_ClientLogger);
 		s_ClientLogger->set_level(spdlog::level::trace);
 		s_ClientLogger->flush_on(spdlog::level::trace);

@@ -11,4 +11,6 @@
 
 #include "Velocity/Core/Application.hpp"	// Application base class
 
+#include "Velocity/Core/Window.hpp"
+
 

@@ -60,7 +60,7 @@ namespace Velocity
 		EventDispatcher(Event& event) : m_Event(event) {};
 
 		template<typename T>
-		bool Dispatcher(EventFunc<T> func)
+		bool Dispatch(EventFunc<T> func)
 		{
 			if (m_Event.GetEventType() == T::GetStaticType())
 			{

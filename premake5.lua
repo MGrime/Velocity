@@ -10,8 +10,18 @@ workspace "Velocity"
 	
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
+vulkanpath = os.getenv("VK_SDK_PATH")
+
+if (vulkanpath == nil)
+then
+	io.write("Vulkan SDK not found! Please install from LunarG")
+	os.exit()
+end
+
 IncludeDir = {}
 IncludeDir["GLFW"] = "Velocity/vendor/GLFW/include"
+IncludeDir["glm"] = "Velocity/vendor/glm"
+IncludeDir["vulkan"] = vulkanpath .. "/Include"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
@@ -42,12 +52,15 @@ project "Velocity"
 	{
 		"%{prj.name}/src",
 		"%{prj.name}/vendor/spdlog/include",
-		"%{IncludeDir.GLFW}"
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.vulkan}"
 	}
 	
 	links
 	{
-		"GLFW"
+		"GLFW",
+		vulkanpath .. "/Lib/vulkan-1.lib"
 	}
 	
 	filter "system:windows"
@@ -90,7 +103,8 @@ project "VelocityEditor"
 	{
 		"Velocity/vendor/spdlog/include",
 		"Velocity/src",
-		"Velocity/vendor"
+		"Velocity/vendor",
+		"%{IncludeDir.glm}"
 	}
 	
 	links
