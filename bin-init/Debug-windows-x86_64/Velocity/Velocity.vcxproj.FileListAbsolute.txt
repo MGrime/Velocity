@@ -1,2 +1,0 @@
-C:\dev\Velocity\bin\Debug-windows-x86_64\Velocity\Velocity.pdb
-C:\dev\Velocity\bin-init\Debug-windows-x86_64\Velocity\Velocity.pdb
