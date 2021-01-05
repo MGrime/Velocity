@@ -36,27 +36,34 @@ public:
 
 	void OnAttach() override
 	{
-		auto triangle = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts);
+		auto square = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts,m_Indices);
 
-		Velocity::Renderer::GetRenderer()->Submit(triangle);
+		Velocity::Renderer::GetRenderer()->Submit(square);
 
-		m_Verts.at(0).Position = { 0.0f, -0.8f,0.0f };
-		m_Verts.at(1).Position = { 0.3f, 0.5f,0.0f };
-		m_Verts.at(2).Position = { -0.3f, 0.5f,0.0f };
+		m_Verts.at(0).Position = { -0.3f, -0.3f,0.0f };
+		m_Verts.at(1).Position = { 0.3f, -0.3f,0.0f };
+		m_Verts.at(2).Position = { 0.3f, 0.3f,0.0f };
+		m_Verts.at(3).Position = { -0.3f, 0.3f,0.0f };
 
 		m_Verts.at(0).Color = { 1.0f,1.0f,1.0f };
 		m_Verts.at(1).Color = { 1.0f,1.0f,1.0f };
 		m_Verts.at(2).Color = { 1.0f,1.0f,1.0f };
+		m_Verts.at(3).Color = { 1.0f,1.0f,1.0f };
 
-		auto triangle2 = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts);
+		auto square2 = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts, m_Indices);
 
-		Velocity::Renderer::GetRenderer()->Submit(triangle2);
+		Velocity::Renderer::GetRenderer()->Submit(square2);
 	}
 private:
 	std::vector<Velocity::Vertex> m_Verts = {
-		{{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
-		{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
-		{{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}
+		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+		{{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}}
+	};
+
+	std::vector<uint32_t> m_Indices = {
+		0u,1u,2u,2u,3u,0u
 	};
 };
 

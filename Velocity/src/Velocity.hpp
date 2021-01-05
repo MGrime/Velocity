@@ -24,5 +24,3 @@
 
 #include "Velocity/Renderer/Renderer.hpp"
 
-
-

@@ -46,9 +46,9 @@ namespace Velocity {
 
 		// Loads the given mesh into a renderable object
 		// Pass this to Renderer::Submit
-		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts)
+		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices)
 		{
-			return m_BufferManager->AddMesh(verts);
+			return m_BufferManager->AddMesh(verts,indices);
 		}
 
 		#pragma endregion 

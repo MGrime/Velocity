@@ -866,7 +866,7 @@ namespace Velocity
 		// 2. Draw
 		for (auto object : m_SceneData)
 		{
-			cmdBuffer->draw(object.VertexCount, 1, object.VertexOffset, 0);
+			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);		
 		}
 
 		// 3. End

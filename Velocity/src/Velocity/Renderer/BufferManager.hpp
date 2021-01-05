@@ -14,13 +14,15 @@ namespace Velocity
 		{
 			int32_t		VertexOffset = 0;
 			uint32_t	VertexCount = 0u;
+			uint32_t	IndexStart = 0u;
+			uint32_t	IndexCount = 0u;
 		};
 
 		// CopyQueue is 99.9% the Graphics Queue
 		BufferManager(vk::PhysicalDevice& pDevice, vk::UniqueDevice& device, vk::CommandPool& pool, vk::Queue& copyQueue);
 
 		// TODO: Update as we change how this works
-		Renderable AddMesh(std::vector<Vertex>& verts);
+		Renderable AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
 
 		// Binds the buffers
 		void Bind(vk::CommandBuffer& commandBuffer);
@@ -33,8 +35,13 @@ namespace Velocity
 		// A completely contiguous list of all vertices of all models
 		std::vector<Vertex> m_Vertices;
 
-		// The actual GPU memory buffer
+		// As above with indicies
+		std::vector<uint32_t> m_Indices;
+
+		// The actual GPU memory buffers
 		std::unique_ptr<BaseBuffer> m_VertexBuffer;
+		std::unique_ptr<BaseBuffer> m_IndexBuffer;
+		
 
 		// References to renderer
 		vk::PhysicalDevice r_PhysicalDevice;
