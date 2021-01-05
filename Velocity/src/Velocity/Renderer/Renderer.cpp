@@ -45,7 +45,8 @@ namespace Velocity
 	void Renderer::Render()
 	{
 		// Wait on fences
-		m_LogicalDevice->waitForFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get(), VK_TRUE, UINT64_MAX);
+		// TODO: check result
+		auto result = m_LogicalDevice->waitForFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get(), VK_TRUE, UINT64_MAX);
 		
 		// Acquire the next available image and signal the semaphore when one is
 		vk::Result acquireResult{};
@@ -59,7 +60,8 @@ namespace Velocity
 		// Check if we need to wait on this image
 		if (m_Syncronizer.ImagesInFlight.at(m_CurrentImage) != vk::Fence(nullptr))
 		{
-			m_LogicalDevice->waitForFences(1, &m_Syncronizer.ImagesInFlight.at(m_CurrentImage), VK_TRUE, UINT64_MAX);
+			// TODO: check result
+			result = m_LogicalDevice->waitForFences(1, &m_Syncronizer.ImagesInFlight.at(m_CurrentImage), VK_TRUE, UINT64_MAX);
 		}
 
 		// Mark we are using
@@ -81,7 +83,7 @@ namespace Velocity
 		
 		// Combine all above data
 		vk::SubmitInfo submitInfo = {
-			waitSemaphores.size(),
+			static_cast<uint32_t>(waitSemaphores.size()),
 			waitSemaphores.data(),
 			waitStages.data(),
 			1,
@@ -89,11 +91,11 @@ namespace Velocity
 			1,
 			signalSemaphores.data()
 		};
-
-		m_LogicalDevice->resetFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
+		// TODO: check result
+		result = m_LogicalDevice->resetFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
 
 		// Submit
-		vk::Result result = m_GraphicsQueue.submit(1, &submitInfo,m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
+		result = m_GraphicsQueue.submit(1, &submitInfo,m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
 		if (result != vk::Result::eSuccess)
 		{
 			VEL_CORE_ASSERT(false, "Failed to submit command buffer!");
@@ -109,8 +111,8 @@ namespace Velocity
 			&m_CurrentImage,
 			nullptr
 		};
-
-		m_PresentQueue.presentKHR(&presentInfo);
+		// TODO: check result
+		result = m_PresentQueue.presentKHR(&presentInfo);
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}

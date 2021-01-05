@@ -8,3 +8,4 @@ bin-init/
 *.sln
 *.vcxproj
 *.filters
+*.log

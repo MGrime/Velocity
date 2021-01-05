@@ -42,7 +42,8 @@ namespace Velocity
 
 		try
 		{
-			m_Pipeline = device->createGraphicsPipelineUnique(nullptr,pipelineInfo);
+			auto result = device->createGraphicsPipelineUnique(nullptr, pipelineInfo);
+			m_Pipeline = std::move(result.value);
 		}
 		catch (vk::SystemError& e)
 		{
