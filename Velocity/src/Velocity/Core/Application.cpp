@@ -6,7 +6,7 @@
 #include "Velocity/Core/Events/ApplicationEvent.hpp"
 #include "Velocity/Core/Log.hpp"
 
-#include "Velocity/Core/Renderer.hpp"
+#include "Velocity/Renderer/Renderer.hpp"
 
 namespace Velocity
 {

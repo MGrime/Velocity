@@ -3,6 +3,11 @@
 #include "Renderer.hpp"
 #include <Velocity/Core/Log.hpp>
 
+#include <Velocity/Core/Window.hpp>
+#include <Velocity/Renderer/Swapchain.hpp>
+
+#include <Velocity/Core/Application.hpp>
+
 namespace Velocity
 {
 	std::shared_ptr<Renderer> Renderer::s_Renderer = nullptr;
@@ -12,7 +17,10 @@ namespace Velocity
 	{
 		CreateInstance();
 		SetupDebugMessenger();
+		CreateSurface();
 		PickPhysicalDevice();
+		CreateLogicalDevice();
+		CreateSwapchain();
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -64,7 +72,7 @@ namespace Velocity
 		// Create and verify instance
 		try
 		{
-			m_Instance = vk::createInstance(createInfo, nullptr);
+			m_Instance = vk::createInstanceUnique(createInfo, nullptr);
 		}
 		catch (vk::SystemError& e)
 		{
@@ -72,7 +80,7 @@ namespace Velocity
 			VEL_CORE_ERROR("An error occured in Renderer: {0}", e.what());
 		}
 
-		m_InstanceLoader = vk::DispatchLoaderDynamic(m_Instance, vkGetInstanceProcAddr);
+		m_InstanceLoader = vk::DispatchLoaderDynamic(m_Instance.get(), vkGetInstanceProcAddr);
 
 		// Check and display other exceptions
 		uint32_t extensionCount = 0;
@@ -88,6 +96,8 @@ namespace Velocity
 				}
 			}
 		}
+		VEL_CORE_INFO("Created Vulkan Instance!");
+
 	}
 
 	// Sets up the debug messenger callback
@@ -106,13 +116,31 @@ namespace Velocity
 		// Create and verify the messenger
 		try
 		{
-			m_DebugMessenger = m_Instance.createDebugUtilsMessengerEXT(createInfo, nullptr, m_InstanceLoader);
+			m_DebugMessenger = m_Instance->createDebugUtilsMessengerEXTUnique(createInfo, nullptr, m_InstanceLoader);
 		}
 		catch (vk::SystemError& e)
 		{
 			VEL_CORE_ASSERT(false, "Failed to create debug messenger! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in Renderer: {0}", e.what());
 		}
+
+		VEL_CORE_INFO("Created debug messenger!");
+	}
+
+	// Creates a window surface. Needs to be done to influence device picking
+	void Renderer::CreateSurface()
+	{
+		VkSurfaceKHR tmpSurface = {};
+
+		if (glfwCreateWindowSurface(m_Instance.get(), Application::GetWindow()->GetNative(), nullptr, &tmpSurface) != VK_SUCCESS)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create swapchain window surface!");
+			VEL_CORE_ERROR("Failed to create window surface!");
+		}
+
+		m_Surface = vk::UniqueSurfaceKHR(tmpSurface, m_Instance.get());
+
+		VEL_CORE_INFO("Created window surface!");
 	}
 
 	// Selects a physical GPU from the PC
@@ -123,7 +151,7 @@ namespace Velocity
 		// Get list
 		try
 		{
-			devices = m_Instance.enumeratePhysicalDevices();
+			devices = m_Instance->enumeratePhysicalDevices();
 		}
 		catch (vk::SystemError& e)
 		{
@@ -152,7 +180,91 @@ namespace Velocity
 			VEL_CORE_ERROR("Failed to find a suitable GPU with Vulkan support!");
 		}
 
-		VEL_CORE_INFO("Selected GPU {0}", m_PhysicalDevice);
+		auto chosenProps = m_PhysicalDevice.getProperties();
+		VEL_CORE_INFO("Selected GPU: {0}", chosenProps.deviceName);
+	}
+
+	// Creates a Vulkan logical device to interface with the physical device
+	void Renderer::CreateLogicalDevice()
+	{
+		// Get the indices
+		QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
+
+		// Prepare create info for queues
+		// Currently graphics & present
+		// They are likely the same but it is not guarenteed
+		std::vector<vk::DeviceQueueCreateInfo> queueCreateInfos{};
+
+		// This will knock them down to 1 value if they are the same
+		std::set<uint32_t> uniqueQueueFamilies = {
+			indices.GraphicsFamily.value(),
+			indices.PresentFamily.value()
+		};
+
+		float queuePriority = 1.0f;
+		for (auto queueFamily : uniqueQueueFamilies)
+		{
+			vk::DeviceQueueCreateInfo createInfo{};
+			createInfo.queueFamilyIndex = queueFamily;
+			createInfo.queueCount = 1;
+			createInfo.pQueuePriorities = &queuePriority;
+			queueCreateInfos.push_back(createInfo);
+		}
+
+		// Prepare physical device features we need
+		vk::PhysicalDeviceFeatures deviceFeatures{};
+
+		// Prepare create info for the logical device
+		vk::DeviceCreateInfo createInfo{};
+
+		// Set queues
+		createInfo.pQueueCreateInfos = queueCreateInfos.data();
+		createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+		
+		// Set required features
+		createInfo.pEnabledFeatures = &deviceFeatures;
+
+		// Set enabled extensions
+		createInfo.ppEnabledExtensionNames = m_DeviceExtensions.data();
+		createInfo.enabledExtensionCount = static_cast<uint32_t>(m_DeviceExtensions.size());
+		
+		// Set validation layers if we are using them
+		if (ENABLE_VALIDATION_LAYERS)
+		{
+			createInfo.enabledLayerCount = static_cast<uint32_t>(m_ValidationLayers.size());
+			createInfo.ppEnabledLayerNames = m_ValidationLayers.data();
+		}
+		else
+		{
+			createInfo.enabledLayerCount = 0u;
+		}
+
+		// Create device
+		try
+		{
+			m_LogicalDevice = m_PhysicalDevice.createDeviceUnique(createInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create logical device! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occured in creating the logical device: {0}", e.what());
+		}
+
+		m_GraphicsQueue = m_LogicalDevice->getQueue(indices.GraphicsFamily.value(), 0);
+		m_PresentQueue = m_LogicalDevice->getQueue(indices.PresentFamily.value(), 0);
+
+		VEL_CORE_INFO("Created Logical device!");
+
+	}
+
+	// Creates the swapchain (creates chain, gets and makes images & views)
+	void Renderer::CreateSwapchain()
+	{
+		auto support = QuerySwapchainSupport(m_PhysicalDevice);
+
+		// Select parameters
+
+
 	}
 	
 	#pragma endregion 
@@ -216,6 +328,11 @@ namespace Velocity
 		const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
 		void* pUserData)
 	{
+		if (messageType == VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT)
+		{
+			return VK_FALSE;
+		}
+
 		switch (messageSeverity)
 		{
 		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT:
@@ -255,7 +372,87 @@ namespace Velocity
 	// Checks if a physical device is suitable
 	bool Renderer::IsDeviceSuitable(vk::PhysicalDevice device)
 	{
-		return true;
+		auto hasIndices = FindQueueFamilies(device).IsComplete();
+
+		auto hasExtensions = CheckDeviceExtensionsSupport(device);
+
+		bool hasSwapchain = false;
+		if (hasExtensions)
+		{
+			auto swapChainSupport = QuerySwapchainSupport(device);
+			hasSwapchain = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
+		}
+
+		return hasIndices && hasExtensions && hasSwapchain;
+	}
+
+	// Checks if a device has required extensions
+	bool Renderer::CheckDeviceExtensionsSupport(vk::PhysicalDevice device)
+	{
+		// Get all available extensions
+		auto availableExtensions = m_PhysicalDevice.enumerateDeviceExtensionProperties();
+
+		// Get a set of our needed extensions
+		std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
+		
+		// Loop and erase all our of available extensions
+		for (const auto& extension : availableExtensions)
+		{
+			requiredExtensions.erase(extension.extensionName);
+		}
+
+		// If empty they are all supported
+		return requiredExtensions.empty();
+
+
+	}
+
+	// Checks if a device can support our swapchain requirements
+	Renderer::SwapChainSupportDetails Renderer::QuerySwapchainSupport(vk::PhysicalDevice device)
+	{
+		SwapChainSupportDetails details;
+
+		details.Capabilities = device.getSurfaceCapabilitiesKHR(m_Surface.get());
+		details.Formats = device.getSurfaceFormatsKHR(m_Surface.get());
+		details.PresentModes = device.getSurfacePresentModesKHR(m_Surface.get());
+
+		return details;
+
+	}
+
+	// Finds the required queue families for the device
+	Renderer::QueueFamilyIndices Renderer::FindQueueFamilies(vk::PhysicalDevice device)
+	{
+		// This is what we will return
+		QueueFamilyIndices indices;
+
+		// Get the queue familes
+		auto queueFamilies = device.getQueueFamilyProperties();
+
+		int i = 0;
+		for (const auto& queueFamily : queueFamilies)
+		{
+			if (queueFamily.queueFlags & vk::QueueFlagBits::eGraphics)
+			{
+				indices.GraphicsFamily = i;
+			}
+
+			if (device.getSurfaceSupportKHR(i, m_Surface.get()))
+			{
+				indices.PresentFamily = i;
+			}
+
+			if (indices.IsComplete())
+			{
+				break;
+			}
+
+			++i;
+		}
+
+		return indices;
+
+
 	}
 
 	#pragma endregion
@@ -263,12 +460,5 @@ namespace Velocity
 	// Destroys all vulkan data
 	Renderer::~Renderer()
 	{
-		// If we are in debug mode and used validation layers
-		if (ENABLE_VALIDATION_LAYERS)
-		{
-			m_Instance.destroyDebugUtilsMessengerEXT(m_DebugMessenger, nullptr, m_InstanceLoader);
-		}
-
-		vkDestroyInstance(m_Instance, nullptr);
 	}
 }

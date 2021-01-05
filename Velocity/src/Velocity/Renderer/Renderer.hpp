@@ -1,12 +1,16 @@
 #pragma once
 
 #include <vulkan/vulkan.hpp>
-
 #include <GLFW/glfw3.h>
 
-#include "Window.hpp"
+#include <optional>
 
 namespace Velocity {
+
+	// Forward declaration
+	// Safer in a class as big as this
+	class Window;
+	class Swapchain;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -33,7 +37,20 @@ namespace Velocity {
 
 		struct QueueFamilyIndices
 		{
-			uint32_t GraphicsFamily;
+			std::optional<uint32_t> GraphicsFamily;
+			std::optional<uint32_t> PresentFamily;
+
+			bool IsComplete()
+			{
+				return GraphicsFamily.has_value() && PresentFamily.has_value();
+			}
+		};
+
+		struct SwapChainSupportDetails
+		{
+			vk::SurfaceCapabilitiesKHR			Capabilities;
+			std::vector<vk::SurfaceFormatKHR>	Formats;
+			std::vector<vk::PresentModeKHR>		PresentModes;
 		};
 		
 		#pragma endregion 
@@ -45,8 +62,17 @@ namespace Velocity {
 		// Sets up the debug messenger callback
 		void SetupDebugMessenger();
 
+		// Creates a window surface. Needs to be done to influence device picking
+		void CreateSurface();
+
 		// Selects a physical GPU from the PC
 		void PickPhysicalDevice();
+
+		// Creates a Vulkan logical device to interface with the physical device
+		void CreateLogicalDevice();
+
+		// Creates the swapchain (creates chain, gets and makes images & views)
+		void CreateSwapchain();
 
 		#pragma endregion
 		
@@ -70,20 +96,44 @@ namespace Velocity {
 		// Checks if a physical device is suitable
 		bool IsDeviceSuitable(vk::PhysicalDevice device);
 
+		// Checks if a device has required extensions
+		bool CheckDeviceExtensionsSupport(vk::PhysicalDevice device);
+
+		// Checks if a device can support our swapchain requirements
+		SwapChainSupportDetails QuerySwapchainSupport(vk::PhysicalDevice device);
+
+		// Finds the required queue families for the device
+		QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
+
 		#pragma endregion
 
 		#pragma region MEMBER VARIABLES
 		// Loads extenstion functions dynamically at runtime
-		vk::DispatchLoaderDynamic	m_InstanceLoader;
+		vk::DispatchLoaderDynamic			m_InstanceLoader;
 
 		// Instance handle
-		vk::Instance				m_Instance;
+		vk::UniqueInstance					m_Instance;
+
+		// Window surface. Passed into swapchain
+		vk::UniqueSurfaceKHR				m_Surface;
+
+		// Swapchain class
+		std::unique_ptr<Swapchain>			m_Swapchain;
 
 		// Physical GPU handle
-		vk::PhysicalDevice			m_PhysicalDevice;
+		vk::PhysicalDevice					m_PhysicalDevice;
+
+		// Logical Vulkan Device handle ^ interfaces with PhysicalDevice
+		vk::UniqueDevice					m_LogicalDevice;
+
+		// Need to store the handle for the graphics queue
+		vk::Queue							m_GraphicsQueue;
+		
+		// Also need to store present queue
+		vk::Queue							m_PresentQueue;
 
 		// Debug messaging callback
-		vk::DebugUtilsMessengerEXT	m_DebugMessenger;
+		vk::UniqueHandle<vk::DebugUtilsMessengerEXT,vk::DispatchLoaderDynamic>	m_DebugMessenger;
 		
 		#pragma endregion
 
@@ -91,6 +141,10 @@ namespace Velocity {
 		const std::array<const char*, 1> m_ValidationLayers = {
 			"VK_LAYER_KHRONOS_validation"
 		};
+		const std::array<const char*, 1> m_DeviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
+
 		#ifdef VEL_DEBUG
 		const bool ENABLE_VALIDATION_LAYERS = true;
 		#else

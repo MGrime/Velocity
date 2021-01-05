@@ -1,166 +1,20 @@
-[20:31:30] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[20:31:30] [trace] VELOCITY: Validation Layer: loaderGetDeviceRegistryFiles: GUID for 23 is not SoftwareComponent skipping
-[20:31:30] [trace] VELOCITY: Validation Layer: Searching for ICD drivers named .\nvoglv64.dll
-[20:31:30] [trace] VELOCITY: Validation Layer: Build ICD instance extension list
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_device_group_creation (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_fence_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_memory_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_semaphore_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_get_physical_device_properties2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_get_surface_capabilities2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_surface (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.25
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_surface_protected_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_win32_surface (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.6
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_debug_report (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.9
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_debug_utils (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_swapchain_colorspace (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.4
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_NV_external_memory_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Loading layer library C:\VulkanSDK\1.2.162.0\Bin\.\VkLayer_khronos_validation.dll
-[20:31:30] [trace] VELOCITY: Validation Layer: Loading layer library C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll
-[20:31:30] [trace] VELOCITY: Validation Layer: Build ICD instance extension list
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_device_group_creation (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_fence_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_memory_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_external_semaphore_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_get_physical_device_properties2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_get_surface_capabilities2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_surface (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.25
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_surface_protected_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_KHR_win32_surface (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.6
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_debug_report (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.9
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_debug_utils (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_EXT_swapchain_colorspace (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.4
-[20:31:30] [trace] VELOCITY: Validation Layer: Instance Extension: VK_NV_external_memory_capabilities (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_16bit_storage (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_8bit_storage (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_bind_memory2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_buffer_device_address (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_create_renderpass2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_dedicated_allocation (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_depth_stencil_resolve (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_descriptor_update_template (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_device_group (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.4
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_draw_indirect_count (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_driver_properties (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_fence (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_fence_win32 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_memory (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_memory_win32 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_semaphore (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_external_semaphore_win32 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_get_memory_requirements2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_image_format_list (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_imageless_framebuffer (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_maintenance1 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_maintenance2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_maintenance3 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_multiview (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_pipeline_executable_properties (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_push_descriptor (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_relaxed_block_layout (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_sampler_mirror_clamp_to_edge (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_sampler_ycbcr_conversion (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.14
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_separate_depth_stencil_layouts (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_atomic_int64 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_clock (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_draw_parameters (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_float16_int8 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_float_controls (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.4
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_non_semantic_info (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_shader_subgroup_extended_types (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_spirv_1_4 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_storage_buffer_storage_class (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_swapchain (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.70
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_swapchain_mutable_format (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_timeline_semaphore (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_uniform_buffer_standard_layout (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_variable_pointers (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_vulkan_memory_model (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_KHR_win32_keyed_mutex (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_blend_operation_advanced (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_buffer_device_address (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_calibrated_timestamps (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_conditional_rendering (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_conservative_rasterization (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_custom_border_color (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.12
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_depth_clip_enable (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_depth_range_unrestricted (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_descriptor_indexing (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_discard_rectangles (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_external_memory_host (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_fragment_shader_interlock (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_full_screen_exclusive (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.4
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_hdr_metadata (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_host_query_reset (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_index_type_uint8 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_inline_uniform_block (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_line_rasterization (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_memory_budget (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_memory_priority (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_pci_bus_info (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_pipeline_creation_cache_control (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_pipeline_creation_feedback (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_post_depth_coverage (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_private_data (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_robustness2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_sample_locations (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_sampler_filter_minmax (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_scalar_block_layout (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_separate_stencil_usage (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_shader_demote_to_helper_invocation (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_shader_subgroup_ballot (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_shader_subgroup_vote (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_shader_viewport_index_layer (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_subgroup_size_control (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_texel_buffer_alignment (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_tooling_info (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_transform_feedback (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_vertex_attribute_divisor (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_EXT_ycbcr_image_arrays (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_clip_space_w_scaling (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_compute_shader_derivatives (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_cooperative_matrix (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_corner_sampled_image (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_coverage_reduction_mode (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_dedicated_allocation (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_dedicated_allocation_image_aliasing (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_device_diagnostic_checkpoints (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_device_diagnostics_config (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_device_generated_commands (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_external_memory (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_external_memory_win32 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_fill_rectangle (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_fragment_coverage_to_color (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_fragment_shader_barycentric (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_framebuffer_mixed_samples (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_geometry_shader_passthrough (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_mesh_shader (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_ray_tracing (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_representative_fragment_test (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_sample_mask_override_coverage (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_scissor_exclusive (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_shader_image_footprint (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_shader_sm_builtins (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_shader_subgroup_partitioned (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_shading_rate_image (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.3
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_viewport_array2 (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_viewport_swizzle (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NV_win32_keyed_mutex (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NVX_binary_import (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NVX_image_view_handle (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.2
-[20:31:30] [trace] VELOCITY: Validation Layer: Device Extension: VK_NVX_multiview_per_view_attributes (C:\Windows\System32\DriverStore\FileRepository\nvmd.inf_amd64_1408eaf9a25ed64f\.\nvoglv64.dll) version 0.0.1
-[20:31:30] [info] VELOCITY: Available extensions:
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_surface
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[20:31:30] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[20:31:30] [trace] VELOCITY: 	 VK_EXT_debug_report
-[20:31:30] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[20:31:30] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[20:31:30] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[20:31:30] [info] VELOCITY: Selected GPU 0x15d0f5fe8b0
+[23:44:24] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[23:44:25] [info] VELOCITY: Available extensions:
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_surface
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[23:44:25] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[23:44:25] [trace] VELOCITY: 	 VK_EXT_debug_report
+[23:44:25] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[23:44:25] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[23:44:25] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[23:44:25] [info] VELOCITY: Created Vulkan Instance!
+[23:44:25] [info] VELOCITY: Created debug messenger!
+[23:44:25] [info] VELOCITY: Created window surface!
+[23:44:25] [info] VELOCITY: Selected GPU: GeForce RTX 2070
+[23:44:25] [info] VELOCITY: Created Logical device!
