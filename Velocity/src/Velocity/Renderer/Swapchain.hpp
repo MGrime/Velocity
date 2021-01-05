@@ -45,7 +45,7 @@ namespace Velocity
 
 		#pragma region RENDER GETTERS
 
-		uint32_t AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore);
+		uint32_t AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore, vk::Result* result);
 
 		vk::SwapchainKHR& GetSwapchainRaw() { return m_Swapchain; }
 		

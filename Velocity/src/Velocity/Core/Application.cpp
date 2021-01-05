@@ -32,12 +32,25 @@ namespace Velocity
 			}
 
 			// TODO: GUI HERE
+			// begin gui 
+
+			// Render each layer
+			for (Layer* layer : m_LayerStack)
+			{
+				layer->OnGuiRender();
+			}
+			// end gui
+			
 
 			// Now update window
 			s_Window->OnUpdate();
 			
 			// Render everything that has been submitted this frame
-			r_Renderer->Render();
+
+			if (!s_Window->IsPaused())
+			{
+				r_Renderer->Render();
+			}
 		}
 
 		r_Renderer->Finalise();
@@ -47,6 +60,7 @@ namespace Velocity
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
 		{
 			(*--it)->OnEvent(e);
@@ -71,6 +85,16 @@ namespace Velocity
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
+		return true;
+	}
+
+	bool Application::OnWindowResize(WindowResizeEvent& e)
+	{
+		if (e.GetWidth() == 0 && e.GetHeight() == 0)
+		{
+			return true;
+		}
+		r_Renderer->OnWindowResize();
 		return true;
 	}
 

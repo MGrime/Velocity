@@ -28,6 +28,8 @@ namespace Velocity
 		// Events
 		bool OnWindowClose(WindowCloseEvent& e);
 
+		bool OnWindowResize(WindowResizeEvent& e);
+		
 		static std::shared_ptr<Window>& GetWindow()
 		{
 			return s_Window;

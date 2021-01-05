@@ -44,8 +44,14 @@ namespace Velocity
 		m_LogicalDevice->waitForFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get(), VK_TRUE, UINT64_MAX);
 		
 		// Acquire the next available image and signal the semaphore when one is
-		m_CurrentImage = m_Swapchain->AcquireImage(UINT64_MAX, m_Syncronizer.ImageAvailable.at(m_CurrentFrame));
-
+		vk::Result acquireResult{};
+		m_CurrentImage = m_Swapchain->AcquireImage(UINT64_MAX, m_Syncronizer.ImageAvailable.at(m_CurrentFrame), &acquireResult);
+		if (acquireResult == vk::Result::eSuboptimalKHR)
+		{
+			// This is recreating the swapchain
+			OnWindowResize();
+		}
+	
 		// Check if we need to wait on this image
 		if (m_Syncronizer.ImagesInFlight.at(m_CurrentImage) != vk::Fence(nullptr))
 		{
@@ -103,6 +109,33 @@ namespace Velocity
 		m_PresentQueue.presentKHR(&presentInfo);
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+	}
+
+	// Called by app when resize occurs
+	void Renderer::OnWindowResize()
+	{
+
+		
+		// Wait until device is done
+		m_LogicalDevice->waitIdle();
+
+		// Cleanup
+		m_Swapchain.reset();
+
+		// Free command buffers
+		for (auto& buffer : m_CommandBuffers)
+		{
+			buffer.reset();
+		}
+		
+		// Reset pipeline
+		m_GraphicsPipeline.reset();
+
+		// Now remake everything we need to
+		CreateSwapchain();
+		CreateGraphicsPipeline();
+		CreateFramebuffers();
+		CreateCommandBuffers();
 	}
 
 	#pragma region INITALISATION FUNCTIONS

@@ -34,6 +34,9 @@ namespace Velocity
 		uint32_t GetHeight() const { return m_Data.Props.Height; }
 		GLFWwindow* GetNative() const { return m_Window; }
 
+		void SetPaused(bool value) { m_Data.Paused = true; }
+		bool IsPaused() const { return m_Data.Paused; }
+
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.EventCallback = callback; }
 		void SetWindowIcon(const std::string& imagePath);
 
@@ -46,9 +49,12 @@ namespace Velocity
 			WindowProps Props;
 			bool VSync;
 			EventCallbackFunc EventCallback;
+			// Set when minimised
+			bool Paused = false;
 		};
 
 		WindowData m_Data;
+
 		
 	};
 

@@ -29,7 +29,6 @@ namespace Velocity
 		}
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-		glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 
 		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), props.Title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
@@ -49,6 +48,15 @@ namespace Velocity
 				WindowData& data = *(WindowData*)glfwGetWindowUserPointer(window);
 				data.Props.Width = width;
 				data.Props.Height = height;
+
+				if (width == 0 && height == 0)
+				{
+					data.Paused = true;
+				}
+				else
+				{
+					data.Paused = false;
+				}
 
 				WindowResizeEvent event(width, height);
 				data.EventCallback(event);
@@ -126,7 +134,7 @@ namespace Velocity
 	}
 
 	void Window::OnUpdate()
-	{
+	{	
 		glfwPollEvents();
 	}
 

@@ -5,6 +5,8 @@
 
 #include <optional>
 
+#include <Velocity/Core/Events/ApplicationEvent.hpp>
+
 namespace Velocity {
 
 	// Forward declaration
@@ -30,6 +32,9 @@ namespace Velocity {
 		// Then syncrohnises and presents a frame
 		// Called by application in the run loop
 		void Render();
+
+		// Called by app when resize occurs
+		void OnWindowResize();
 
 		// Call as application exits
 		void Finalise() { m_LogicalDevice->waitIdle(); } ;
@@ -168,6 +173,8 @@ namespace Velocity {
 
 		// Finds the required queue families for the device
 		QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
+
+		void RecreateSwapchain();
 
 		#pragma endregion
 

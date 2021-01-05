@@ -78,13 +78,17 @@ namespace Velocity
 		}
 	}
 
-	uint32_t Swapchain::AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore)
+	uint32_t Swapchain::AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore, vk::Result* result)
 	{
 		uint32_t index = 0u;
 
-		vk::Result result = r_Device->get().acquireNextImageKHR(m_Swapchain, timeout, semaphore.get(),nullptr,&index);
+		*result = r_Device->get().acquireNextImageKHR(m_Swapchain, timeout, semaphore.get(),nullptr,&index);
 
-		if (result != vk::Result::eSuccess)
+		if (*result == vk::Result::eErrorOutOfDateKHR)
+		{
+			return 0u;
+		}
+		if (*result != vk::Result::eSuccess && *result != vk::Result::eSuboptimalKHR)
 		{
 			VEL_CORE_ASSERT("Failed to acquire swapchain image!");
 			VEL_CORE_ERROR("Failed to acquire swapchain image!");
