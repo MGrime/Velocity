@@ -21,6 +21,10 @@ namespace Velocity {
 		Renderer();
 
 		virtual ~Renderer();
+
+		// Takes all the information recorded in the command buffers and submits the commands
+		// Called by application in the run loop
+		void RenderAndSubmit();
 		
 		static std::shared_ptr<Renderer>& GetRenderer()
 		{
@@ -79,6 +83,16 @@ namespace Velocity {
 		// Chonky function that creates a full pipeline
 		void CreateGraphicsPipeline();
 
+		// Creates framebuffers using the pipeline render pass details and the swapchain
+		void CreateFramebuffers();
+
+		// Creates the pool we will use to create all command buffers
+		void CreateCommandPool();
+
+		// Allocates one command buffer per framebuffer
+		void CreateCommandBuffers();
+
+		
 		#pragma endregion
 		
 		#pragma region HELPER FUNCTIONS
@@ -114,34 +128,45 @@ namespace Velocity {
 
 		#pragma region MEMBER VARIABLES
 		// Loads extenstion functions dynamically at runtime
-		vk::DispatchLoaderDynamic			m_InstanceLoader;
+		vk::DispatchLoaderDynamic				m_InstanceLoader;
 
 		// Instance handle
-		vk::UniqueInstance					m_Instance;
+		vk::UniqueInstance						m_Instance;
 
 		// Window surface. Passed into swapchain
-		vk::UniqueSurfaceKHR				m_Surface;
+		vk::UniqueSurfaceKHR					m_Surface;
 
 		// Physical GPU handle
-		vk::PhysicalDevice					m_PhysicalDevice;
+		vk::PhysicalDevice						m_PhysicalDevice;
 
 		// Logical Vulkan Device handle ^ interfaces with PhysicalDevice
-		vk::UniqueDevice					m_LogicalDevice;
+		vk::UniqueDevice						m_LogicalDevice;
 
 		// Need to store the handle for the graphics queue
-		vk::Queue							m_GraphicsQueue;
+		vk::Queue								m_GraphicsQueue;
 		
 		// Also need to store present queue
-		vk::Queue							m_PresentQueue;
+		vk::Queue								m_PresentQueue;
 
 		// Debug messaging callback
 		vk::UniqueHandle<vk::DebugUtilsMessengerEXT,vk::DispatchLoaderDynamic>	m_DebugMessenger;
 
 		// Swapchain class
-		std::unique_ptr<Swapchain>			m_Swapchain;
+		std::unique_ptr<Swapchain>				m_Swapchain;
 
 		// Pipeline class - We only need one to start
-		std::unique_ptr<Pipeline>			m_GraphicsPipeline;
+		std::unique_ptr<Pipeline>				m_GraphicsPipeline;
+
+		// Collection of framebuffers for the swapchain
+		// TODO: Check if this can be made a part of the swapchain class
+		std::vector<vk::UniqueFramebuffer>		m_Framebuffers;
+
+		// Command pools which are used to allocate command buffers
+		// TODO: Check if these need to be moved to swapchain aswell
+		vk::UniqueCommandPool					m_CommandPool;
+
+		// Command buffers - one per swapchain
+		std::vector<vk::UniqueCommandBuffer>	m_CommandBuffers;
 		
 		#pragma endregion
 

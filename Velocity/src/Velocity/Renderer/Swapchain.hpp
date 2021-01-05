@@ -20,6 +20,12 @@ namespace Velocity
 		#pragma endregion
 
 		#pragma region GETTERS
+
+		// Return swapchain width as a uint32
+		uint32_t GetWidth() { return m_Extent.width; }
+
+		// Return swapchain height as a uint32
+		uint32_t GetHeight() { return m_Extent.height; }
 		
 		// Return swapchain width as a float
 		float GetWidthF() { return static_cast<float>(m_Extent.width); }
@@ -28,6 +34,12 @@ namespace Velocity
 		float GetHeightF() { return static_cast<float>(m_Extent.height); }
 
 		vk::Extent2D GetExtent() { return m_Extent; }
+
+		vk::Format GetFormat() { return m_Format; }
+
+		const std::vector<vk::Image>& GetImages() { return m_SwapchainImages; }
+
+		const std::vector<vk::ImageView>& GetImageViews() { return m_SwapchainImageViews; }
 		
 		#pragma endregion
 
@@ -53,7 +65,7 @@ namespace Velocity
 		// This is the handle to interface with the surface
 		vk::UniqueSurfaceKHR* r_Surface;
 
-		// This is the handle to interface with renderer physical device
+		// This is the handle to interface with renderer device
 		vk::UniqueDevice* r_Device;
 
 		// This is the vulkan swapchain handle this class manages

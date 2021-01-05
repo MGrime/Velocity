@@ -24,6 +24,9 @@ namespace Velocity
 		CreateLogicalDevice();
 		CreateSwapchain();
 		CreateGraphicsPipeline();
+		CreateFramebuffers();
+		CreateCommandPool();
+		CreateCommandBuffers();
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -482,13 +485,163 @@ namespace Velocity
 		};
 		
 		#pragma endregion
+
+		#pragma region RENDER PASSES
+
+		// Single colour buffer attachment (Relates to framebuffer)s
+		vk::AttachmentDescription colorAttachment = {
+			vk::AttachmentDescriptionFlags{},
+			m_Swapchain->GetFormat(),
+			vk::SampleCountFlagBits::e1,
+			vk::AttachmentLoadOp::eClear,
+			vk::AttachmentStoreOp::eStore,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::ePresentSrcKHR
+		};
+
+		// Single subpass for now
+		// Subpasses can be combined into a single renderpass for better memory usage and optimisation
+
+		// An attachment reference must reference an attachment described with an AttachmentDescription above
+		// This is done with an index
+		vk::AttachmentReference colorAttachmentRef = {
+			0,
+			vk::ImageLayout::eColorAttachmentOptimal
+		};
+
+		vk::SubpassDescription subpass = {
+			vk::SubpassDescriptionFlags{},
+			vk::PipelineBindPoint::eGraphics,
+			0,
+			nullptr,
+			1,
+			&colorAttachmentRef,
+			nullptr,
+			nullptr,
+			0,
+			nullptr
+		};
+
+		vk::RenderPassCreateInfo renderPassInfo = {
+			vk::RenderPassCreateFlags{},
+			1,
+			&colorAttachment,
+			1,
+			&subpass,
+			0,
+			nullptr
+		};
+		
+		#pragma endregion
+
+		#pragma region PIPELINE CREATION
+
+		vk::GraphicsPipelineCreateInfo pipelineInfo = {
+			vk::PipelineCreateFlags{},
+			static_cast<uint32_t>(shaderStages.size()),
+			shaderStages.data(),
+			&vertexInputInfo,
+			&inputAssembly,
+			nullptr,
+			&viewportState,
+			&rasterizer,
+			&multiSampling,
+			nullptr,
+			&colorBlending,
+			&dynamicState,
+			nullptr,				// Pipeline Layout Supplied in pipeline constructor
+			nullptr,				// Render pass supplied in pipeline constructor
+			0,
+			nullptr
+		};
+
+		m_GraphicsPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo);
+
+		VEL_CORE_INFO("Created graphics pipeline!");
+		
+		#pragma endregion
 		
 		// Modules hooked into the pipeline so we can delete here
 		m_LogicalDevice->destroyShaderModule(vertShaderModule);
 		m_LogicalDevice->destroyShaderModule(fragShaderModule);
 
 	}
-	
+
+	// Creates framebuffers using the pipeline render pass details and the swapchain
+	void Renderer::CreateFramebuffers()
+	{
+		// Each swapchain image needs a framebuffer
+		m_Framebuffers.resize(m_Swapchain->GetImageViews().size());
+		for (size_t i = 0; i < m_Swapchain->GetImageViews().size(); ++i)
+		{
+			vk::FramebufferCreateInfo framebufferInfo = {
+				vk::FramebufferCreateFlags{},
+				m_GraphicsPipeline->GetRenderPass().get(),
+				1,
+				&m_Swapchain->GetImageViews().at(i),
+				m_Swapchain->GetWidth(),
+				m_Swapchain->GetHeight(),
+				1
+			};
+			try
+			{
+				m_Framebuffers.at(i) = m_LogicalDevice->createFramebufferUnique(framebufferInfo);
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ASSERT(false, "Failed to create framebuffer! Error {0}", e.what());
+				VEL_CORE_ERROR("An error occurred in creating the framebuffers: {0}", e.what());
+			}
+			
+		}
+
+		VEL_CORE_INFO("Created framebuffers!");
+		
+	}
+
+	// Creates the pool we will use to create all command buffers
+	void Renderer::CreateCommandPool()
+	{
+		auto qfIndices = FindQueueFamilies(m_PhysicalDevice);
+
+		vk::CommandPoolCreateInfo poolInfo = {
+			vk::CommandPoolCreateFlags{},
+			qfIndices.GraphicsFamily.value()
+		};
+
+		try
+		{
+			m_CommandPool = m_LogicalDevice->createCommandPoolUnique(poolInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create command pool! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in creating the command pool: {0}", e.what());
+		}
+		
+	}
+
+	// Allocates one command buffer per framebuffer
+	void Renderer::CreateCommandBuffers()
+	{
+		vk::CommandBufferAllocateInfo allocInfo = {
+			m_CommandPool.get(),
+			vk::CommandBufferLevel::ePrimary,
+			static_cast<uint32_t>(m_Framebuffers.size())
+		};
+
+		try
+		{
+			m_CommandBuffers = m_LogicalDevice->allocateCommandBuffersUnique(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
+		}
+	}
 	#pragma endregion 
 
 	#pragma region HELPER FUNCTIONS
@@ -577,6 +730,7 @@ namespace Velocity
 			VEL_CORE_ERROR("Validation Layer: {0}", pCallbackData->pMessage);
 			break;
 		}
+		case VK_DEBUG_UTILS_MESSAGE_SEVERITY_FLAG_BITS_MAX_ENUM_EXT: break;
 		}
 
 		return VK_FALSE;
@@ -585,7 +739,7 @@ namespace Velocity
 	// Fills in the structure with the data for a debug messenger
 	void Renderer::PopulateDebugMessengerCreateInfo(vk::DebugUtilsMessengerCreateInfoEXT& createInfo)
 	{
-		createInfo.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eVerbose | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
+		createInfo.messageSeverity = vk::DebugUtilsMessageSeverityFlagBitsEXT::eInfo | vk::DebugUtilsMessageSeverityFlagBitsEXT::eWarning | vk::DebugUtilsMessageSeverityFlagBitsEXT::eError;
 		createInfo.messageType = vk::DebugUtilsMessageTypeFlagBitsEXT::eGeneral | vk::DebugUtilsMessageTypeFlagBitsEXT::ePerformance | vk::DebugUtilsMessageTypeFlagBitsEXT::eValidation;
 		createInfo.pfnUserCallback = Renderer::DebugCallback;
 		createInfo.pUserData = nullptr; // Optional
