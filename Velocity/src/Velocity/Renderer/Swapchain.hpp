@@ -11,11 +11,27 @@ namespace Velocity
 	class Swapchain
 	{
 	public:
+		#pragma region CREATION MANAGEMENT
+		
 		Swapchain(vk::UniqueSurfaceKHR& surface, vk::UniqueDevice& device, const vk::SwapchainCreateInfoKHR& info);
 
 		virtual ~Swapchain();
+		
+		#pragma endregion
 
-		// STATIC HELPER FUNCTIONS
+		#pragma region GETTERS
+		
+		// Return swapchain width as a float
+		float GetWidthF() { return static_cast<float>(m_Extent.width); }
+
+		// Return swapchain height as a float
+		float GetHeightF() { return static_cast<float>(m_Extent.height); }
+
+		vk::Extent2D GetExtent() { return m_Extent; }
+		
+		#pragma endregion
+
+		#pragma region STATIC HELPERS
 		// These help renderer pick the best swapchain
 
 		// Choose the most optimal format
@@ -26,6 +42,8 @@ namespace Velocity
 
 		// Choose the most optimal swap extent
 		static vk::Extent2D ChooseExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
+		
+		#pragma endregion 
 
 	private:
 

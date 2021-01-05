@@ -139,6 +139,9 @@ namespace Velocity {
 
 		// Swapchain class
 		std::unique_ptr<Swapchain>			m_Swapchain;
+
+		// Pipeline class - We only need one to start
+		std::unique_ptr<Pipeline>			m_GraphicsPipeline;
 		
 		#pragma endregion
 

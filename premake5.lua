@@ -107,7 +107,9 @@ project "VelocityEditor"
 		"Velocity/vendor/spdlog/include",
 		"Velocity/src",
 		"Velocity/vendor",
-		"%{IncludeDir.glm}"
+		"%{IncludeDir.glm}",
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.vulkan}",
 	}
 	
 	links

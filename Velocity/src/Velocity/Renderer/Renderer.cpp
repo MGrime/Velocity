@@ -8,6 +8,7 @@
 
 #include <Velocity/Renderer/Swapchain.hpp>
 #include <Velocity/Renderer/Shader.hpp>
+#include <Velocity/Renderer/Pipeline.hpp>
 
 namespace Velocity
 {
@@ -22,6 +23,7 @@ namespace Velocity
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateSwapchain();
+		CreateGraphicsPipeline();
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -319,11 +321,168 @@ namespace Velocity
 	void Renderer::CreateGraphicsPipeline()
 	{
 		// Load shaders as spv bytecode
-		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "assets/shaders/vert.spv");
-		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "assets/shaders/frag.spv");
+		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/vert.spv");
+		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/frag.spv");
 
+		VEL_CORE_INFO("Loaded default shaders!");
+		
+		#pragma region CREATE SHADER MODULES
+		
+		// 1. Vertex
+		vk::PipelineShaderStageCreateInfo vertexShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{0u},
+			vk::ShaderStageFlagBits::eVertex,
+			vertShaderModule,
+			"main"
+		};
+		// 2. Fragment
+		vk::PipelineShaderStageCreateInfo fragmentShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{0u},
+			vk::ShaderStageFlagBits::eFragment,
+			fragShaderModule,
+			"main"
+		};
+		// Combine into a contiguous structure
+		std::array<vk::PipelineShaderStageCreateInfo, 2u> shaderStages = { vertexShaderStageInfo, fragmentShaderStageInfo };
 
+		#pragma endregion
 
+		#pragma region VERTEX INPUT
+		
+		vk::PipelineVertexInputStateCreateInfo vertexInputInfo = {
+				vk::PipelineVertexInputStateCreateFlags{},
+				0,
+				nullptr,
+				0,
+			nullptr
+		};
+
+		#pragma endregion
+
+		#pragma region INPUT ASSEMBLY
+		
+		vk::PipelineInputAssemblyStateCreateInfo inputAssembly = {
+			vk::PipelineInputAssemblyStateCreateFlags{},
+			vk::PrimitiveTopology::eTriangleList,
+			VK_FALSE
+		};
+
+		#pragma endregion
+
+		#pragma region VIEWPORT AND SCISSORS
+
+		vk::Viewport viewport = {
+			0.0f,
+			0.0f,
+			m_Swapchain->GetWidthF(),
+			m_Swapchain->GetHeightF(),
+			0.0f,
+			1.0f
+		};
+
+		vk::Rect2D scissor = {
+			{0,0},
+			m_Swapchain->GetExtent()
+		};
+
+		vk::PipelineViewportStateCreateInfo viewportState = {
+			vk::PipelineViewportStateCreateFlags{},
+			1,
+			&viewport,
+			1,
+			&scissor
+		};
+		
+		#pragma endregion 
+
+		#pragma region RASTERIZER
+
+		vk::PipelineRasterizationStateCreateInfo rasterizer = {
+			vk::PipelineRasterizationStateCreateFlags{},
+			VK_FALSE,
+			VK_FALSE,
+			vk::PolygonMode::eFill,
+			vk::CullModeFlagBits::eBack,
+			vk::FrontFace::eClockwise,
+			VK_FALSE,
+			0.0f,
+			0.0f,
+			0.0f,
+			1.0f
+		};
+		
+		#pragma endregion
+
+		#pragma region MULTISAMPLING
+
+		vk::PipelineMultisampleStateCreateInfo multiSampling = {
+			vk::PipelineMultisampleStateCreateFlags{},
+			vk::SampleCountFlagBits::e1,
+			VK_FALSE,
+			1.0f,
+			nullptr,
+			VK_FALSE,
+			VK_FALSE
+		};
+		
+		#pragma endregion
+
+		#pragma region DEPTH AND STENCIL
+		#pragma endregion
+
+		#pragma region COLOR BLENDING
+
+		// Per framebuffer and we only have one atm
+		vk::PipelineColorBlendAttachmentState colorBlendAttachment = {
+			VK_FALSE,
+			vk::BlendFactor::eOne,
+			vk::BlendFactor::eZero,
+			vk::BlendOp::eAdd,
+			vk::BlendFactor::eOne,
+			vk::BlendFactor::eZero,
+			vk::BlendOp::eAdd,
+			vk::ColorComponentFlagBits::eR | vk::ColorComponentFlagBits::eG | vk::ColorComponentFlagBits::eB | vk::ColorComponentFlagBits::eA
+		};
+
+		// Global settings
+		std::array<float, 4> blendConstants = { 0.0f,0.0f,0.0f,0.0f };
+		vk::PipelineColorBlendStateCreateInfo colorBlending = {
+			vk::PipelineColorBlendStateCreateFlags{},
+			VK_FALSE,
+			vk::LogicOp::eCopy,
+			1,
+			&colorBlendAttachment,
+			blendConstants
+		};
+		
+		#pragma endregion
+
+		#pragma region DYNAMIC STATE
+
+		std::array<vk::DynamicState, 2> dynamicStates = {
+			vk::DynamicState::eViewport,
+			vk::DynamicState::eLineWidth
+		};
+
+		vk::PipelineDynamicStateCreateInfo dynamicState = {
+			vk::PipelineDynamicStateCreateFlags{},
+			dynamicStates
+		};
+		
+		#pragma endregion 
+		
+		#pragma region PIPELINE LAYOUT
+
+		vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {
+			vk::PipelineLayoutCreateFlags{},
+			0,
+			nullptr,
+			0,
+			nullptr
+		};
+		
+		#pragma endregion
+		
 		// Modules hooked into the pipeline so we can delete here
 		m_LogicalDevice->destroyShaderModule(vertShaderModule);
 		m_LogicalDevice->destroyShaderModule(fragShaderModule);

@@ -21,7 +21,7 @@ namespace Velocity {
 		{
 			return device->createShaderModule(createInfo);
 		}
-		catch (vk::SystemError& e)
+		catch (vk::SystemError&)
 		{
 			VEL_CORE_ASSERT(false, "Failed to create shader module from: {0]", shaderPath);
 			VEL_CORE_ERROR("Failed to create shader module from: {0}", shaderPath);
@@ -37,17 +37,19 @@ namespace Velocity {
 		std::ifstream file;
 		file.open(filename, std::ios::ate | std::ios::binary);
 
+		std::vector<char> bufferChar;
+
 		// Check it was accessed correctly
 		if (!file.is_open())
 		{
 			VEL_CORE_ASSERT(false, "Failed to open file {0]", filename);
 			VEL_CORE_ERROR("Failed to open file {0}", filename);
-			return;
+			return bufferChar;
 		}
 
 		// Create a large enough buffer
 		size_t fileSize = static_cast<size_t>(file.tellg());
-		std::vector<char> bufferChar(fileSize);
+		bufferChar.resize(fileSize);
 
 		// Seek back to start of file and read in one go
 		file.seekg(0);
