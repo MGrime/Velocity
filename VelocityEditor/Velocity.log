@@ -1,39 +1,34 @@
-[19:40:22] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[19:40:22] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1f0c1cec140, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[23:14:37] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[23:14:38] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1f0b4cbe550, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[19:40:22] [info] VELOCITY: Available extensions:
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_display
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_surface
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[19:40:22] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[19:40:22] [trace] VELOCITY: 	 VK_EXT_debug_report
-[19:40:22] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[19:40:22] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[19:40:22] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[19:40:22] [info] VELOCITY: Created Vulkan Instance!
-[19:40:22] [info] VELOCITY: Created debug messenger!
-[19:40:22] [info] VELOCITY: Created window surface!
-[19:40:23] [info] VELOCITY: Selected GPU: GeForce GT 710
-[19:40:23] [info] VELOCITY: Created Logical device!
-[19:40:23] [info] VELOCITY: Created swapchain with size:(1280,720)
-[19:40:23] [info] VELOCITY: Loaded default shaders!
-[19:40:23] [info] VELOCITY: Created graphics pipeline!
-[19:40:23] [info] VELOCITY: Created framebuffers!
-[19:40:23] [info] VELOCITY: Created command pool!
-[19:40:23] [info] VELOCITY: Allocated command buffers!
-[19:40:23] [info] VELOCITY: Created syncronisation primitives!
-[19:40:26] [info] VELOCITY: Created swapchain with size:(1280,720)
-[19:40:26] [info] VELOCITY: Loaded default shaders!
-[19:40:26] [info] VELOCITY: Created graphics pipeline!
-[19:40:26] [info] VELOCITY: Created framebuffers!
-[19:40:26] [info] VELOCITY: Allocated command buffers!
+[23:14:38] [info] VELOCITY: Available extensions:
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_display
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_surface
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[23:14:38] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[23:14:38] [trace] VELOCITY: 	 VK_EXT_debug_report
+[23:14:38] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[23:14:38] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[23:14:38] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[23:14:38] [info] VELOCITY: Created Vulkan Instance!
+[23:14:38] [info] VELOCITY: Created debug messenger!
+[23:14:38] [info] VELOCITY: Created window surface!
+[23:14:38] [info] VELOCITY: Selected GPU: GeForce GT 710
+[23:14:38] [info] VELOCITY: Created Logical device!
+[23:14:38] [info] VELOCITY: Created swapchain with size:(1280,720)
+[23:14:38] [info] VELOCITY: Loaded default shaders!
+[23:14:38] [info] VELOCITY: Created graphics pipeline!
+[23:14:38] [info] VELOCITY: Created framebuffers!
+[23:14:38] [info] VELOCITY: Created command pool!
+[23:14:38] [info] VELOCITY: Allocated command buffers!
+[23:14:38] [info] VELOCITY: Created syncronisation primitives!

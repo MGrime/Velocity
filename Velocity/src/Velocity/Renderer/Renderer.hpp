@@ -7,6 +7,8 @@
 
 #include <Velocity/Core/Events/ApplicationEvent.hpp>
 
+#include "BufferManager.hpp"
+
 namespace Velocity {
 
 	// Forward declaration
@@ -15,6 +17,7 @@ namespace Velocity {
 	class Swapchain;
 	class Pipeline;
 	class Shader;
+	class BufferManager;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -26,18 +29,29 @@ namespace Velocity {
 
 		// Submits a renderer command to be done
 		// TODO: Make this actually work as it is. Im placeholding the record logic in here so it reads right from the application side
-		void Submit();
+		void Submit(BufferManager::Renderable object);
 
 		// Calls RecordCommandBuffers to flush all Submitted commands
 		// Then syncrohnises and presents a frame
 		// Called by application in the run loop
 		void Render();
-
+		
 		// Called by app when resize occurs
 		void OnWindowResize();
 
 		// Call as application exits
 		void Finalise() { m_LogicalDevice->waitIdle(); } ;
+
+		#pragma region USER API
+
+		// Loads the given mesh into a renderable object
+		// Pass this to Renderer::Submit
+		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts)
+		{
+			return m_BufferManager->AddMesh(verts);
+		}
+
+		#pragma endregion 
 		
 		static std::shared_ptr<Renderer>& GetRenderer()
 		{
@@ -128,6 +142,9 @@ namespace Velocity {
 
 		// Creates the pool we will use to create all command buffers
 		void CreateCommandPool();
+
+		// Creates the vertex and index buffers we need
+		void CreateBufferManager();
 
 		// Allocates one command buffer per framebuffer
 		void CreateCommandBuffers();
@@ -224,6 +241,11 @@ namespace Velocity {
 		Syncronizer								m_Syncronizer;
 		size_t									m_CurrentFrame = 0u;
 		uint32_t								m_CurrentImage = 0u;
+
+		// Contains the vertex and index buffers and provides interface to load into them
+		std::unique_ptr<BufferManager>			m_BufferManager;
+
+		std::vector<BufferManager::Renderable>	m_SceneData;
 		
 		#pragma endregion
 

@@ -29,6 +29,37 @@ public:
 	}
 };
 
+class SceneLayer : public Velocity::Layer
+{
+public:
+	SceneLayer() : Layer("Scene Layer") {}
+
+	void OnAttach() override
+	{
+		auto triangle = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts);
+
+		Velocity::Renderer::GetRenderer()->Submit(triangle);
+
+		m_Verts.at(0).Position = { 0.0f, -0.8f,0.0f };
+		m_Verts.at(1).Position = { 0.3f, 0.5f,0.0f };
+		m_Verts.at(2).Position = { -0.3f, 0.5f,0.0f };
+
+		m_Verts.at(0).Color = { 1.0f,1.0f,1.0f };
+		m_Verts.at(1).Color = { 1.0f,1.0f,1.0f };
+		m_Verts.at(2).Color = { 1.0f,1.0f,1.0f };
+
+		auto triangle2 = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts);
+
+		Velocity::Renderer::GetRenderer()->Submit(triangle2);
+	}
+private:
+	std::vector<Velocity::Vertex> m_Verts = {
+		{{0.0f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},
+		{{0.5f, 0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}},
+		{{-0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}}
+	};
+};
+
 class EditorApplication : public Velocity::Application
 {
 public:
@@ -37,7 +68,7 @@ public:
 		// Set the editor icon
 		GetWindow()->SetWindowIcon("assets/textures/logo.png");
 
-		//PushLayer(new TestLayer());
+		PushLayer(new SceneLayer());
 	}
 
 	~EditorApplication() = default;

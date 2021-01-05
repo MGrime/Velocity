@@ -9,6 +9,8 @@
 #include <Velocity/Renderer/Swapchain.hpp>
 #include <Velocity/Renderer/Shader.hpp>
 #include <Velocity/Renderer/Pipeline.hpp>
+#include <Velocity/Renderer/Vertex.hpp>
+#include <Velocity/Renderer/BufferManager.hpp>
 
 namespace Velocity
 {
@@ -26,14 +28,16 @@ namespace Velocity
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandPool();
+		CreateBufferManager();
 		CreateCommandBuffers();
 		CreateSyncronizer();
 	}
 
 	// Submits a renderer command to be done
-	void Renderer::Submit()
+	void Renderer::Submit(BufferManager::Renderable object)
 	{
 		// TODO: Add logic
+		m_SceneData.push_back(object);
 	}
 	
 	// Takes all the information submitted this frame, records and submits the commands
@@ -460,13 +464,17 @@ namespace Velocity
 		#pragma endregion
 
 		#pragma region VERTEX INPUT
+
+		// Sets up the pipeline to accept a Velocity::Vertex
+		auto bindingDescription = Vertex::GetBindingDescription();
+		auto attribDescription = Vertex::GetAttributeDescriptions();
 		
 		vk::PipelineVertexInputStateCreateInfo vertexInputInfo = {
 				vk::PipelineVertexInputStateCreateFlags{},
-				0,
-				nullptr,
-				0,
-			nullptr
+				1,
+				&bindingDescription,
+				static_cast<uint32_t>(attribDescription.size()),
+			attribDescription.data()
 		};
 
 		#pragma endregion
@@ -745,6 +753,12 @@ namespace Velocity
 		VEL_CORE_INFO("Created command pool!");
 	}
 
+	// Creates the vertex and index buffers we need
+	void Renderer::CreateBufferManager()
+	{
+		m_BufferManager = std::make_unique<BufferManager>(m_PhysicalDevice, m_LogicalDevice, m_CommandPool.get(), m_GraphicsQueue);
+	}
+
 	// Allocates one command buffer per framebuffer
 	void Renderer::CreateCommandBuffers()
 	{
@@ -845,11 +859,15 @@ namespace Velocity
 		};
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
-		// 1. Bind pipeline
+		// 1. Bind pipeline and buffer
 		m_GraphicsPipeline->Bind(cmdBuffer);
+		m_BufferManager->Bind(cmdBuffer.get());
 
 		// 2. Draw
-		cmdBuffer->draw(3, 1, 0,0);
+		for (auto object : m_SceneData)
+		{
+			cmdBuffer->draw(object.VertexCount, 1, object.VertexOffset, 0);
+		}
 
 		// 3. End
 		cmdBuffer->endRenderPass();
