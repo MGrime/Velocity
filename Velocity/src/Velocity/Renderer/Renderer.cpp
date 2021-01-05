@@ -1027,8 +1027,6 @@ namespace Velocity
 	// Destroys all vulkan data
 	Renderer::~Renderer()
 	{
-		m_LogicalDevice->waitIdle();
-		
 		// Need to force this to happen before the other variables go out of scope
 		m_Swapchain.reset();
 	}

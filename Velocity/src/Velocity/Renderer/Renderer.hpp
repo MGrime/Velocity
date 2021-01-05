@@ -30,6 +30,9 @@ namespace Velocity {
 		// Then syncrohnises and presents a frame
 		// Called by application in the run loop
 		void Render();
+
+		// Call as application exits
+		void Finalise() { m_LogicalDevice->waitIdle(); } ;
 		
 		static std::shared_ptr<Renderer>& GetRenderer()
 		{

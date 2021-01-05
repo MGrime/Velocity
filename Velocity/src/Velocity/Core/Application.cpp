@@ -32,6 +32,8 @@ namespace Velocity
 			
 			r_Renderer->Render();
 		}
+
+		r_Renderer->Finalise();
 	}
 
 	void Application::OnEvent(Event& e)
