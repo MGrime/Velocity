@@ -27,6 +27,65 @@ namespace Velocity
 		CreateFramebuffers();
 		CreateCommandPool();
 		CreateCommandBuffers();
+		CreateSyncronizer();
+	}
+
+	// Submits a renderer command to be done
+	void Renderer::Submit()
+	{
+		// TODO: Add logic
+		RecordCommandBuffers();
+	}
+	
+	// Takes all the information submitted this frame, records and submits the commands
+	// Called by application in the run loop
+	void Renderer::Render()
+	{
+		// Acquire the next available image and signal the semaphore when one is
+		uint32_t index = m_Swapchain->AcquireImage(UINT64_MAX, m_Syncronizer.ImageAvailable);
+
+		// Submit command buffer
+
+		// Which semaphores to wait on before starting submission
+		std::array<vk::Semaphore,1> waitSemaphores = { m_Syncronizer.ImageAvailable.get() };
+
+		// Which semaphores to signal when submission is complete
+		std::array<vk::Semaphore, 1> signalSemaphores = { m_Syncronizer.RenderFinished.get() };
+
+		// Which stages of the pipeline wait to finish before we submit
+		std::array<vk::PipelineStageFlags, 1> waitStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
+
+		// Combine all above data
+		vk::SubmitInfo submitInfo = {
+			waitSemaphores.size(),
+			waitSemaphores.data(),
+			waitStages.data(),
+			1,
+			&m_CommandBuffers.at(index).get(),
+			1,
+			signalSemaphores.data()
+		};
+
+		// Submit
+		vk::Result result = m_GraphicsQueue.submit(1, &submitInfo,nullptr);
+		if (result != vk::Result::eSuccess)
+		{
+			VEL_CORE_ASSERT(false, "Failed to submit command buffer!");
+			VEL_CORE_ERROR("Failed to submit command buffer!");
+		}
+
+		// Time to present
+		vk::PresentInfoKHR presentInfo = {
+			1,
+			signalSemaphores.data(),
+			1,
+			&m_Swapchain->GetSwapchainRaw(),
+			&index,
+			nullptr
+		};
+
+		m_PresentQueue.presentKHR(&presentInfo);
+		
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -524,14 +583,26 @@ namespace Velocity
 			nullptr
 		};
 
+		/* We make the render pass wait on the image being acquired as there is an implicit subpass at the start
+		 this transisitons the image and will be wrong if we leave it unsorted */
+		vk::SubpassDependency implicitDependency = {
+			VK_SUBPASS_EXTERNAL,
+			0,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::AccessFlags{},
+			vk::AccessFlagBits::eColorAttachmentWrite
+		};
+		
+
 		vk::RenderPassCreateInfo renderPassInfo = {
 			vk::RenderPassCreateFlags{},
 			1,
 			&colorAttachment,
 			1,
 			&subpass,
-			0,
-			nullptr
+			1,
+			&implicitDependency
 		};
 		
 		#pragma endregion
@@ -607,7 +678,7 @@ namespace Velocity
 		auto qfIndices = FindQueueFamilies(m_PhysicalDevice);
 
 		vk::CommandPoolCreateInfo poolInfo = {
-			vk::CommandPoolCreateFlags{},
+			vk::CommandPoolCreateFlagBits::eTransient,
 			qfIndices.GraphicsFamily.value()
 		};
 
@@ -620,7 +691,8 @@ namespace Velocity
 			VEL_CORE_ASSERT(false, "Failed to create command pool! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the command pool: {0}", e.what());
 		}
-		
+
+		VEL_CORE_INFO("Created command pool!");
 	}
 
 	// Allocates one command buffer per framebuffer
@@ -641,9 +713,101 @@ namespace Velocity
 			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
 		}
+
+		VEL_CORE_INFO("Allocated command buffers!");
+	}
+
+	// Creates all required sync primitives
+	void Renderer::CreateSyncronizer()
+	{
+		// Create semaphores
+		// Used for image and rendering syncing
+		vk::SemaphoreCreateInfo semaphoreInfo = {
+			vk::SemaphoreCreateFlags{}
+		};
+		try
+		{
+			m_Syncronizer.ImageAvailable = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
+			m_Syncronizer.RenderFinished = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create semaphores! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in creating the semaphores: {0}", e.what());
+		}	
 	}
 	#pragma endregion 
 
+	#pragma region RENDERING FUNCTIONS
+
+	// Takes all commands sent through Renderer::Submit and records the buffers for them
+	void Renderer::RecordCommandBuffers()
+	{
+		// TODO: Remove/change this static recording when you create the submit logic
+		for (size_t i = 0; i < m_CommandBuffers.size(); ++i)
+		{
+			auto& cmdBuffer = m_CommandBuffers.at(i);
+			
+			// Start a command buffer recording
+			vk::CommandBufferBeginInfo beginInfo = {
+				vk::CommandBufferUsageFlags{},
+				nullptr
+			};
+
+			try
+			{
+				cmdBuffer->begin(beginInfo);
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ASSERT(false, "Failed to start record commandbuffers! Error {0}", e.what());
+				VEL_CORE_ERROR("An error occurred in starting recording commandbuffers: {0}", e.what());
+			}
+
+			// Now we make the draw commands
+			// TODO: This will be based on the contents submitted
+			
+			// Set magenta clear color
+			std::array<float, 4> clearColor = {
+				1.0f, 0.0f, 1.0f, 1.0f
+			};
+			vk::ClearValue clearColorValue = vk::ClearColorValue(clearColor);
+
+			// Begin render pass
+			vk::RenderPassBeginInfo renderPassInfo = {
+				m_GraphicsPipeline->GetRenderPass().get(),
+				m_Framebuffers.at(i).get(),
+				vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
+				1,
+				&clearColorValue
+			};
+			cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+
+			// 1. Bind pipeline
+			m_GraphicsPipeline->Bind(cmdBuffer);
+
+			// 2. Draw
+			cmdBuffer->draw(3, 1, 0,0);
+
+			// 3. End
+			cmdBuffer->endRenderPass();
+
+			// 4. Check
+			try
+			{
+				cmdBuffer->end();
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
+				VEL_CORE_ERROR("An error occurred in recording commandbuffers: {0}", e.what());
+			}
+			
+		}
+	}
+
+	#pragma endregion 
+	
 	#pragma region HELPER FUNCTIONS
 	// Checks for required validation layers
 	bool Renderer::CheckValidationLayerSupport()

@@ -43,6 +43,14 @@ namespace Velocity
 		
 		#pragma endregion
 
+		#pragma region RENDER GETTERS
+
+		uint32_t AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore);
+
+		vk::SwapchainKHR& GetSwapchainRaw() { return m_Swapchain; }
+		
+		#pragma endregion
+
 		#pragma region STATIC HELPERS
 		// These help renderer pick the best swapchain
 

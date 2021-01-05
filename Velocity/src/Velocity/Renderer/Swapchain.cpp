@@ -76,6 +76,23 @@ namespace Velocity
 		}
 	}
 
+	uint32_t Swapchain::AcquireImage(uint64_t timeout, vk::UniqueSemaphore& semaphore)
+	{
+		uint32_t index = 0u;
+
+		vk::Result result = r_Device->get().acquireNextImageKHR(m_Swapchain, timeout, semaphore.get(),nullptr,&index);
+
+		if (result != vk::Result::eSuccess)
+		{
+			VEL_CORE_ASSERT("Failed to acquire swapchain image!");
+			VEL_CORE_ERROR("Failed to acquire swapchain image!");
+
+			return 0u;
+		}
+		return index;
+
+	}
+
 	// STATIC HELPER FUNCTIONS
 	// These help renderer pick the best swapchain
 

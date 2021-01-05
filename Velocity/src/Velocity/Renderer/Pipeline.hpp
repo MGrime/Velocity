@@ -12,6 +12,8 @@ namespace Velocity
 
 		virtual ~Pipeline() = default;
 
+		void Bind(vk::UniqueCommandBuffer& commandBuffer);
+		
 		vk::UniquePipeline& GetPipeline() { return m_Pipeline; }
 		vk::UniqueRenderPass& GetRenderPass() { return m_RenderPass; }
 		vk::UniquePipelineLayout& GetLayout() { return m_Layout; }

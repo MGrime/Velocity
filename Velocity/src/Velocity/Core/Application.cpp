@@ -26,6 +26,7 @@ namespace Velocity
 		while (m_Running)
 		{
 			s_Window->OnUpdate();
+			r_Renderer->Render();	// drawFrame()
 		}
 	}
 

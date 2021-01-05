@@ -53,6 +53,10 @@ namespace Velocity
 		
 		
 	}
+	void Pipeline::Bind(vk::UniqueCommandBuffer& commandBuffer)
+	{
+		commandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
+	}
 
 	
 }

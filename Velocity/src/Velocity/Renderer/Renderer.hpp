@@ -22,9 +22,14 @@ namespace Velocity {
 
 		virtual ~Renderer();
 
-		// Takes all the information recorded in the command buffers and submits the commands
+		// Submits a renderer command to be done
+		// TODO: Make this actually work as it is. Im placeholding the record logic in here so it reads right from the application side
+		void Submit();
+
+		// Calls RecordCommandBuffers to flush all Submitted commands
+		// Then syncrohnises and presents a frame
 		// Called by application in the run loop
-		void RenderAndSubmit();
+		void Render();
 		
 		static std::shared_ptr<Renderer>& GetRenderer()
 		{
@@ -57,6 +62,13 @@ namespace Velocity {
 			vk::SurfaceCapabilitiesKHR			Capabilities;
 			std::vector<vk::SurfaceFormatKHR>	Formats;
 			std::vector<vk::PresentModeKHR>		PresentModes;
+		};
+
+		// Contains all syncronization primitives needed for this renderer
+		struct Syncronizer
+		{
+			vk::UniqueSemaphore ImageAvailable;
+			vk::UniqueSemaphore RenderFinished;
 		};
 		
 		#pragma endregion 
@@ -92,8 +104,18 @@ namespace Velocity {
 		// Allocates one command buffer per framebuffer
 		void CreateCommandBuffers();
 
+		// Creates all required sync primitives
+		void CreateSyncronizer();
+
 		
 		#pragma endregion
+
+		#pragma region RENDERING FUNCTIONS
+
+		// Takes all commands sent through Renderer::Submit and records the buffers for them
+		void RecordCommandBuffers();
+		
+		#pragma endregion 
 		
 		#pragma region HELPER FUNCTIONS
 		// Checks for required validation layers
@@ -167,6 +189,9 @@ namespace Velocity {
 
 		// Command buffers - one per swapchain
 		std::vector<vk::UniqueCommandBuffer>	m_CommandBuffers;
+
+		// Contains all sync primitives needed
+		Syncronizer								m_Syncronizer;
 		
 		#pragma endregion
 
