@@ -34,40 +34,56 @@ namespace Velocity
 	void Renderer::Submit()
 	{
 		// TODO: Add logic
-		RecordCommandBuffers();
 	}
 	
 	// Takes all the information submitted this frame, records and submits the commands
 	// Called by application in the run loop
 	void Renderer::Render()
 	{
+		// Wait on fences
+		m_LogicalDevice->waitForFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get(), VK_TRUE, UINT64_MAX);
+		
 		// Acquire the next available image and signal the semaphore when one is
-		uint32_t index = m_Swapchain->AcquireImage(UINT64_MAX, m_Syncronizer.ImageAvailable);
+		m_CurrentImage = m_Swapchain->AcquireImage(UINT64_MAX, m_Syncronizer.ImageAvailable.at(m_CurrentFrame));
 
+		// Check if we need to wait on this image
+		if (m_Syncronizer.ImagesInFlight.at(m_CurrentImage) != vk::Fence(nullptr))
+		{
+			m_LogicalDevice->waitForFences(1, &m_Syncronizer.ImagesInFlight.at(m_CurrentImage), VK_TRUE, UINT64_MAX);
+		}
+
+		// Mark we are using
+		m_Syncronizer.ImagesInFlight.at(m_CurrentImage) = m_Syncronizer.InFlightFences.at(m_CurrentFrame).get();
+		
 		// Submit command buffer
 
+		// Records everything submitted
+		RecordCommandBuffers();
+
 		// Which semaphores to wait on before starting submission
-		std::array<vk::Semaphore,1> waitSemaphores = { m_Syncronizer.ImageAvailable.get() };
+		std::array<vk::Semaphore,1> waitSemaphores = { m_Syncronizer.ImageAvailable.at(m_CurrentFrame).get() };
 
 		// Which semaphores to signal when submission is complete
-		std::array<vk::Semaphore, 1> signalSemaphores = { m_Syncronizer.RenderFinished.get() };
+		std::array<vk::Semaphore, 1> signalSemaphores = { m_Syncronizer.RenderFinished.at(m_CurrentFrame).get() };
 
 		// Which stages of the pipeline wait to finish before we submit
-		std::array<vk::PipelineStageFlags, 1> waitStages = { vk::PipelineStageFlagBits::eColorAttachmentOutput };
-
+		std::array<vk::PipelineStageFlags, 1> waitStages = { vk::PipelineStageFlagBits::eTopOfPipe };
+		
 		// Combine all above data
 		vk::SubmitInfo submitInfo = {
 			waitSemaphores.size(),
 			waitSemaphores.data(),
 			waitStages.data(),
 			1,
-			&m_CommandBuffers.at(index).get(),
+			&m_CommandBuffers.at(m_CurrentImage).get(),
 			1,
 			signalSemaphores.data()
 		};
 
+		m_LogicalDevice->resetFences(1, &m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
+
 		// Submit
-		vk::Result result = m_GraphicsQueue.submit(1, &submitInfo,nullptr);
+		vk::Result result = m_GraphicsQueue.submit(1, &submitInfo,m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
 		if (result != vk::Result::eSuccess)
 		{
 			VEL_CORE_ASSERT(false, "Failed to submit command buffer!");
@@ -80,12 +96,13 @@ namespace Velocity
 			signalSemaphores.data(),
 			1,
 			&m_Swapchain->GetSwapchainRaw(),
-			&index,
+			&m_CurrentImage,
 			nullptr
 		};
 
 		m_PresentQueue.presentKHR(&presentInfo);
-		
+
+		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -621,7 +638,7 @@ namespace Velocity
 			&multiSampling,
 			nullptr,
 			&colorBlending,
-			&dynamicState,
+			nullptr,				// No dynamic state yet
 			nullptr,				// Pipeline Layout Supplied in pipeline constructor
 			nullptr,				// Render pass supplied in pipeline constructor
 			0,
@@ -678,7 +695,7 @@ namespace Velocity
 		auto qfIndices = FindQueueFamilies(m_PhysicalDevice);
 
 		vk::CommandPoolCreateInfo poolInfo = {
-			vk::CommandPoolCreateFlagBits::eTransient,
+			vk::CommandPoolCreateFlagBits::eResetCommandBuffer,
 			qfIndices.GraphicsFamily.value()
 		};
 
@@ -725,16 +742,30 @@ namespace Velocity
 		vk::SemaphoreCreateInfo semaphoreInfo = {
 			vk::SemaphoreCreateFlags{}
 		};
-		try
+
+		// Used for frame syncing
+		vk::FenceCreateInfo fenceInfo = {
+			vk::FenceCreateFlagBits::eSignaled
+		};
+
+		m_Syncronizer.ImagesInFlight.resize(m_Swapchain->GetImages().size(),vk::Fence(nullptr));
+		
+		for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; ++i)
 		{
-			m_Syncronizer.ImageAvailable = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
-			m_Syncronizer.RenderFinished = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
+			try
+			{
+				m_Syncronizer.ImageAvailable.at(i) = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
+				m_Syncronizer.RenderFinished.at(i) = m_LogicalDevice->createSemaphoreUnique(semaphoreInfo);
+				m_Syncronizer.InFlightFences.at(i) = m_LogicalDevice->createFenceUnique(fenceInfo);
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ASSERT(false, "Failed to create sync primitives! Error {0}", e.what());
+				VEL_CORE_ERROR("An error occurred in creating the sync primitives: {0}", e.what());
+			}
+
 		}
-		catch (vk::SystemError& e)
-		{
-			VEL_CORE_ASSERT(false, "Failed to create semaphores! Error {0}", e.what());
-			VEL_CORE_ERROR("An error occurred in creating the semaphores: {0}", e.what());
-		}	
+		VEL_CORE_INFO("Created syncronisation primitives!");
 	}
 	#pragma endregion 
 
@@ -744,65 +775,61 @@ namespace Velocity
 	void Renderer::RecordCommandBuffers()
 	{
 		// TODO: Remove/change this static recording when you create the submit logic
-		for (size_t i = 0; i < m_CommandBuffers.size(); ++i)
+		auto& cmdBuffer = m_CommandBuffers.at(m_CurrentImage);
+		
+		// Start a command buffer recording
+		vk::CommandBufferBeginInfo beginInfo = {
+			vk::CommandBufferUsageFlags{},
+			nullptr
+		};
+
+		try
 		{
-			auto& cmdBuffer = m_CommandBuffers.at(i);
-			
-			// Start a command buffer recording
-			vk::CommandBufferBeginInfo beginInfo = {
-				vk::CommandBufferUsageFlags{},
-				nullptr
-			};
+			cmdBuffer->begin(beginInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to start record commandbuffers! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in starting recording commandbuffers: {0}", e.what());
+		}
 
-			try
-			{
-				cmdBuffer->begin(beginInfo);
-			}
-			catch (vk::SystemError& e)
-			{
-				VEL_CORE_ASSERT(false, "Failed to start record commandbuffers! Error {0}", e.what());
-				VEL_CORE_ERROR("An error occurred in starting recording commandbuffers: {0}", e.what());
-			}
+		// Now we make the draw commands
+		// TODO: This will be based on the contents submitted
+		
+		// Set magenta clear color
+		std::array<float, 4> clearColor = {
+			1.0f, 0.0f, 1.0f, 1.0f
+		};
+		vk::ClearValue clearColorValue = vk::ClearColorValue(clearColor);
 
-			// Now we make the draw commands
-			// TODO: This will be based on the contents submitted
-			
-			// Set magenta clear color
-			std::array<float, 4> clearColor = {
-				1.0f, 0.0f, 1.0f, 1.0f
-			};
-			vk::ClearValue clearColorValue = vk::ClearColorValue(clearColor);
+		// Begin render pass
+		vk::RenderPassBeginInfo renderPassInfo = {
+			m_GraphicsPipeline->GetRenderPass().get(),
+			m_Framebuffers.at(m_CurrentImage).get(),
+			vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
+			1,
+			&clearColorValue
+		};
+		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
-			// Begin render pass
-			vk::RenderPassBeginInfo renderPassInfo = {
-				m_GraphicsPipeline->GetRenderPass().get(),
-				m_Framebuffers.at(i).get(),
-				vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
-				1,
-				&clearColorValue
-			};
-			cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+		// 1. Bind pipeline
+		m_GraphicsPipeline->Bind(cmdBuffer);
 
-			// 1. Bind pipeline
-			m_GraphicsPipeline->Bind(cmdBuffer);
+		// 2. Draw
+		cmdBuffer->draw(3, 1, 0,0);
 
-			// 2. Draw
-			cmdBuffer->draw(3, 1, 0,0);
+		// 3. End
+		cmdBuffer->endRenderPass();
 
-			// 3. End
-			cmdBuffer->endRenderPass();
-
-			// 4. Check
-			try
-			{
-				cmdBuffer->end();
-			}
-			catch (vk::SystemError& e)
-			{
-				VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
-				VEL_CORE_ERROR("An error occurred in recording commandbuffers: {0}", e.what());
-			}
-			
+		// 4. Check
+		try
+		{
+			cmdBuffer->end();
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in recording commandbuffers: {0}", e.what());
 		}
 	}
 
@@ -1000,6 +1027,8 @@ namespace Velocity
 	// Destroys all vulkan data
 	Renderer::~Renderer()
 	{
+		m_LogicalDevice->waitIdle();
+		
 		// Need to force this to happen before the other variables go out of scope
 		m_Swapchain.reset();
 	}

@@ -31,6 +31,8 @@ namespace Velocity
 		// Store paramters
 		m_Format = info.imageFormat;
 		m_Extent = info.imageExtent;
+
+		CreateImageViews();
 	}
 
 	Swapchain::~Swapchain()

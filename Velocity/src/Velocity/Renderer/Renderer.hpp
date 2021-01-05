@@ -43,7 +43,25 @@ namespace Velocity {
 	private:
 		// Renderer is a singleton
 		static std::shared_ptr<Renderer> s_Renderer;
+		
+		#pragma region CONSTANT DATA
+		const std::array<const char*, 1> m_ValidationLayers = {
+			"VK_LAYER_KHRONOS_validation"
+		};
+		const std::array<const char*, 1> m_DeviceExtensions = {
+			VK_KHR_SWAPCHAIN_EXTENSION_NAME
+		};
 
+		#ifdef VEL_DEBUG
+		const bool ENABLE_VALIDATION_LAYERS = true;
+		#else
+		const bool ENABLE_VALIDATION_LAYERS = false;
+		#endif
+
+		static const uint32_t MAX_FRAMES_IN_FLIGHT = 2u;
+
+		#pragma endregion
+		
 		#pragma region TYPEDEFS AND STRUCTS
 
 		struct QueueFamilyIndices
@@ -67,8 +85,10 @@ namespace Velocity {
 		// Contains all syncronization primitives needed for this renderer
 		struct Syncronizer
 		{
-			vk::UniqueSemaphore ImageAvailable;
-			vk::UniqueSemaphore RenderFinished;
+			std::array<vk::UniqueSemaphore, MAX_FRAMES_IN_FLIGHT>	ImageAvailable;
+			std::array<vk::UniqueSemaphore, MAX_FRAMES_IN_FLIGHT>	RenderFinished;
+			std::array<vk::UniqueFence, MAX_FRAMES_IN_FLIGHT>		InFlightFences;
+			std::vector<vk::Fence>									ImagesInFlight;
 		};
 		
 		#pragma endregion 
@@ -192,24 +212,11 @@ namespace Velocity {
 
 		// Contains all sync primitives needed
 		Syncronizer								m_Syncronizer;
+		size_t									m_CurrentFrame = 0u;
+		uint32_t								m_CurrentImage = 0u;
 		
 		#pragma endregion
 
-		#pragma region CONSTANT DATA
-		const std::array<const char*, 1> m_ValidationLayers = {
-			"VK_LAYER_KHRONOS_validation"
-		};
-		const std::array<const char*, 1> m_DeviceExtensions = {
-			VK_KHR_SWAPCHAIN_EXTENSION_NAME
-		};
-
-		#ifdef VEL_DEBUG
-		const bool ENABLE_VALIDATION_LAYERS = true;
-		#else
-		const bool ENABLE_VALIDATION_LAYERS = false;
-		#endif
-		
-		#pragma endregion 
 
 	};
 

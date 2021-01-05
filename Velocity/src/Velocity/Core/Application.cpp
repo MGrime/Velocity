@@ -26,7 +26,11 @@ namespace Velocity
 		while (m_Running)
 		{
 			s_Window->OnUpdate();
-			r_Renderer->Render();	// drawFrame()
+
+			// REMOVE REMOVE REMOVE REMOVE REMOVE
+			r_Renderer->Submit();
+			
+			r_Renderer->Render();
 		}
 	}
 
