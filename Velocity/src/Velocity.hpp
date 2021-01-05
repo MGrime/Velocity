@@ -7,14 +7,22 @@
 // Base file - Contains macros for project operation
 #include "Velocity/Core/Base.hpp"
 
+// Logging
+#include "Velocity/Core/Log.hpp"
+
 // Core includes
 
 #include "Velocity/Core/Application.hpp"	// Application base class
 
 #include "Velocity/Core/Window.hpp"
 
+// Layer includes
+
+#include "Velocity/Core/Layers/Layer.hpp"
 
 // Renderer Includes
+
 #include "Velocity/Renderer/Renderer.hpp"
+
 
 

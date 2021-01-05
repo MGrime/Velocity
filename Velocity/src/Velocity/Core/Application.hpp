@@ -4,6 +4,8 @@
 #include <Velocity/Core/Window.hpp>
 #include <Velocity/Core/Events/ApplicationEvent.hpp>
 
+#include <Velocity/Core/Layers/LayerStack.hpp>
+
 struct GLFWwindow;
 
 namespace Velocity 
@@ -19,6 +21,9 @@ namespace Velocity
 		void Run();
 
 		void OnEvent(Event& e);
+
+		void PushLayer(Layer* layer);
+		void PushOverlay(Layer* overlay);
 		
 		// Events
 		bool OnWindowClose(WindowCloseEvent& e);
@@ -37,6 +42,9 @@ namespace Velocity
 		std::shared_ptr<Renderer>			 r_Renderer;
 
 		bool m_Running = true;
+
+		// Stores layer implementions of the users app so we can update and dispatch events
+		LayerStack m_LayerStack;
 	};
 
 	// To be defined in client

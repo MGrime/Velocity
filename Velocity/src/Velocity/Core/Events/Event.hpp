@@ -42,6 +42,8 @@ namespace Velocity
 		virtual int GetCategoryFlags() const = 0;
 		virtual std::string ToString() const { return GetName(); }
 
+		bool Handled() { return m_Handled; }
+
 		bool IsInCategory(EventCategory category)
 		{
 			return GetCategoryFlags() & category;

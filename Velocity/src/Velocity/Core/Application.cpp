@@ -25,11 +25,18 @@ namespace Velocity
 	{
 		while (m_Running)
 		{
-			s_Window->OnUpdate();
+			// First go through layer stack and update
+			for (Layer* layer : m_LayerStack)
+			{
+				layer->OnUpdate();
+			}
 
-			// REMOVE REMOVE REMOVE REMOVE REMOVE
-			r_Renderer->Submit();
+			// TODO: GUI HERE
+
+			// Now update window
+			s_Window->OnUpdate();
 			
+			// Render everything that has been submitted this frame
 			r_Renderer->Render();
 		}
 
@@ -40,9 +47,27 @@ namespace Velocity
 	{
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
+		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
+		{
+			(*--it)->OnEvent(e);
+			if (e.Handled())
+				break;
+		}
+		
 
 	}
 
+	void Application::PushLayer(Layer* layer)
+	{
+		m_LayerStack.PushLayer(layer);
+	}
+
+	void Application::PushOverlay(Layer* overlay)
+	{
+		m_LayerStack.PushOverlay(overlay);
+	}
+
+	
 	bool Application::OnWindowClose(WindowCloseEvent& e)
 	{
 		m_Running = false;
