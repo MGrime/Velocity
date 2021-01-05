@@ -11,6 +11,8 @@ namespace Velocity {
 	// Safer in a class as big as this
 	class Window;
 	class Swapchain;
+	class Pipeline;
+	class Shader;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -74,6 +76,9 @@ namespace Velocity {
 		// Creates the swapchain (creates chain, gets and makes images & views)
 		void CreateSwapchain();
 
+		// Chonky function that creates a full pipeline
+		void CreateGraphicsPipeline();
+
 		#pragma endregion
 		
 		#pragma region HELPER FUNCTIONS
@@ -117,9 +122,6 @@ namespace Velocity {
 		// Window surface. Passed into swapchain
 		vk::UniqueSurfaceKHR				m_Surface;
 
-		// Swapchain class
-		std::unique_ptr<Swapchain>			m_Swapchain;
-
 		// Physical GPU handle
 		vk::PhysicalDevice					m_PhysicalDevice;
 
@@ -134,6 +136,9 @@ namespace Velocity {
 
 		// Debug messaging callback
 		vk::UniqueHandle<vk::DebugUtilsMessengerEXT,vk::DispatchLoaderDynamic>	m_DebugMessenger;
+
+		// Swapchain class
+		std::unique_ptr<Swapchain>			m_Swapchain;
 		
 		#pragma endregion
 

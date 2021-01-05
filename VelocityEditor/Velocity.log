@@ -1,20 +1,21 @@
-[23:44:24] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[23:44:25] [info] VELOCITY: Available extensions:
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_surface
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[23:44:25] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[23:44:25] [trace] VELOCITY: 	 VK_EXT_debug_report
-[23:44:25] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[23:44:25] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[23:44:25] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[23:44:25] [info] VELOCITY: Created Vulkan Instance!
-[23:44:25] [info] VELOCITY: Created debug messenger!
-[23:44:25] [info] VELOCITY: Created window surface!
-[23:44:25] [info] VELOCITY: Selected GPU: GeForce RTX 2070
-[23:44:25] [info] VELOCITY: Created Logical device!
+[10:21:54] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[10:21:54] [info] VELOCITY: Available extensions:
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_surface
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[10:21:54] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[10:21:54] [trace] VELOCITY: 	 VK_EXT_debug_report
+[10:21:54] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[10:21:54] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[10:21:54] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[10:21:54] [info] VELOCITY: Created Vulkan Instance!
+[10:21:54] [info] VELOCITY: Created debug messenger!
+[10:21:54] [info] VELOCITY: Created window surface!
+[10:21:54] [info] VELOCITY: Selected GPU: GeForce RTX 2070
+[10:21:54] [info] VELOCITY: Created Logical device!
+[10:21:54] [info] VELOCITY: Created swapchain with size:(1280,720)

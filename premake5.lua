@@ -22,6 +22,7 @@ IncludeDir = {}
 IncludeDir["GLFW"] = "Velocity/vendor/GLFW/include"
 IncludeDir["glm"] = "Velocity/vendor/glm"
 IncludeDir["vulkan"] = vulkanpath .. "/Include"
+IncludeDir["stb"] = "Velocity/vendor/stb"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
@@ -45,7 +46,8 @@ project "Velocity"
 	{
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.hpp",
-		"%{prj.name}/src/**.cpp"
+		"%{prj.name}/src/**.cpp",
+		"%{IncludeDir.stb}/**.cpp"
 	}
 	
 	includedirs
@@ -54,7 +56,8 @@ project "Velocity"
 		"%{prj.name}/vendor/spdlog/include",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.vulkan}"
+		"%{IncludeDir.vulkan}",
+		"%{IncludeDir.stb}"
 	}
 	
 	links

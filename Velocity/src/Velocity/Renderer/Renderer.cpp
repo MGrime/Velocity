@@ -4,9 +4,10 @@
 #include <Velocity/Core/Log.hpp>
 
 #include <Velocity/Core/Window.hpp>
-#include <Velocity/Renderer/Swapchain.hpp>
-
 #include <Velocity/Core/Application.hpp>
+
+#include <Velocity/Renderer/Swapchain.hpp>
+#include <Velocity/Renderer/Shader.hpp>
 
 namespace Velocity
 {
@@ -262,8 +263,70 @@ namespace Velocity
 	{
 		auto support = QuerySwapchainSupport(m_PhysicalDevice);
 
-		// Select parameters
+		// Select optimal parameters
+		vk::SurfaceFormatKHR surfaceFormat = Swapchain::ChooseFormat(support.Formats);
+		vk::PresentModeKHR presentMode = Swapchain::ChoosePresentMode(support.PresentModes);
+		vk::Extent2D extent = Swapchain::ChooseExtent(support.Capabilities);
 
+		// Calculate other parameters
+		uint32_t imageCount = support.Capabilities.minImageCount + 1;
+		if (support.Capabilities.maxImageCount > 0 && imageCount > support.Capabilities.maxImageCount)
+		{
+			imageCount = support.Capabilities.maxImageCount;
+		}
+
+		// If our queue families are seperate we need to set the swapchain up differently
+		// Assume default values and check for if we need to switch
+		vk::SharingMode sharingMode = vk::SharingMode::eExclusive;
+		uint32_t indexCount = 0;
+		uint32_t* indicesPtr = nullptr;
+
+		QueueFamilyIndices indices = FindQueueFamilies(m_PhysicalDevice);
+		uint32_t qfIndices[] = { indices.GraphicsFamily.value(),indices.PresentFamily.value() };
+
+		if (indices.GraphicsFamily != indices.PresentFamily)
+		{
+			sharingMode = vk::SharingMode::eConcurrent;
+			indexCount = 2;
+			indicesPtr = qfIndices;
+		}
+
+		// Set up the structure of doom
+		vk::SwapchainCreateInfoKHR createInfo{};
+
+		createInfo.surface = m_Surface.get();
+		createInfo.minImageCount = imageCount;
+		createInfo.imageFormat = surfaceFormat.format;
+		createInfo.imageColorSpace = surfaceFormat.colorSpace;
+		createInfo.imageExtent = extent;
+		createInfo.imageArrayLayers = 1;
+		createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+		createInfo.imageSharingMode = sharingMode;
+		createInfo.queueFamilyIndexCount = indexCount;
+		createInfo.pQueueFamilyIndices = indicesPtr;
+		createInfo.preTransform = support.Capabilities.currentTransform;
+		createInfo.compositeAlpha = vk::CompositeAlphaFlagBitsKHR::eOpaque;
+		createInfo.presentMode = presentMode;
+		createInfo.clipped = VK_TRUE;
+		createInfo.oldSwapchain = nullptr;
+
+		m_Swapchain = std::make_unique<Swapchain>(m_Surface, m_LogicalDevice, createInfo);
+
+		VEL_CORE_INFO("Created swapchain with size:({0},{1})", extent.width, extent.height);
+	}
+
+	// Chonky function that creates a full pipeline
+	void Renderer::CreateGraphicsPipeline()
+	{
+		// Load shaders as spv bytecode
+		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "assets/shaders/vert.spv");
+		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "assets/shaders/frag.spv");
+
+
+
+		// Modules hooked into the pipeline so we can delete here
+		m_LogicalDevice->destroyShaderModule(vertShaderModule);
+		m_LogicalDevice->destroyShaderModule(fragShaderModule);
 
 	}
 	
@@ -390,7 +453,7 @@ namespace Velocity
 	bool Renderer::CheckDeviceExtensionsSupport(vk::PhysicalDevice device)
 	{
 		// Get all available extensions
-		auto availableExtensions = m_PhysicalDevice.enumerateDeviceExtensionProperties();
+		auto availableExtensions = device.enumerateDeviceExtensionProperties();
 
 		// Get a set of our needed extensions
 		std::set<std::string> requiredExtensions(m_DeviceExtensions.begin(), m_DeviceExtensions.end());
@@ -460,5 +523,7 @@ namespace Velocity
 	// Destroys all vulkan data
 	Renderer::~Renderer()
 	{
+		// Need to force this to happen before the other variables go out of scope
+		m_Swapchain.reset();
 	}
 }

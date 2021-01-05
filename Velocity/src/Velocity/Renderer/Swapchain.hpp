@@ -11,7 +11,7 @@ namespace Velocity
 	class Swapchain
 	{
 	public:
-		Swapchain(vk::UniqueSurfaceKHR& surface, vk::PhysicalDevice& device);
+		Swapchain(vk::UniqueSurfaceKHR& surface, vk::UniqueDevice& device, const vk::SwapchainCreateInfoKHR& info);
 
 		virtual ~Swapchain();
 
@@ -28,10 +28,27 @@ namespace Velocity
 		static vk::Extent2D ChooseExtent(const vk::SurfaceCapabilitiesKHR& capabilities);
 
 	private:
+
+		// Creates image views from the swapchain images
+		void CreateImageViews();
+
 		// This is the handle to interface with the surface
 		vk::UniqueSurfaceKHR* r_Surface;
 
 		// This is the handle to interface with renderer physical device
-		vk::PhysicalDevice* r_Device;
+		vk::UniqueDevice* r_Device;
+
+		// This is the vulkan swapchain handle this class manages
+		vk::SwapchainKHR m_Swapchain;
+
+		// A reference to the images created by the swapchain. Implicitly cleaned up
+		std::vector<vk::Image> m_SwapchainImages;
+
+		// Image views that map directly into images above
+		std::vector<vk::ImageView> m_SwapchainImageViews;
+
+		// Store the format and the extent
+		vk::Format		m_Format;
+		vk::Extent2D	m_Extent;
 	};
 }

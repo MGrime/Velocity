@@ -35,6 +35,7 @@ namespace Velocity
 		GLFWwindow* GetNative() const { return m_Window; }
 
 		void SetEventCallback(const EventCallbackFunc& callback) { m_Data.EventCallback = callback; }
+		void SetWindowIcon(const std::string& imagePath);
 
 	private:
 		

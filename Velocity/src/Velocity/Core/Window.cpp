@@ -3,6 +3,8 @@
 
 #include "GLFW/glfw3.h"
 
+#include "stb_image.h"
+
 #include <Velocity/Core/Log.hpp>
 #include <Velocity/Core/Events/ApplicationEvent.hpp>
 #include <Velocity/Core/Events/MouseEvent.hpp>
@@ -31,6 +33,7 @@ namespace Velocity
 
 		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), props.Title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
+
 
 		// Set callbacks
 
@@ -114,14 +117,25 @@ namespace Velocity
 		});
 
 	}
+
 	Window::~Window()
 	{
 		glfwDestroyWindow(m_Window);
 		s_GLFWInit = false;
 		glfwTerminate();
 	}
+
 	void Window::OnUpdate()
 	{
 		glfwPollEvents();
+	}
+
+	void Window::SetWindowIcon(const std::string& imagePath)
+	{
+		GLFWimage newIcon;
+		newIcon.pixels = stbi_load(imagePath.c_str(), &newIcon.width, &newIcon.height, 0, 4);
+		glfwSetWindowIcon(m_Window, 1, &newIcon);
+		stbi_image_free(newIcon.pixels);
+
 	}
 }
