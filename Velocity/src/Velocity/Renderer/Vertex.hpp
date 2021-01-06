@@ -11,6 +11,7 @@ namespace Velocity
 	{
 		glm::vec3 Position;
 		glm::vec3 Color;
+		glm::vec2 UV;
 
 		// Returns how the vertex shader should load the data from memory from vertex to vertex
 		static vk::VertexInputBindingDescription GetBindingDescription()
@@ -23,7 +24,7 @@ namespace Velocity
 		}
 
 		// Returns how to extract a vertex attribute from a chunk of data
-		static std::array<vk::VertexInputAttributeDescription, 2> GetAttributeDescriptions()
+		static std::array<vk::VertexInputAttributeDescription, 3> GetAttributeDescriptions()
 		{
 			return {
 				vk::VertexInputAttributeDescription{
@@ -37,6 +38,12 @@ namespace Velocity
 					0,
 					vk::Format::eR32G32B32Sfloat,
 					offsetof(Vertex,Color)
+				},
+				vk::VertexInputAttributeDescription{
+					2,
+					0,
+					vk::Format::eR32G32Sfloat,
+					offsetof(Vertex,UV)					
 				}
 			};
 		}

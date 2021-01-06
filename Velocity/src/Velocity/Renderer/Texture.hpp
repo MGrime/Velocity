@@ -50,6 +50,9 @@ namespace Velocity
 		// Tells the GPU how to
 		vk::UniqueImageView			m_ImageView;
 
+		// Tells the pipeline how to bind this texture
+		vk::DescriptorImageInfo			m_DescriptorImageInfo;
+
 		// Variables
 		std::string		m_DebugPath;
 		uint32_t		m_Width;

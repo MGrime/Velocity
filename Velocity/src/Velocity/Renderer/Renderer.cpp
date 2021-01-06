@@ -29,6 +29,7 @@ namespace Velocity
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
 		CreateCommandPool();
+		CreateTextureSamplers();
 		CreateBufferManager();
 		CreateUniformBuffers();
 		CreateDescriptorPool();
@@ -49,26 +50,45 @@ namespace Velocity
 	// Submits a renderer command to be done
 
 	// This allows you to add an object that will never move. Add it once and it will always be drawn
-	void Renderer::AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
+	void Renderer::AddStatic(BufferManager::Renderable object,uint32_t textureID, const glm::mat4& modelMatrix)
 	{
-		m_SceneData.m_StaticSceneObjects.push_back(object);
-		m_SceneData.m_StaticSceneObjectTransforms.push_back(modelMatrix);
+		RenderBatchedObject newStatic = {
+			object,modelMatrix,textureID
+		};
+		
+		m_SceneData.m_StaticScene.push_back(newStatic);
+
+		m_SceneData.m_StaticSorted = false;
 	}
 
 	// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
 	// TODO: PROFILE THIS. I think this copy is expensive
-	void Renderer::DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
+	void Renderer::DrawDynamic(BufferManager::Renderable object, uint32_t textureID, const glm::mat4& modelMatrix)
 	{
-		m_SceneData.m_SceneObjects.push_back(object);
-		m_SceneData.m_SceneObjectTransforms.push_back(modelMatrix);
+		RenderBatchedObject newDynamic = {
+			object, modelMatrix,textureID
+		};
+
+		m_SceneData.m_DynamicScene.push_back(newDynamic);
+
+		m_SceneData.m_DynamicSorted = true;
 	}
 
 	// Returns a new texture. You are responsible for cleaning it up!
-	Texture* Renderer::CreateTexture(const std::string& filepath)
+	uint32_t Renderer::CreateTexture(const std::string& filepath)
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		m_Textures.push_back(std::make_unique<Texture>(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
+		auto newIndex = static_cast<uint32_t>(m_Textures.size()) - 1u;
+		// Update the texture info
+		m_TextureInfos.at(newIndex).imageView = m_Textures.back()->m_ImageView.get();
 
-		return new Texture(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+		m_LogicalDevice->waitIdle();
+
+		m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.size()), m_DescriptorWrites.data(), 0, nullptr);
+
+		return newIndex;
+
 	}
 	
 	// This is called to end the rendering of a scene
@@ -183,7 +203,7 @@ namespace Velocity
 		}
 		
 		// Reset pipeline
-		m_GraphicsPipeline.reset();
+		m_TexturedPipeline.reset();
 
 		// Now remake everything we need to
 		CreateSwapchain();
@@ -385,6 +405,8 @@ namespace Velocity
 
 		// Prepare physical device features we need
 		vk::PhysicalDeviceFeatures deviceFeatures{};
+		deviceFeatures.samplerAnisotropy = VK_TRUE;
+		deviceFeatures.shaderSampledImageArrayDynamicIndexing = VK_TRUE;
 
 		// Prepare create info for the logical device
 		vk::DeviceCreateInfo createInfo{};
@@ -647,18 +669,26 @@ namespace Velocity
 		#pragma region PIPELINE LAYOUT
 
 		// Setup push constant ranges
-		vk::PushConstantRange pushConstantRange = {
+		vk::PushConstantRange modelConstantRange = {
 			vk::ShaderStageFlagBits::eVertex,
 			0,
 			sizeof(glm::mat4)
 		};
 
+		vk::PushConstantRange textureConstantRange = {
+			vk::ShaderStageFlagBits::eFragment,
+			sizeof(glm::mat4),
+			sizeof(uint32_t)
+		};
+
+		auto ranges = std::array<vk::PushConstantRange,2>{ modelConstantRange,textureConstantRange };
+
 		vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {
 			vk::PipelineLayoutCreateFlags{},
 			0,			// Set in pipeline constructor
 			nullptr,		// Set in pipeline constructor
-			1,
-			&pushConstantRange
+			ranges.size(),
+			ranges.data()
 		};
 		
 		#pragma endregion
@@ -756,7 +786,16 @@ namespace Velocity
 			nullptr
 		};
 
-		const std::vector<vk::DescriptorSetLayoutBinding> descriptorBindings = { vpLayoutBinding };
+		// Texture binding
+		vk::DescriptorSetLayoutBinding textureLayoutBinding = {
+			1,
+			vk::DescriptorType::eCombinedImageSampler,
+			128,
+			vk::ShaderStageFlagBits::eFragment,
+			nullptr
+		};
+
+		const std::vector<vk::DescriptorSetLayoutBinding> descriptorBindings = { vpLayoutBinding , textureLayoutBinding };
 
 		vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {
 			vk::DescriptorSetLayoutCreateFlags{},
@@ -764,7 +803,7 @@ namespace Velocity
 			descriptorBindings.data()
 		};
 
-		m_GraphicsPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
+		m_TexturedPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
 		
@@ -785,7 +824,7 @@ namespace Velocity
 		{
 			vk::FramebufferCreateInfo framebufferInfo = {
 				vk::FramebufferCreateFlags{},
-				m_GraphicsPipeline->GetRenderPass().get(),
+				m_TexturedPipeline->GetRenderPass().get(),
 				1,
 				&m_Swapchain->GetImageViews().at(i),
 				m_Swapchain->GetWidth(),
@@ -831,6 +870,43 @@ namespace Velocity
 		VEL_CORE_INFO("Created command pool!");
 	}
 
+	// Creates the texture samplers
+	void Renderer::CreateTextureSamplers()
+	{
+		// Get device properties
+		auto properties = m_PhysicalDevice.getProperties();
+
+		vk::SamplerCreateInfo samplerInfo = {
+			vk::SamplerCreateFlags{},
+			vk::Filter::eLinear,
+			vk::Filter::eLinear,
+			vk::SamplerMipmapMode::eLinear,
+			vk::SamplerAddressMode::eRepeat,
+			vk::SamplerAddressMode::eRepeat,
+			vk::SamplerAddressMode::eRepeat,
+			0.0f,
+			VK_TRUE,
+			properties.limits.maxSamplerAnisotropy,
+			VK_FALSE,
+			vk::CompareOp::eAlways,
+			0.0f,
+			0.0f,
+			vk::BorderColor::eIntOpaqueBlack,
+			VK_FALSE
+		};
+
+		try
+		{
+			m_TextureSampler = m_LogicalDevice->createSamplerUnique(samplerInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create texture sampler! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in creating the texture samplers: {0}", e.what());
+			return;
+		}
+	}
+	
 	// Creates the vertex and index buffers we need
 	void Renderer::CreateBufferManager()
 	{
@@ -862,18 +938,25 @@ namespace Velocity
 	// Creates the pool used to allocate descriptor sets
 	void Renderer::CreateDescriptorPool()
 	{
-		// Pool has one uniform buffer for each frame
-		vk::DescriptorPoolSize poolSize = {
-			vk::DescriptorType::eUniformBuffer,
-			static_cast<uint32_t>(m_Swapchain->GetImages().size())
+		std::array<vk::DescriptorPoolSize,2> poolSizes = {
+		vk::DescriptorPoolSize{
+					vk::DescriptorType::eUniformBuffer,
+					static_cast<uint32_t>(512)
+			},
+		vk::DescriptorPoolSize{
+					vk::DescriptorType::eCombinedImageSampler,
+					static_cast<uint32_t>(512)
+			}
 		};
 
 		vk::DescriptorPoolCreateInfo poolInfo = {
 			vk::DescriptorPoolCreateFlags{},
-			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
-			1,
-			&poolSize
+			1024u,
+			static_cast<uint32_t>(poolSizes.size()),
+			poolSizes.data()
 		};
+
+		
 		try
 		{
 			m_DescriptorPool = m_LogicalDevice->createDescriptorPoolUnique(poolInfo);
@@ -891,7 +974,7 @@ namespace Velocity
 	{
 		// For each pipeline we have made we need to create a descriptor set for each frame that matches its layout
 		// Right now we only have one pipeline
-		std::vector<vk::DescriptorSetLayout> layouts(m_Swapchain->GetImages().size(), m_GraphicsPipeline->GetDescriptorSetLayout().get());
+		std::vector<vk::DescriptorSetLayout> layouts(m_Swapchain->GetImages().size(), m_TexturedPipeline->GetDescriptorSetLayout().get());
 
 		vk::DescriptorSetAllocateInfo allocInfo = {
 			m_DescriptorPool.get(),
@@ -910,26 +993,54 @@ namespace Velocity
 		}
 
 		// Configure descriptors
+		
+		// Load a default texture
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		m_Textures.push_back(std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
+		m_DefaultBindingTexture = &m_Textures.back();
+		m_TextureInfos.resize(128);
+		
 		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
 		{
-			vk::DescriptorBufferInfo bufferInfo = {
+			m_ViewProjectionBufferInfo = vk::DescriptorBufferInfo{
 				m_ViewProjectionBuffers.at(i)->Buffer.get(),
 				0,
 				sizeof(ViewProjection)
 			};
 
-			vk::WriteDescriptorSet descriptorWrite = {
-				m_DescriptorSets.at(i),
-				0,
-				0,
-				1,
-				vk::DescriptorType::eUniformBuffer,
-				nullptr,
-				&bufferInfo,
-				nullptr
+			for (auto& info : m_TextureInfos)
+			{
+				info = {
+				m_TextureSampler.get(),
+				*m_DefaultBindingTexture->get()->m_ImageView,
+					vk::ImageLayout::eShaderReadOnlyOptimal,
+				};
+			}
+			
+			
+			m_DescriptorWrites = { vk::WriteDescriptorSet{
+					m_DescriptorSets.at(i),
+					0,
+					0,
+					1,
+					vk::DescriptorType::eUniformBuffer,
+					nullptr,
+					& m_ViewProjectionBufferInfo,
+					nullptr
+				},
+				{
+					m_DescriptorSets.at(i),
+					1,
+					0,
+					128,
+					vk::DescriptorType::eCombinedImageSampler,
+					m_TextureInfos.data(),
+					nullptr,
+					nullptr,
+				}
 			};
 
-			m_LogicalDevice->updateDescriptorSets(1, &descriptorWrite, 0, nullptr);
+			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.size()), m_DescriptorWrites.data(), 0, nullptr);
 		}
 		
 	}
@@ -1025,7 +1136,7 @@ namespace Velocity
 
 		// Begin render pass
 		vk::RenderPassBeginInfo renderPassInfo = {
-			m_GraphicsPipeline->GetRenderPass().get(),
+			m_TexturedPipeline->GetRenderPass().get(),
 			m_Framebuffers.at(m_CurrentImage).get(),
 			vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
 			1,
@@ -1034,30 +1145,72 @@ namespace Velocity
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
 		// 1. Bind pipeline and buffer
-		m_GraphicsPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));
+		m_TexturedPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));
 		m_BufferManager->Bind(cmdBuffer.get());
 
-		// 2. Draw static objects
-		size_t staticCounter = 0;
-		for (auto object : m_SceneData.m_StaticSceneObjects)
+		// TODO: CACHE DYNAMIC SO WE DONT HAVE TO SORT EACH FRAME? PROFILE IT
+		// 1b. Batch together textures to limit amount of descriptor writes
+		// If we havent done it since last push
+		if (!m_SceneData.m_StaticSorted)
 		{
-			cmdBuffer->pushConstants(m_GraphicsPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &m_SceneData.m_StaticSceneObjectTransforms.at(staticCounter));
-			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);
+			// Sort by texture index
+			std::sort(m_SceneData.m_StaticScene.begin(), m_SceneData.m_StaticScene.end(), [](RenderBatchedObject a, RenderBatchedObject b)
+				{
+					return a.m_Texture > b.m_Texture;
+				});
 
-			++staticCounter;
+			m_SceneData.m_StaticSorted = true;
 		}
+
+		if (!m_SceneData.m_DynamicSorted)
+		{
+			std::sort(m_SceneData.m_DynamicScene.begin(), m_SceneData.m_DynamicScene.end(), [](RenderBatchedObject a, RenderBatchedObject b)
+				{
+					return a.m_Texture > b.m_Texture;
+				});
+
+			m_SceneData.m_DynamicSorted = true;
+		}
+		
+
+		// 2. Draw static objects
+
+		// The user has submitted static geometry
+		if (m_SceneData.m_StaticScene.size() != 0)
+		{
+
+			uint32_t staticCounter = 0;
+			for (auto batchedObject : m_SceneData.m_StaticScene)
+			{				
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &batchedObject.m_Transform);
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &batchedObject.m_Texture);
+				cmdBuffer->drawIndexed(batchedObject.m_Object.IndexCount, 1, batchedObject.m_Object.IndexStart, batchedObject.m_Object.VertexOffset, 0);
+
+				// Track for update texture calls
+				++staticCounter;
+			}
+		}
+		
+
 
 		// 2b. Draw dynamic objects and CLEAR
-		size_t dynamicCounter = 0;
-		for (auto object : m_SceneData.m_SceneObjects)
+		if (m_SceneData.m_DynamicScene.size() != 0)
 		{
-			cmdBuffer->pushConstants(m_GraphicsPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &m_SceneData.m_SceneObjectTransforms.at(dynamicCounter));
-			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);
 
-			++dynamicCounter;
+			uint32_t dynamicCounter = 0;
+			for (auto batchedObject : m_SceneData.m_DynamicScene)
+			{
+				
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &batchedObject.m_Transform);
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &batchedObject.m_Texture);
+				cmdBuffer->drawIndexed(batchedObject.m_Object.IndexCount, 1, batchedObject.m_Object.IndexStart, batchedObject.m_Object.VertexOffset, 0);
+
+				// Track for texture update calls
+				++dynamicCounter;
+			}
+			m_SceneData.m_DynamicScene.clear();
 		}
-		m_SceneData.m_SceneObjects.clear();
-		m_SceneData.m_SceneObjectTransforms.clear();
+
 		
 		// 3. End
 		cmdBuffer->endRenderPass();
@@ -1221,6 +1374,8 @@ namespace Velocity
 
 		auto hasExtensions = CheckDeviceExtensionsSupport(device);
 
+		auto features = device.getFeatures();
+
 		bool hasSwapchain = false;
 		if (hasExtensions)
 		{
@@ -1228,7 +1383,7 @@ namespace Velocity
 			hasSwapchain = !swapChainSupport.Formats.empty() && !swapChainSupport.PresentModes.empty();
 		}
 
-		return hasIndices && hasExtensions && hasSwapchain;
+		return hasIndices && hasExtensions && hasSwapchain && features.samplerAnisotropy && features.shaderSampledImageArrayDynamicIndexing;
 	}
 
 	// Checks if a device has required extensions

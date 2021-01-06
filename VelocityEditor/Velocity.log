@@ -1,34 +1,65 @@
-[12:57:15] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[12:57:15] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x27f57610080, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[20:01:38] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[20:01:38] [info] VELOCITY: Validation Layer: loaderAddJsonEntry: Located json file "C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\nv-vk64.json" from PnP registry: E
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\Program Files\NVIDIA Corporation\Nsight Graphics 2020.6.1\target\windows-desktop-nomad-x64\VK_LAYER_NV_nomad_release_public_2020_6_1.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ImplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\Program Files\NVIDIA Corporation\Nsight Graphics 2020.6.1\target\windows-desktop-nomad-x64\VK_LAYER_NV_GPU_Trace_release_public_2020_6_1.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ImplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\nv-vk64.json, version "1.0.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\Program Files\NVIDIA Corporation\Nsight Graphics 2020.6.1\target\windows-desktop-nomad-x64\VK_LAYER_NV_nomad_release_public_2020_6_1.json, version "1.1.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Layer "VK_LAYER_NV_nomad_release_public_2020_6_1" using deprecated 'vkGetInstanceProcAddr' tag which was deprecated starting with JSON file version 1.1.0. The new vkNegotiateLoaderLayerInterfaceVersion function is preferred, though for compatibility reasons it may be desirable to continue using the deprecated tag.
+[20:01:38] [info] VELOCITY: Validation Layer: Layer "VK_LAYER_NV_nomad_release_public_2020_6_1" using deprecated 'vkGetDeviceProcAddr' tag which was deprecated starting with JSON file version 1.1.0. The new vkNegotiateLoaderLayerInterfaceVersion function is preferred, though for compatibility reasons it may be desirable to continue using the deprecated tag.
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\Program Files\NVIDIA Corporation\Nsight Graphics 2020.6.1\target\windows-desktop-nomad-x64\VK_LAYER_NV_GPU_Trace_release_public_2020_6_1.json, version "1.1.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Layer "VK_LAYER_NV_GPU_Trace_release_public_2020_6_1" using deprecated 'vkGetInstanceProcAddr' tag which was deprecated starting with JSON file version 1.1.0. The new vkNegotiateLoaderLayerInterfaceVersion function is preferred, though for compatibility reasons it may be desirable to continue using the deprecated tag.
+[20:01:38] [info] VELOCITY: Validation Layer: Layer "VK_LAYER_NV_GPU_Trace_release_public_2020_6_1" using deprecated 'vkGetDeviceProcAddr' tag which was deprecated starting with JSON file version 1.1.0. The new vkNegotiateLoaderLayerInterfaceVersion function is preferred, though for compatibility reasons it may be desirable to continue using the deprecated tag.
+[20:01:38] [info] VELOCITY: Validation Layer: loaderGetDeviceRegistryFiles: opening device PCI\VEN_10DE&DEV_128B&SUBSYS_85F71043&REV_A1\4&ff97b5e&0&0008
+[20:01:38] [info] VELOCITY: Validation Layer: loaderGetDeviceRegistryEntry: Device ID(18) Does not contain a value for "VulkanExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: loaderGetDeviceRegistryFiles: Opening child device 19 - DISPLAY\WAN2700\5&10F07D86&0&UID4353
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_api_dump.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_device_simulation.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_gfxreconstruct.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_khronos_validation.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_monitor.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Located json file "C:\VulkanSDK\1.2.162.0\Bin\VkLayer_screenshot.json" from registry "HKEY_LOCAL_MACHINE\SOFTWARE\Khronos\Vulkan\ExplicitLayers"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_api_dump.json, version "1.0.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_device_simulation.json, version "1.1.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_gfxreconstruct.json, version "1.1.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_khronos_validation.json, version "1.1.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_monitor.json, version "1.0.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Found manifest file C:\VulkanSDK\1.2.162.0\Bin\VkLayer_screenshot.json, version "1.0.0"
+[20:01:38] [info] VELOCITY: Validation Layer: loaderAddJsonEntry: Located json file "C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\nv-vk64.json" from PnP registry: E
+[20:01:38] [info] VELOCITY: Validation Layer: Found ICD manifest file C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\nv-vk64.json, version "1.0.0"
+[20:01:38] [info] VELOCITY: Validation Layer: Insert instance layer VK_LAYER_KHRONOS_validation (C:\VulkanSDK\1.2.162.0\Bin\.\VkLayer_khronos_validation.dll)
+[20:01:38] [info] VELOCITY: Validation Layer: Insert instance layer VK_LAYER_NV_optimus (C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\.\nvoglv64.dll)
+[20:01:38] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x115a97a0080, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[12:57:16] [info] VELOCITY: Available extensions:
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_display
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_surface
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[12:57:16] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[12:57:16] [trace] VELOCITY: 	 VK_EXT_debug_report
-[12:57:16] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[12:57:16] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[12:57:16] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[12:57:16] [info] VELOCITY: Created Vulkan Instance!
-[12:57:16] [info] VELOCITY: Created debug messenger!
-[12:57:16] [info] VELOCITY: Created window surface!
-[12:57:16] [info] VELOCITY: Selected GPU: GeForce GT 710
-[12:57:16] [info] VELOCITY: Created Logical device!
-[12:57:17] [info] VELOCITY: Created swapchain with size:(1280,720)
-[12:57:17] [info] VELOCITY: Loaded default shaders!
-[12:57:17] [info] VELOCITY: Created graphics pipeline!
-[12:57:17] [info] VELOCITY: Created framebuffers!
-[12:57:17] [info] VELOCITY: Created command pool!
-[12:57:17] [info] VELOCITY: Allocated command buffers!
-[12:57:17] [info] VELOCITY: Created syncronisation primitives!
+[20:01:38] [info] VELOCITY: Available extensions:
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_display
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_surface
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[20:01:38] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[20:01:38] [trace] VELOCITY: 	 VK_EXT_debug_report
+[20:01:38] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[20:01:38] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[20:01:38] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[20:01:38] [info] VELOCITY: Created Vulkan Instance!
+[20:01:38] [info] VELOCITY: Created debug messenger!
+[20:01:38] [info] VELOCITY: Created window surface!
+[20:01:38] [info] VELOCITY: Selected GPU: GeForce GT 710
+[20:01:38] [info] VELOCITY: Validation Layer: Inserted device layer VK_LAYER_KHRONOS_validation (C:\VulkanSDK\1.2.162.0\Bin\.\VkLayer_khronos_validation.dll)
+[20:01:38] [info] VELOCITY: Validation Layer: Inserted device layer VK_LAYER_NV_optimus (C:\Windows\System32\DriverStore\FileRepository\nvaki.inf_amd64_147d42c40204e941\.\nvoglv64.dll)
+[20:01:38] [info] VELOCITY: Created Logical device!
+[20:01:39] [info] VELOCITY: Created swapchain with size:(1280,720)
+[20:01:39] [info] VELOCITY: Loaded default shaders!
+[20:01:39] [info] VELOCITY: Created graphics pipeline!
+[20:01:39] [info] VELOCITY: Created framebuffers!
+[20:01:39] [info] VELOCITY: Created command pool!
+[20:01:39] [info] VELOCITY: Allocated command buffers!
+[20:01:39] [info] VELOCITY: Created syncronisation primitives!

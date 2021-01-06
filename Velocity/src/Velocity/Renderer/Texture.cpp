@@ -64,7 +64,7 @@ namespace Velocity
 
 		#pragma region CREATE VULKAN IMAGE
 
-		m_CurrentFormat = stbiToVulkan(channels);
+		m_CurrentFormat = vk::Format::eR8G8B8A8Srgb;
 		m_CurrentLayout = vk::ImageLayout::eUndefined;
 
 		vk::ImageCreateInfo imageInfo = {
@@ -172,8 +172,7 @@ namespace Velocity
 			return;
 		}
 		
-		#pragma endregion 
-		
+		#pragma endregion
 	}
 
 	void Texture::TransitionImageLayout(vk::CommandBuffer& buffer, Texture& texture, vk::ImageLayout newLayout)

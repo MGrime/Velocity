@@ -57,16 +57,30 @@ namespace Velocity {
 		// Submits a renderer command to be done.
 
 		// This allows you to add an object that will never move. Add it once and it will always be drawn
-		void AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+		void AddStatic(BufferManager::Renderable object,uint32_t textureID, const glm::mat4& modelMatrix);
 
 		// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
-		void DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+		void DrawDynamic(BufferManager::Renderable object, uint32_t textureID, const glm::mat4& modelMatrix);
 
 		// Create assets
 
 		// TODO: Check ownership here
-		// Returns a new texture. You are responsible for cleaning it up!
-		Texture* CreateTexture(const std::string& filepath);
+		// Returns a new texture. The index is what is passed into the render commands
+		uint32_t CreateTexture(const std::string& filepath);
+
+		std::unique_ptr<Texture>* GetTextureByID(uint32_t textureID)
+		{
+			if (textureID > static_cast<uint32_t>(m_Textures.size()) - 1u)
+			{
+				VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
+				VEL_CORE_ERROR("Tried to get a texture that hasnt been loaded!. Your texture is likely null!");
+				return nullptr;
+			}
+			else
+			{
+				return &m_Textures.at(textureID);
+			}
+		}
 		
 
 		#pragma endregion 
@@ -131,6 +145,14 @@ namespace Velocity {
 			std::vector<vk::Fence>									ImagesInFlight;
 		};
 
+		// Contains a group of renderering data
+		struct RenderBatchedObject
+		{
+			BufferManager::Renderable	m_Object;
+			glm::mat4					m_Transform;
+			uint32_t					m_Texture;
+		};
+		
 		// Contains the data for a scene
 		struct SceneData
 		{
@@ -139,15 +161,15 @@ namespace Velocity {
 
 			// These objects CANNOT be modified after you push them
 			// TODO: Make it so you can at least remove them
-			std::vector<BufferManager::Renderable>	m_StaticSceneObjects;
-			std::vector<glm::mat4>			m_StaticSceneObjectTransforms;
+			bool									m_StaticSorted = false;
+			std::vector<RenderBatchedObject>		m_StaticScene;
 
 			// These objects are flushed each frame. So they must be pushed per frame
-			std::vector<BufferManager::Renderable>	m_SceneObjects;
-			std::vector<glm::mat4>			m_SceneObjectTransforms;
+			bool									m_DynamicSorted = false;
+			std::vector<RenderBatchedObject>		m_DynamicScene;
 		};
-		
 
+		
 		// Matches the UBO used to pass over view & projection data per scene
 		struct ViewProjection
 		{
@@ -184,6 +206,9 @@ namespace Velocity {
 
 		// Creates the pool we will use to create all command buffers
 		void CreateCommandPool();
+
+		// Creates the texture samplers
+		void CreateTextureSamplers();
 
 		// Creates the vertex and index buffers we need
 		void CreateBufferManager();
@@ -245,6 +270,7 @@ namespace Velocity {
 		// Finds the required queue families for the device
 		QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
 
+
 		#pragma endregion
 
 		#pragma region MEMBER VARIABLES
@@ -276,7 +302,7 @@ namespace Velocity {
 		std::unique_ptr<Swapchain>				m_Swapchain;
 
 		// Pipeline class - We only need one to start
-		std::unique_ptr<Pipeline>				m_GraphicsPipeline;
+		std::unique_ptr<Pipeline>				m_TexturedPipeline;
 
 		// Collection of framebuffers for the swapchain
 		// TODO: Check if this can be made a part of the swapchain class
@@ -309,8 +335,20 @@ namespace Velocity {
 
 		// This might seem like it should go in Pipeline.
 		// HOWEVER descriptor sets are not unique to a single pipeline, as long as the layout is compatitible
-		std::vector<vk::DescriptorSet>		m_DescriptorSets;
-		
+
+		vk::DescriptorBufferInfo				m_ViewProjectionBufferInfo;
+		std::array<vk::WriteDescriptorSet,2>	m_DescriptorWrites;
+		std::vector<vk::DescriptorSet>			m_DescriptorSets;
+
+		// Used to sample textures passed in by the user on draw commands
+		vk::UniqueSampler					m_TextureSampler;
+
+		// Limitation of wanting to stick to vulkan 1.0, I need a texture to bind to by default
+		std::unique_ptr<Texture>*			m_DefaultBindingTexture;
+
+		// List of textures loaded by the user
+		std::vector<std::unique_ptr<Texture>>	m_Textures;
+		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
 		
 		#pragma endregion
 
