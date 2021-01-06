@@ -1,5 +1,9 @@
 #pragma once
 
+#define GLM_FORCE_RADIANS
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+
 #include <Velocity.hpp>
 
 class TestLayer : public Velocity::Layer
@@ -38,7 +42,7 @@ public:
 	{
 		auto square = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts,m_Indices);
 
-		Velocity::Renderer::GetRenderer()->Submit(square);
+		Velocity::Renderer::GetRenderer()->AddStatic(square, glm::mat4());
 
 		m_Verts.at(0).Position = { -0.3f, -0.3f,0.0f };
 		m_Verts.at(1).Position = { 0.3f, -0.3f,0.0f };
@@ -52,8 +56,27 @@ public:
 
 		auto square2 = Velocity::Renderer::GetRenderer()->LoadMesh(m_Verts, m_Indices);
 
-		Velocity::Renderer::GetRenderer()->Submit(square2);
+		Velocity::Renderer::GetRenderer()->AddStatic(square2, glm::mat4());
 	}
+
+	void OnUpdate() override
+	{
+		const glm::mat4 view = lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+		const float width = static_cast<float>(Velocity::Application::GetWindow()->GetWidth());
+		const float height = static_cast<float>(Velocity::Application::GetWindow()->GetHeight());
+		
+		glm::mat4 proj = glm::perspective(glm::radians(45.0f), width/height, 0.1f, 10.0f);
+		proj[1][1] *= -1.0f;
+		
+		Velocity::Renderer::GetRenderer()->BeginScene(view,proj);
+
+		// Nothing dynmaic yet
+
+		Velocity::Renderer::GetRenderer()->EndScene();
+		
+	}
+
 private:
 	std::vector<Velocity::Vertex> m_Verts = {
 		{{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}},

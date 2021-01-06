@@ -29,15 +29,41 @@ namespace Velocity
 		CreateFramebuffers();
 		CreateCommandPool();
 		CreateBufferManager();
+		CreateUniformBuffers();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 		CreateSyncronizer();
 	}
 
-	// Submits a renderer command to be done
-	void Renderer::Submit(BufferManager::Renderable object)
+	// This is called when you want to start the rendering of a scene!
+	void Renderer::BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 	{
-		// TODO: Add logic
-		m_SceneData.push_back(object);
+		m_SceneData.m_SceneCamera = std::make_pair<const glm::mat4*, const glm::mat4*>(
+			&viewMatrix,&projectionMatrix
+		);
+	}
+
+	// Submits a renderer command to be done
+
+	// This allows you to add an object that will never move. Add it once and it will always be drawn
+	void Renderer::AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
+	{
+		m_SceneData.m_StaticSceneObjects.push_back(object);
+		m_SceneData.m_StaticSceneObjectTransforms.push_back(&modelMatrix);
+	}
+
+	// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
+	void Renderer::DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
+	{
+		m_SceneData.m_SceneObjects.push_back(object);
+		m_SceneData.m_SceneObjectTransforms.push_back(&modelMatrix);
+	}
+
+	// This is called to end the rendering of a scene
+	void Renderer::EndScene()
+	{
+		
 	}
 	
 	// Takes all the information submitted this frame, records and submits the commands
@@ -80,6 +106,9 @@ namespace Velocity
 
 		// Which stages of the pipeline wait to finish before we submit
 		std::array<vk::PipelineStageFlags, 1> waitStages = { vk::PipelineStageFlagBits::eTopOfPipe };
+
+		// Update buffers
+		UpdateUniformBuffers();
 		
 		// Combine all above data
 		vk::SubmitInfo submitInfo = {
@@ -120,10 +149,16 @@ namespace Velocity
 	// Called by app when resize occurs
 	void Renderer::OnWindowResize()
 	{
-
-		
 		// Wait until device is done
 		m_LogicalDevice->waitIdle();
+
+		// Reset uniform buffers
+		for (auto& buffer : m_ViewProjectionBuffers)
+		{
+			buffer.reset();
+		}
+
+		m_DescriptorPool.reset();
 
 		// Cleanup
 		m_Swapchain.reset();
@@ -141,6 +176,9 @@ namespace Velocity
 		CreateSwapchain();
 		CreateGraphicsPipeline();
 		CreateFramebuffers();
+		CreateUniformBuffers();
+		CreateDescriptorPool();
+		CreateDescriptorSets();
 		CreateCommandBuffers();
 	}
 
@@ -525,7 +563,7 @@ namespace Velocity
 			VK_FALSE,
 			vk::PolygonMode::eFill,
 			vk::CullModeFlagBits::eBack,
-			vk::FrontFace::eClockwise,
+			vk::FrontFace::eCounterClockwise,
 			VK_FALSE,
 			0.0f,
 			0.0f,
@@ -597,8 +635,8 @@ namespace Velocity
 
 		vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {
 			vk::PipelineLayoutCreateFlags{},
-			0,
-			nullptr,
+			0,			// Set in pipeline constructor
+			nullptr,		// Set in pipeline constructor
 			0,
 			nullptr
 		};
@@ -688,7 +726,25 @@ namespace Velocity
 			nullptr
 		};
 
-		m_GraphicsPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo);
+		// Define descript set layouts
+		// Binding for the View Projection uniform
+		vk::DescriptorSetLayoutBinding vpLayoutBinding = {
+			0,
+			vk::DescriptorType::eUniformBuffer,
+			1,
+			vk::ShaderStageFlagBits::eVertex,
+			nullptr
+		};
+
+		const std::vector<vk::DescriptorSetLayoutBinding> descriptorBindings = { vpLayoutBinding };
+
+		vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {
+			vk::DescriptorSetLayoutCreateFlags{},
+			static_cast<uint32_t>(descriptorBindings.size()),
+			descriptorBindings.data()
+		};
+
+		m_GraphicsPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
 		
@@ -783,6 +839,102 @@ namespace Velocity
 		VEL_CORE_INFO("Allocated command buffers!");
 	}
 
+	// Creates the pool used to allocate descriptor sets
+	void Renderer::CreateDescriptorPool()
+	{
+		// Pool has one uniform buffer for each frame
+		vk::DescriptorPoolSize poolSize = {
+			vk::DescriptorType::eUniformBuffer,
+			static_cast<uint32_t>(m_Swapchain->GetImages().size())
+		};
+
+		vk::DescriptorPoolCreateInfo poolInfo = {
+			vk::DescriptorPoolCreateFlags{},
+			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
+			1,
+			&poolSize
+		};
+		try
+		{
+			m_DescriptorPool = m_LogicalDevice->createDescriptorPoolUnique(poolInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create descriptor pool! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occured in creating the descriptor pool: {0}", e.what());
+		}
+
+	}
+
+	// Allocate the descriptor sets we will use accross our program.
+	void Renderer::CreateDescriptorSets()
+	{
+		// For each pipeline we have made we need to create a descriptor set for each frame that matches its layout
+		// Right now we only have one pipeline
+		std::vector<vk::DescriptorSetLayout> layouts(m_Swapchain->GetImages().size(), m_GraphicsPipeline->GetDescriptorSetLayout().get());
+
+		vk::DescriptorSetAllocateInfo allocInfo = {
+			m_DescriptorPool.get(),
+			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
+			layouts.data()
+		};
+
+		try
+		{
+			m_DescriptorSets = m_LogicalDevice->allocateDescriptorSets(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}");
+			VEL_CORE_INFO("Failed to create descriptor sets! Error:{0}");
+		}
+
+		// Configure descriptors
+		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		{
+			vk::DescriptorBufferInfo bufferInfo = {
+				m_ViewProjectionBuffers.at(i)->Buffer.get(),
+				0,
+				sizeof(ViewProjection)
+			};
+
+			vk::WriteDescriptorSet descriptorWrite = {
+				m_DescriptorSets.at(i),
+				0,
+				0,
+				1,
+				vk::DescriptorType::eUniformBuffer,
+				nullptr,
+				&bufferInfo,
+				nullptr
+			};
+
+			m_LogicalDevice->updateDescriptorSets(1, &descriptorWrite, 0, nullptr);
+		}
+		
+	}
+
+	// Creates the buffers used for uniform data
+	void Renderer::CreateUniformBuffers()
+	{
+		// Create the buffers for camera data (view and projection matrix)
+		VkDeviceSize bufferSize = sizeof(ViewProjection);
+
+		// One copy per swapchain image (e.g. framebuffer)
+		m_ViewProjectionBuffers.resize(m_Swapchain->GetImages().size());
+
+		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		{
+			m_ViewProjectionBuffers.at(i) = std::make_unique<BaseBuffer>(
+				m_PhysicalDevice,
+				m_LogicalDevice,
+				bufferSize,
+				vk::BufferUsageFlagBits::eUniformBuffer,
+				vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+			);
+		}
+	}
+
 	// Creates all required sync primitives
 	void Renderer::CreateSyncronizer()
 	{
@@ -862,15 +1014,23 @@ namespace Velocity
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
 		// 1. Bind pipeline and buffer
-		m_GraphicsPipeline->Bind(cmdBuffer);
+		m_GraphicsPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));
 		m_BufferManager->Bind(cmdBuffer.get());
 
-		// 2. Draw
-		for (auto object : m_SceneData)
+		// 2. Draw static objects
+		for (auto object : m_SceneData.m_StaticSceneObjects)
 		{
 			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);		
 		}
 
+		// 2b. Draw dynamic objects and CLEAR
+		for (auto object : m_SceneData.m_SceneObjects)
+		{
+			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);
+		}
+		m_SceneData.m_SceneObjects.clear();
+		m_SceneData.m_SceneObjectTransforms.clear();
+		
 		// 3. End
 		cmdBuffer->endRenderPass();
 
@@ -884,6 +1044,52 @@ namespace Velocity
 			VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in recording commandbuffers: {0}", e.what());
 		}
+	}
+
+	// Updates uniform buffers with scene data
+	void Renderer::UpdateUniformBuffers()
+	{
+		ViewProjection flattenedData;
+		if (!m_SceneData.m_SceneCamera.first || !m_SceneData.m_SceneCamera.second)
+		{
+			VEL_CORE_WARN("You didnt set a camera!");
+			flattenedData =
+			{
+				glm::mat4(),
+				glm::mat4()
+			};
+		}
+		else
+		{
+			flattenedData =
+			{
+				*m_SceneData.m_SceneCamera.first,
+				*m_SceneData.m_SceneCamera.second
+			};
+		}
+
+		
+		void* data;
+	
+		auto result = m_LogicalDevice->mapMemory(
+			m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get(),
+			0,
+			sizeof(ViewProjection),
+			vk::MemoryMapFlags{},
+			&data
+		);
+
+		if (result != vk::Result::eSuccess)
+		{
+			VEL_CORE_ASSERT(false, "Failed to update uniform buffers");
+			VEL_CORE_INFO("Failed to update uniform buffers");
+			return;
+		}
+
+		memcpy(data, &flattenedData, sizeof(ViewProjection));
+
+		m_LogicalDevice->unmapMemory(m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get());
+		
 	}
 
 	#pragma endregion 

@@ -6,8 +6,23 @@
 
 namespace Velocity
 {
-	Pipeline::Pipeline(vk::UniqueDevice& device, vk::GraphicsPipelineCreateInfo& pipelineInfo, vk::PipelineLayoutCreateInfo& layoutInfo, vk::RenderPassCreateInfo& renderPassInfo)
+	Pipeline::Pipeline(vk::UniqueDevice& device, vk::GraphicsPipelineCreateInfo& pipelineInfo, vk::PipelineLayoutCreateInfo& layoutInfo, vk::RenderPassCreateInfo& renderPassInfo, vk::DescriptorSetLayoutCreateInfo& descriptorSetLayout)
 	{
+		// Create the descriptor sets
+		try 
+		{
+			m_DescriptorSetLayout = device->createDescriptorSetLayoutUnique(descriptorSetLayout);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create descriptor set layout! Error: {0}", e.what());
+			VEL_CORE_ERROR("Failed to create descriptor set layout! Error: {0}", e.what());
+			return;
+		}
+		// Update the pipeline layout info
+		layoutInfo.setLayoutCount = 1u;
+		layoutInfo.pSetLayouts = &m_DescriptorSetLayout.get();
+		
 		// Create the pipeline layout
 		try
 		{
@@ -54,9 +69,12 @@ namespace Velocity
 		
 		
 	}
-	void Pipeline::Bind(vk::UniqueCommandBuffer& commandBuffer)
+	void Pipeline::Bind(vk::UniqueCommandBuffer& commandBuffer, uint32_t descriptorSetCount, uint32_t descriptorSetIndex,vk::DescriptorSet& set)
 	{
 		commandBuffer->bindPipeline(vk::PipelineBindPoint::eGraphics, m_Pipeline.get());
+
+		commandBuffer->bindDescriptorSets(vk::PipelineBindPoint::eGraphics, m_Layout.get(), descriptorSetIndex, descriptorSetCount,&set,0u,nullptr);
+		
 	}
 
 	

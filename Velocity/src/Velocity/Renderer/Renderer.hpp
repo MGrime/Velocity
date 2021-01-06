@@ -27,9 +27,19 @@ namespace Velocity {
 
 		virtual ~Renderer();
 
-		// Submits a renderer command to be done
-		// TODO: Make this actually work as it is. Im placeholding the record logic in here so it reads right from the application side
-		void Submit(BufferManager::Renderable object);
+		// This is called when you want to start the rendering of a scene!
+		void BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+
+		// Submits a renderer command to be done.
+
+		// This allows you to add an object that will never move. Add it once and it will always be drawn
+		void AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+
+		// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
+		void DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+
+		// This is called to end the rendering of a scene
+		void EndScene();
 
 		// Calls RecordCommandBuffers to flush all Submitted commands
 		// Then syncrohnises and presents a frame
@@ -112,6 +122,29 @@ namespace Velocity {
 			std::array<vk::UniqueFence, MAX_FRAMES_IN_FLIGHT>		InFlightFences;
 			std::vector<vk::Fence>									ImagesInFlight;
 		};
+
+		// Contains the data for a scene
+		struct SceneData
+		{
+			std::pair< const glm::mat4*, const glm::mat4*> m_SceneCamera;
+
+			// These objects CANNOT be modified after you push them
+			// TODO: Make it so you can at least remove them
+			std::vector<BufferManager::Renderable>	m_StaticSceneObjects;
+			std::vector<const glm::mat4*>			m_StaticSceneObjectTransforms;
+
+			// These objects are flushed each frame. So they must be pushed per frame
+			std::vector<BufferManager::Renderable>	m_SceneObjects;
+			std::vector<const glm::mat4*>			m_SceneObjectTransforms;
+		};
+		
+
+		// Matches the UBO used to pass over view & projection data per scene
+		struct ViewProjection
+		{
+			glm::mat4 view;
+			glm::mat4 proj;
+		};
 		
 		#pragma endregion 
 
@@ -146,6 +179,15 @@ namespace Velocity {
 		// Creates the vertex and index buffers we need
 		void CreateBufferManager();
 
+		// Creates the buffers used for uniform data
+		void CreateUniformBuffers();
+
+		// Creates the pool used to allocate descriptor sets
+		void CreateDescriptorPool();
+
+		// Allocate the descriptor sets we will use accross our program.
+		void CreateDescriptorSets();
+		
 		// Allocates one command buffer per framebuffer
 		void CreateCommandBuffers();
 
@@ -159,6 +201,9 @@ namespace Velocity {
 
 		// Takes all commands sent through Renderer::Submit and records the buffers for them
 		void RecordCommandBuffers();
+
+		// Updates uniform buffers with scene data
+		void UpdateUniformBuffers();
 		
 		#pragma endregion 
 		
@@ -245,7 +290,20 @@ namespace Velocity {
 		// Contains the vertex and index buffers and provides interface to load into them
 		std::unique_ptr<BufferManager>			m_BufferManager;
 
-		std::vector<BufferManager::Renderable>	m_SceneData;
+		// This structure is flushed every frame
+		// TODO: UNLESS renderer::setstatic is called ?
+		SceneData									m_SceneData;
+
+		// One buffer with a copy of the view projection per frame. Because we may need to update it for a new frame whilst other is in flight
+		std::vector<std::unique_ptr<BaseBuffer>>	m_ViewProjectionBuffers;
+
+		// Descriptor pools which are used to allocate descriptor sets
+		vk::UniqueDescriptorPool					m_DescriptorPool;
+
+		// This might seem like it should go in Pipeline.
+		// HOWEVER descriptor sets are not unique to a single pipeline, as long as the layout is compatitible
+		std::vector<vk::DescriptorSet>		m_DescriptorSets;
+		
 		
 		#pragma endregion
 
