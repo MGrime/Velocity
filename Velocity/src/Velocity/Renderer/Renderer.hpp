@@ -49,9 +49,21 @@ namespace Velocity {
 
 		// Loads the given mesh into a renderable object
 		// Pass this to Renderer::Submit
-		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices)
+		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
 		{
-			return m_BufferManager->AddMesh(verts,indices);
+			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(verts, indices) });
+			return m_Renderables.at(referenceName);
+		}
+
+		// Gets a mesh by name
+		BufferManager::Renderable GetMesh(const std::string& referenceName)
+		{
+			if (m_Renderables.find(referenceName) != m_Renderables.end())
+			{
+				return m_Renderables.at(referenceName);
+			}
+			VEL_CORE_WARN("Tried to get mesh {0} which has not been loaded yet! The returned renderable will not be what you are expecting and may cause errors!", referenceName);
+			return BufferManager::Renderable();
 		}
 
 		// Submits a renderer command to be done.
@@ -377,10 +389,12 @@ namespace Velocity {
 		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
 
 		// Depth Buffer
-
 		vk::UniqueImage							m_DepthImage;
 		vk::UniqueDeviceMemory					m_DepthMemory;
 		vk::UniqueImageView						m_DepthImageView;
+
+		// Store all loaded meshes in a map so they can accessed easily
+		std::unordered_map<std::string, BufferManager::Renderable> m_Renderables;
 		
 		#pragma endregion
 

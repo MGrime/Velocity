@@ -12,7 +12,7 @@ void SceneLayer::OnAttach()
 	//m_Projection[1][1] *= -1.0f;
 
 	// "Load a mesh"
-	m_Square = r_Renderer->LoadMesh(m_Verts, m_Indices);
+	r_Renderer->LoadMesh(m_Verts, m_Indices, "Square");
 
 	// Load textures
 	m_Textures.at(0) = r_Renderer->CreateTexture("assets/textures/logo.png");
@@ -36,7 +36,7 @@ void SceneLayer::OnAttach()
 		// Pick a random texture
 		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
 		
-		r_Renderer->AddStatic(m_Square, m_Textures.at(indexRand), newPos);
+		r_Renderer->AddStatic(r_Renderer->GetMesh("Square"), m_Textures.at(indexRand), newPos);
 	}
 	
 }
@@ -69,7 +69,7 @@ void SceneLayer::OnUpdate()
 		// Pick a random texture
 		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
 
-		r_Renderer->DrawDynamic(m_Square, m_Textures.at(0), newPos);
+		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Square"), m_Textures.at(0), newPos);
 	}
 
 	Velocity::Renderer::GetRenderer()->EndScene();

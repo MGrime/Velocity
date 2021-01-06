@@ -27,9 +27,6 @@ private:
 	};
 	// Store renderer handle
 	std::shared_ptr<Velocity::Renderer> r_Renderer;
-	
-	// Store the handle for the ^ square to be rendered
-	Velocity::BufferManager::Renderable m_Square;
 
 	std::array<uint32_t, 5> m_Textures;
 
