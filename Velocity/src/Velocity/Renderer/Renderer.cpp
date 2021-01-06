@@ -27,8 +27,9 @@ namespace Velocity
 		CreateLogicalDevice();
 		CreateSwapchain();
 		CreateGraphicsPipeline();
-		CreateFramebuffers();
 		CreateCommandPool();
+		CreateDepthResources();
+		CreateFramebuffers();
 		CreateTextureSamplers();
 		CreateBufferManager();
 		CreateUniformBuffers();
@@ -85,8 +86,11 @@ namespace Velocity
 
 		m_LogicalDevice->waitIdle();
 
-		m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.size()), m_DescriptorWrites.data(), 0, nullptr);
+		for (auto writes : m_DescriptorWrites)
+		{
+			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
 
+		}
 		return newIndex;
 
 	}
@@ -598,7 +602,7 @@ namespace Velocity
 			VK_FALSE,
 			vk::PolygonMode::eFill,
 			vk::CullModeFlagBits::eBack,
-			vk::FrontFace::eCounterClockwise,
+			vk::FrontFace::eClockwise,
 			VK_FALSE,
 			0.0f,
 			0.0f,
@@ -687,7 +691,7 @@ namespace Velocity
 			vk::PipelineLayoutCreateFlags{},
 			0,			// Set in pipeline constructor
 			nullptr,		// Set in pipeline constructor
-			ranges.size(),
+			static_cast<uint32_t>(ranges.size()),
 			ranges.data()
 		};
 		
@@ -708,6 +712,19 @@ namespace Velocity
 			vk::ImageLayout::ePresentSrcKHR
 		};
 
+		// And a depth attachment
+		vk::AttachmentDescription depthAttachment = {
+			vk::AttachmentDescriptionFlags{},
+			FindDepthFormat(),
+			vk::SampleCountFlagBits::e1,
+			vk::AttachmentLoadOp::eClear,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eDepthStencilAttachmentOptimal
+		};
+
 		// Single subpass for now
 		// Subpasses can be combined into a single renderpass for better memory usage and optimisation
 
@@ -718,6 +735,11 @@ namespace Velocity
 			vk::ImageLayout::eColorAttachmentOptimal
 		};
 
+		vk::AttachmentReference depthAttachmentRef = {
+			1,
+			vk::ImageLayout::eDepthStencilAttachmentOptimal
+		};
+
 		vk::SubpassDescription subpass = {
 			vk::SubpassDescriptionFlags{},
 			vk::PipelineBindPoint::eGraphics,
@@ -726,7 +748,7 @@ namespace Velocity
 			1,
 			&colorAttachmentRef,
 			nullptr,
-			nullptr,
+			&depthAttachmentRef,
 			0,
 			nullptr
 		};
@@ -736,17 +758,18 @@ namespace Velocity
 		vk::SubpassDependency implicitDependency = {
 			VK_SUBPASS_EXTERNAL,
 			0,
-			vk::PipelineStageFlagBits::eColorAttachmentOutput,
-			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
 			vk::AccessFlags{},
-			vk::AccessFlagBits::eColorAttachmentWrite
+			vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite
 		};
-		
+
+		std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment,depthAttachment };
 
 		vk::RenderPassCreateInfo renderPassInfo = {
 			vk::RenderPassCreateFlags{},
-			1,
-			&colorAttachment,
+			static_cast<uint32_t>(attachments.size()),
+			attachments.data(),
 			1,
 			&subpass,
 			1,
@@ -756,6 +779,17 @@ namespace Velocity
 		#pragma endregion
 
 		#pragma region PIPELINE CREATION
+
+		vk::PipelineDepthStencilStateCreateInfo depthStencil = {
+			vk::PipelineDepthStencilStateCreateFlags{},
+			VK_TRUE,
+			VK_TRUE,
+			vk::CompareOp::eLess,
+			VK_FALSE,
+			VK_FALSE,
+			{},{},
+			0.0f,1.0f
+		};
 
 		vk::GraphicsPipelineCreateInfo pipelineInfo = {
 			vk::PipelineCreateFlags{},
@@ -767,7 +801,7 @@ namespace Velocity
 			&viewportState,
 			&rasterizer,
 			&multiSampling,
-			nullptr,
+			&depthStencil,
 			&colorBlending,
 			nullptr,				// No dynamic state yet
 			nullptr,				// Pipeline Layout Supplied in pipeline constructor
@@ -822,11 +856,16 @@ namespace Velocity
 		m_Framebuffers.resize(m_Swapchain->GetImageViews().size());
 		for (size_t i = 0; i < m_Swapchain->GetImageViews().size(); ++i)
 		{
+			std::array<vk::ImageView, 2> attachments = {
+			m_Swapchain->GetImageViews().at(i),
+				m_DepthImageView.get()
+			};
+			
 			vk::FramebufferCreateInfo framebufferInfo = {
 				vk::FramebufferCreateFlags{},
 				m_TexturedPipeline->GetRenderPass().get(),
-				1,
-				&m_Swapchain->GetImageViews().at(i),
+				static_cast<uint32_t>(attachments.size()),
+				attachments.data(),
 				m_Swapchain->GetWidth(),
 				m_Swapchain->GetHeight(),
 				1
@@ -868,6 +907,95 @@ namespace Velocity
 		}
 
 		VEL_CORE_INFO("Created command pool!");
+	}
+
+	// Create the depth buffer 
+	void Renderer::CreateDepthResources()
+	{
+		auto depthFormat = FindDepthFormat();
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+
+		// Create image
+		vk::ImageCreateInfo imageInfo = {
+			vk::ImageCreateFlags{},
+			vk::ImageType::e2D,
+			depthFormat,
+			vk::Extent3D{
+				m_Swapchain->GetWidth(),
+				m_Swapchain->GetHeight(),
+				1
+			},
+			1,
+			1,
+			vk::SampleCountFlagBits::e1,
+			vk::ImageTiling::eOptimal,
+			vk::ImageUsageFlagBits::eDepthStencilAttachment,
+			vk::SharingMode::eExclusive,
+			1,
+			&indices.GraphicsFamily.value(),
+			vk::ImageLayout::eUndefined
+		};
+
+		try
+		{
+			m_DepthImage = m_LogicalDevice->createImageUnique(imageInfo);
+		}
+		catch(vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Could not create depth buffer image. Error: {0}", e.what());
+			VEL_CORE_ERROR("Could not create depth buffer image. Error: {0}", e.what());
+			return;
+		}
+		
+		// Create memory
+		auto memRequirements = m_LogicalDevice->getImageMemoryRequirements(m_DepthImage.get());
+
+		vk::MemoryAllocateInfo allocInfo = {
+			memRequirements.size,
+			BaseBuffer::FindMemoryType(m_PhysicalDevice,memRequirements.memoryTypeBits,vk::MemoryPropertyFlagBits::eDeviceLocal)
+		};
+
+		try
+		{
+			m_DepthMemory = m_LogicalDevice->allocateMemoryUnique(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Could not create depth buffer memory. Error: {0}", e.what());
+			VEL_CORE_ERROR("Could not create depth buffer memory. Error: {0}", e.what());
+			return;
+		}
+
+		// Bind
+		m_LogicalDevice->bindImageMemory(m_DepthImage.get(), m_DepthMemory.get(),0);
+
+		// Create imageview
+
+		vk::ImageViewCreateInfo imageViewInfo = {
+			vk::ImageViewCreateFlags{},
+			m_DepthImage.get(),
+			vk::ImageViewType::e2D,
+			depthFormat,
+			vk::ComponentMapping{},
+			{
+				vk::ImageAspectFlagBits::eDepth,
+				0,
+				1,
+				0,
+				1
+			}
+		};
+
+		try
+		{
+			m_DepthImageView = m_LogicalDevice->createImageViewUnique(imageViewInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Could not create depth buffer imageview. Error: {0}", e.what());
+			VEL_CORE_ERROR("Could not create depth buffer imageview. Error: {0}", e.what());
+		}
+		
 	}
 
 	// Creates the texture samplers
@@ -994,20 +1122,13 @@ namespace Velocity
 
 		// Configure descriptors
 		
-		// Load a default texture
-		auto indices = FindQueueFamilies(m_PhysicalDevice);
-		m_Textures.push_back(std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
-		m_DefaultBindingTexture = &m_Textures.back();
-		m_TextureInfos.resize(128);
-		
-		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		// Load a default texture and fill texture infos
+		if (m_Textures.size() == 0)
 		{
-			m_ViewProjectionBufferInfo = vk::DescriptorBufferInfo{
-				m_ViewProjectionBuffers.at(i)->Buffer.get(),
-				0,
-				sizeof(ViewProjection)
-			};
-
+			auto indices = FindQueueFamilies(m_PhysicalDevice);
+			m_Textures.push_back(std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
+			m_DefaultBindingTexture = &m_Textures.back();
+			m_TextureInfos.resize(128);
 			for (auto& info : m_TextureInfos)
 			{
 				info = {
@@ -1016,9 +1137,21 @@ namespace Velocity
 					vk::ImageLayout::eShaderReadOnlyOptimal,
 				};
 			}
+
+			// Resize the storage of descriptor writes
+			m_DescriptorWrites.resize(m_Swapchain->GetImages().size());
+		}
+
+		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		{
+			m_ViewProjectionBufferInfo = vk::DescriptorBufferInfo{
+				m_ViewProjectionBuffers.at(i)->Buffer.get(),
+				0,
+				sizeof(ViewProjection)
+			};
 			
 			
-			m_DescriptorWrites = { vk::WriteDescriptorSet{
+			m_DescriptorWrites.at(i) = { vk::WriteDescriptorSet{
 					m_DescriptorSets.at(i),
 					0,
 					0,
@@ -1040,7 +1173,7 @@ namespace Velocity
 				}
 			};
 
-			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.size()), m_DescriptorWrites.data(), 0, nullptr);
+			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.at(i).size()), m_DescriptorWrites.at(i).data(), 0, nullptr);
 		}
 		
 	}
@@ -1132,15 +1265,22 @@ namespace Velocity
 		std::array<float, 4> clearColor = {
 			1.0f, 0.0f, 1.0f, 1.0f
 		};
-		vk::ClearValue clearColorValue = vk::ClearColorValue(clearColor);
+		std::array<float, 4> depthClear = {
+		1.0f, 0.0f, 0.0f, 0.0f
+		};
+		
+		std::array<vk::ClearValue, 2> clearColorValues = {
+			vk::ClearColorValue(clearColor),
+			vk::ClearColorValue(depthClear)
+		};
 
 		// Begin render pass
 		vk::RenderPassBeginInfo renderPassInfo = {
 			m_TexturedPipeline->GetRenderPass().get(),
 			m_Framebuffers.at(m_CurrentImage).get(),
 			vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
-			1,
-			&clearColorValue
+			static_cast<uint32_t>(clearColorValues.size()),
+			clearColorValues.data()
 		};
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
@@ -1453,6 +1593,28 @@ namespace Velocity
 		return indices;
 
 
+	}
+
+	// Find a depth format our device supports
+	vk::Format Renderer::FindSupportedFormat(const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features)
+	{
+		// For each format
+		for (auto format : candidates)
+		{
+			auto props = m_PhysicalDevice.getFormatProperties(format);
+
+			if ((tiling == vk::ImageTiling::eLinear && (props.linearTilingFeatures & features) == features) ||
+				(tiling == vk::ImageTiling::eOptimal && (props.optimalTilingFeatures & features) == features))
+			{
+				return format;
+			}
+
+		}
+
+		VEL_CORE_ASSERT(false, "Failed to find a suitable depth format!");
+		VEL_CORE_ERROR("Failed to find a suitable depth format!");
+		return vk::Format::eR8Srgb;	// Return a dumb value to break it. The error is logged
+		
 	}
 
 	#pragma endregion

@@ -204,6 +204,9 @@ namespace Velocity {
 		// Creates framebuffers using the pipeline render pass details and the swapchain
 		void CreateFramebuffers();
 
+		// Create the depth buffer 
+		void CreateDepthResources();
+
 		// Creates the pool we will use to create all command buffers
 		void CreateCommandPool();
 
@@ -270,7 +273,25 @@ namespace Velocity {
 		// Finds the required queue families for the device
 		QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
 
+		// Find a format from canditates that supports the tiling and features needed
+		vk::Format FindSupportedFormat(const std::vector<vk::Format>& candidates, vk::ImageTiling tiling, vk::FormatFeatureFlags features);
 
+		// Find depth format
+		vk::Format FindDepthFormat()
+		{
+			return FindSupportedFormat(
+				{ vk::Format::eD32Sfloat,vk::Format::eD32SfloatS8Uint,vk::Format::eD24UnormS8Uint },
+				vk::ImageTiling::eOptimal,
+				vk::FormatFeatureFlagBits::eDepthStencilAttachment
+			);
+		}
+
+		// Check for stencil
+		bool HasStencilComponent(vk::Format format)
+		{
+			return format == vk::Format::eD32SfloatS8Uint || format == vk::Format::eD24UnormS8Uint;
+		}
+		
 		#pragma endregion
 
 		#pragma region MEMBER VARIABLES
@@ -336,19 +357,30 @@ namespace Velocity {
 		// This might seem like it should go in Pipeline.
 		// HOWEVER descriptor sets are not unique to a single pipeline, as long as the layout is compatitible
 
-		vk::DescriptorBufferInfo				m_ViewProjectionBufferInfo;
-		std::array<vk::WriteDescriptorSet,2>	m_DescriptorWrites;
-		std::vector<vk::DescriptorSet>			m_DescriptorSets;
+		// Store this as it will be the same for any pipeline we make 99% of time
+		vk::DescriptorBufferInfo							m_ViewProjectionBufferInfo;
+
+		// Also need to cache the writes for when we update textures
+		std::vector<std::array<vk::WriteDescriptorSet,2>>	m_DescriptorWrites;
+
+		// Store the actualy sets
+		std::vector<vk::DescriptorSet>						m_DescriptorSets;
 
 		// Used to sample textures passed in by the user on draw commands
 		vk::UniqueSampler					m_TextureSampler;
 
-		// Limitation of wanting to stick to vulkan 1.0, I need a texture to bind to by default
+		// Limitation of wanting to stick to no extensions, I need a texture to bind to by default
 		std::unique_ptr<Texture>*			m_DefaultBindingTexture;
 
 		// List of textures loaded by the user
 		std::vector<std::unique_ptr<Texture>>	m_Textures;
 		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
+
+		// Depth Buffer
+
+		vk::UniqueImage							m_DepthImage;
+		vk::UniqueDeviceMemory					m_DepthMemory;
+		vk::UniqueImageView						m_DepthImageView;
 		
 		#pragma endregion
 
