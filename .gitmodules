@@ -7,3 +7,6 @@
 [submodule "Velocity/vendor/glm"]
 	path = Velocity/vendor/glm
 	url = https://github.com/g-truc/glm
+[submodule "Velocity/vendor/assimp"]
+	path = Velocity/vendor/assimp
+	url = https://github.com/MGrime/assimp
