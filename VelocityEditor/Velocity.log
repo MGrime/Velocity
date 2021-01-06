@@ -1,37 +1,32 @@
-[09:15:33] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[09:15:33] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x21d0eb86e30, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[09:28:03] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[09:28:03] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x21a2e24e270, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
-    Current Disables: VK_VALIDATION_FEATURE_DISABLE_UNIQUE_HANDLES_EXT.
+    Current Disables: None.
 
-[09:15:33] [info] VELOCITY: Available extensions:
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_display
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_surface
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[09:15:33] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[09:15:33] [trace] VELOCITY: 	 VK_EXT_debug_report
-[09:15:33] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[09:15:33] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[09:15:33] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[09:15:33] [info] VELOCITY: Created Vulkan Instance!
-[09:15:33] [info] VELOCITY: Created debug messenger!
-[09:15:33] [info] VELOCITY: Created window surface!
-[09:15:33] [info] VELOCITY: Selected GPU: GeForce GT 710
-[09:15:33] [error] VELOCITY: Validation Layer: Validation Error: [ VUID-vkCreateDevice-ppEnabledExtensionNames-01387 ] Object 0: VK_NULL_HANDLE, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0x12537a2c | Missing extensions required by the device extension VK_KHR_8bit_storage: VK_KHR_get_physical_device_properties2, VK_KHR_storage_buffer_storage_class. The Vulkan spec states: All required extensions for each extension in the VkDeviceCreateInfo::ppEnabledExtensionNames list must also be present in that list (https://vulkan.lunarg.com/doc/view/1.2.162.0/windows/1.2-extensions/vkspec.html#VUID-vkCreateDevice-ppEnabledExtensionNames-01387)
-[09:15:33] [error] VELOCITY: Validation Layer: Validation Error: [ VUID-vkCreateDevice-ppEnabledExtensionNames-01387 ] Object 0: VK_NULL_HANDLE, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0x12537a2c | Missing extensions required by the device extension VK_KHR_16bit_storage: VK_KHR_get_physical_device_properties2, VK_KHR_storage_buffer_storage_class. The Vulkan spec states: All required extensions for each extension in the VkDeviceCreateInfo::ppEnabledExtensionNames list must also be present in that list (https://vulkan.lunarg.com/doc/view/1.2.162.0/windows/1.2-extensions/vkspec.html#VUID-vkCreateDevice-ppEnabledExtensionNames-01387)
-[09:15:33] [error] VELOCITY: Validation Layer: Validation Error: [ VUID-vkCreateDevice-ppEnabledExtensionNames-01387 ] Object 0: VK_NULL_HANDLE, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0x12537a2c | Missing extension required by the device extension VK_KHR_push_descriptor: VK_KHR_get_physical_device_properties2. The Vulkan spec states: All required extensions for each extension in the VkDeviceCreateInfo::ppEnabledExtensionNames list must also be present in that list (https://vulkan.lunarg.com/doc/view/1.2.162.0/windows/1.2-extensions/vkspec.html#VUID-vkCreateDevice-ppEnabledExtensionNames-01387)
-[09:15:34] [info] VELOCITY: Created Logical device!
-[09:15:34] [info] VELOCITY: Created swapchain with size:(1280,720)
-[09:15:34] [info] VELOCITY: Loaded default shaders!
-[09:15:34] [info] VELOCITY: Created graphics pipeline!
-[09:15:34] [info] VELOCITY: Created framebuffers!
-[09:15:34] [info] VELOCITY: Created command pool!
-[09:15:34] [info] VELOCITY: Allocated command buffers!
-[09:15:34] [info] VELOCITY: Created syncronisation primitives!
+[09:28:03] [info] VELOCITY: Available extensions:
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_surface
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[09:28:03] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[09:28:03] [trace] VELOCITY: 	 VK_EXT_debug_report
+[09:28:03] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[09:28:03] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[09:28:03] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[09:28:03] [info] VELOCITY: Created Vulkan Instance!
+[09:28:03] [info] VELOCITY: Created debug messenger!
+[09:28:03] [info] VELOCITY: Created window surface!
+[09:28:03] [info] VELOCITY: Selected GPU: GeForce RTX 2070
+[09:28:03] [info] VELOCITY: Created Logical device!
+[09:28:03] [info] VELOCITY: Created swapchain with size:(1280,720)
+[09:28:03] [info] VELOCITY: Loaded default shaders!
+[09:28:03] [info] VELOCITY: Created graphics pipeline!
+[09:28:03] [info] VELOCITY: Created framebuffers!
+[09:28:03] [info] VELOCITY: Created command pool!
+[09:28:03] [info] VELOCITY: Allocated command buffers!
+[09:28:03] [info] VELOCITY: Created syncronisation primitives!

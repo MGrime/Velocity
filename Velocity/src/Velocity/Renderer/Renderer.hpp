@@ -126,7 +126,8 @@ namespace Velocity {
 		// Contains the data for a scene
 		struct SceneData
 		{
-			std::pair< const glm::mat4*, const glm::mat4*> m_SceneCamera;
+			glm::mat4 m_ViewMatrix;
+			glm::mat4 m_ProjectionMatrix;
 
 			// These objects CANNOT be modified after you push them
 			// TODO: Make it so you can at least remove them

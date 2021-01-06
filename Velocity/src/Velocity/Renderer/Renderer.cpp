@@ -39,9 +39,8 @@ namespace Velocity
 	// This is called when you want to start the rendering of a scene!
 	void Renderer::BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 	{
-		m_SceneData.m_SceneCamera = std::make_pair<const glm::mat4*, const glm::mat4*>(
-			&viewMatrix,&projectionMatrix
-		);
+		m_SceneData.m_ViewMatrix = viewMatrix;
+		m_SceneData.m_ProjectionMatrix = projectionMatrix;
 	}
 
 	// Submits a renderer command to be done
@@ -1050,25 +1049,16 @@ namespace Velocity
 	void Renderer::UpdateUniformBuffers()
 	{
 		ViewProjection flattenedData;
-		if (!m_SceneData.m_SceneCamera.first || !m_SceneData.m_SceneCamera.second)
+		if (m_SceneData.m_ViewMatrix == glm::mat4()|| m_SceneData.m_ProjectionMatrix == glm::mat4())
 		{
 			VEL_CORE_WARN("You didnt set a camera!");
-			flattenedData =
-			{
-				glm::mat4(),
-				glm::mat4()
-			};
-		}
-		else
-		{
-			flattenedData =
-			{
-				*m_SceneData.m_SceneCamera.first,
-				*m_SceneData.m_SceneCamera.second
-			};
 		}
 
-		
+		flattenedData = {
+			m_SceneData.m_ViewMatrix,
+			m_SceneData.m_ProjectionMatrix
+		};
+	
 		void* data;
 	
 		auto result = m_LogicalDevice->mapMemory(
