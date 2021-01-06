@@ -11,6 +11,7 @@
 #include <Velocity/Renderer/Pipeline.hpp>
 #include <Velocity/Renderer/Vertex.hpp>
 #include <Velocity/Renderer/BufferManager.hpp>
+#include <Velocity/Renderer/Texture.hpp>
 
 namespace Velocity
 {
@@ -36,6 +37,8 @@ namespace Velocity
 		CreateSyncronizer();
 	}
 
+	#pragma region USER API
+	
 	// This is called when you want to start the rendering of a scene!
 	void Renderer::BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
 	{
@@ -49,21 +52,32 @@ namespace Velocity
 	void Renderer::AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
 	{
 		m_SceneData.m_StaticSceneObjects.push_back(object);
-		m_SceneData.m_StaticSceneObjectTransforms.push_back(&modelMatrix);
+		m_SceneData.m_StaticSceneObjectTransforms.push_back(modelMatrix);
 	}
 
 	// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
+	// TODO: PROFILE THIS. I think this copy is expensive
 	void Renderer::DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix)
 	{
 		m_SceneData.m_SceneObjects.push_back(object);
-		m_SceneData.m_SceneObjectTransforms.push_back(&modelMatrix);
+		m_SceneData.m_SceneObjectTransforms.push_back(modelMatrix);
 	}
 
+	// Returns a new texture. You are responsible for cleaning it up!
+	Texture* Renderer::CreateTexture(const std::string& filepath)
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+
+		return new Texture(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+	}
+	
 	// This is called to end the rendering of a scene
 	void Renderer::EndScene()
 	{
 		
 	}
+
+	#pragma endregion 
 	
 	// Takes all the information submitted this frame, records and submits the commands
 	// Called by application in the run loop
@@ -632,12 +646,19 @@ namespace Velocity
 		
 		#pragma region PIPELINE LAYOUT
 
+		// Setup push constant ranges
+		vk::PushConstantRange pushConstantRange = {
+			vk::ShaderStageFlagBits::eVertex,
+			0,
+			sizeof(glm::mat4)
+		};
+
 		vk::PipelineLayoutCreateInfo pipelineLayoutInfo = {
 			vk::PipelineLayoutCreateFlags{},
 			0,			// Set in pipeline constructor
 			nullptr,		// Set in pipeline constructor
-			0,
-			nullptr
+			1,
+			&pushConstantRange
 		};
 		
 		#pragma endregion
@@ -884,8 +905,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}");
-			VEL_CORE_INFO("Failed to create descriptor sets! Error:{0}");
+			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}",e.what());
+			VEL_CORE_INFO("Failed to create descriptor sets! Error:{0}",e.what());
 		}
 
 		// Configure descriptors
@@ -1017,15 +1038,23 @@ namespace Velocity
 		m_BufferManager->Bind(cmdBuffer.get());
 
 		// 2. Draw static objects
+		size_t staticCounter = 0;
 		for (auto object : m_SceneData.m_StaticSceneObjects)
 		{
-			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);		
+			cmdBuffer->pushConstants(m_GraphicsPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &m_SceneData.m_StaticSceneObjectTransforms.at(staticCounter));
+			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);
+
+			++staticCounter;
 		}
 
 		// 2b. Draw dynamic objects and CLEAR
+		size_t dynamicCounter = 0;
 		for (auto object : m_SceneData.m_SceneObjects)
 		{
+			cmdBuffer->pushConstants(m_GraphicsPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &m_SceneData.m_SceneObjectTransforms.at(dynamicCounter));
 			cmdBuffer->drawIndexed(object.IndexCount, 1, object.IndexStart, object.VertexOffset, 0);
+
+			++dynamicCounter;
 		}
 		m_SceneData.m_SceneObjects.clear();
 		m_SceneData.m_SceneObjectTransforms.clear();

@@ -23,4 +23,4 @@
 // Renderer Includes
 
 #include "Velocity/Renderer/Renderer.hpp"
-
+#include "Velocity/Renderer/Texture.hpp"

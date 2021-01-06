@@ -18,6 +18,7 @@ namespace Velocity {
 	class Pipeline;
 	class Shader;
 	class BufferManager;
+	class Texture;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -26,20 +27,6 @@ namespace Velocity {
 		Renderer();
 
 		virtual ~Renderer();
-
-		// This is called when you want to start the rendering of a scene!
-		void BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
-
-		// Submits a renderer command to be done.
-
-		// This allows you to add an object that will never move. Add it once and it will always be drawn
-		void AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
-
-		// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
-		void DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
-
-		// This is called to end the rendering of a scene
-		void EndScene();
 
 		// Calls RecordCommandBuffers to flush all Submitted commands
 		// Then syncrohnises and presents a frame
@@ -54,12 +41,33 @@ namespace Velocity {
 
 		#pragma region USER API
 
+		// This is called when you want to start the rendering of a scene!
+		void BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+
+		// This is called to end the rendering of a scene
+		void EndScene();
+
 		// Loads the given mesh into a renderable object
 		// Pass this to Renderer::Submit
 		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices)
 		{
 			return m_BufferManager->AddMesh(verts,indices);
 		}
+
+		// Submits a renderer command to be done.
+
+		// This allows you to add an object that will never move. Add it once and it will always be drawn
+		void AddStatic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+
+		// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
+		void DrawDynamic(BufferManager::Renderable object, const glm::mat4& modelMatrix);
+
+		// Create assets
+
+		// TODO: Check ownership here
+		// Returns a new texture. You are responsible for cleaning it up!
+		Texture* CreateTexture(const std::string& filepath);
+		
 
 		#pragma endregion 
 		
@@ -132,11 +140,11 @@ namespace Velocity {
 			// These objects CANNOT be modified after you push them
 			// TODO: Make it so you can at least remove them
 			std::vector<BufferManager::Renderable>	m_StaticSceneObjects;
-			std::vector<const glm::mat4*>			m_StaticSceneObjectTransforms;
+			std::vector<glm::mat4>			m_StaticSceneObjectTransforms;
 
 			// These objects are flushed each frame. So they must be pushed per frame
 			std::vector<BufferManager::Renderable>	m_SceneObjects;
-			std::vector<const glm::mat4*>			m_SceneObjectTransforms;
+			std::vector<glm::mat4>			m_SceneObjectTransforms;
 		};
 		
 
@@ -236,8 +244,6 @@ namespace Velocity {
 
 		// Finds the required queue families for the device
 		QueueFamilyIndices FindQueueFamilies(vk::PhysicalDevice device);
-
-		void RecreateSwapchain();
 
 		#pragma endregion
 
