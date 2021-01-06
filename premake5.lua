@@ -23,9 +23,14 @@ IncludeDir["GLFW"] = "Velocity/vendor/GLFW/include"
 IncludeDir["glm"] = "Velocity/vendor/glm"
 IncludeDir["vulkan"] = vulkanpath .. "/Include"
 IncludeDir["stb"] = "Velocity/vendor/stb"
+IncludeDir["assimp"] = "Velocity/vendor/assimp/include"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
+
+	externalproject "assimp"
+		location "Velocity/vendor/assimp"
+
 	
 group ""
 
