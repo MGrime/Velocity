@@ -111,7 +111,7 @@ namespace Velocity
 		// Default to the first one if we cant get this format
 		for (const auto& format : formats)
 		{
-			if (format.format == vk::Format::eB8G8R8A8Srgb && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
+			if (format.format == vk::Format::eB8G8R8A8Unorm && format.colorSpace == vk::ColorSpaceKHR::eSrgbNonlinear)
 			{
 				return format;
 			}
