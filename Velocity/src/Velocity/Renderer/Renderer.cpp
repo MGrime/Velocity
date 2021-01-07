@@ -1124,7 +1124,7 @@ namespace Velocity
 			VK_FALSE,
 			vk::CompareOp::eAlways,
 			0.0f,
-			static_cast<float>(16.0f),
+			static_cast<float>(1000.0f),
 			vk::BorderColor::eIntOpaqueBlack,
 			VK_FALSE
 		};
