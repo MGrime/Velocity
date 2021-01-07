@@ -800,6 +800,7 @@ namespace Velocity
 		auto copyDependency = implicitDependency;
 
 		// Gui shouldn't clear
+		//copyColorAttachment.format = vk::Format::eB8G8R8A8Unorm;
 		copyColorAttachment.loadOp = vk::AttachmentLoadOp::eLoad;
 		copyColorAttachment.initialLayout = vk::ImageLayout::eColorAttachmentOptimal;
 		copyColorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
