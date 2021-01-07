@@ -88,33 +88,20 @@ namespace Velocity {
 		// Returns a new texture. The index is what is passed into the render commands
 		uint32_t CreateTexture(const std::string& filepath, const std::string& referenceName);
 
-		std::unique_ptr<Texture>& GetTextureByID(uint32_t textureID)
-		{
-			if (textureID > static_cast<uint32_t>(m_Textures.size()) - 1u)
-			{
-				VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
-				VEL_CORE_ERROR("Tried to get a texture that hasnt been loaded!. Returning the default texture (white square)");
-				return m_Textures.at(0).second;
-			}
-			else
-			{
-				return m_Textures.at(textureID).second;
-			}
-		}
-		std::unique_ptr<Texture>& GetTextureByReference(const std::string& texture)
+		uint32_t GetTextureByReference(const std::string& texture)
 		{
 			// TODO: IMPROVE SEARCH
 			for (size_t i = 0; i < m_Textures.size(); ++i)
 			{
 				if (m_Textures.at(i).first.compare(texture) == 0)
 				{
-					return m_Textures.at(i).second;
+					return i;
 				}
 			}
 			
 			VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
 			VEL_CORE_ERROR("Tried to get a texture that hasnt been loaded!. Returning the default texture (white square)");
-			return m_Textures.at(0).second;
+			return 0;
 		}
 		
 

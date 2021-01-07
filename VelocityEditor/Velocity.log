@@ -1,34 +1,34 @@
-[16:45:01] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[16:45:01] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1a3e77dc7e0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[17:02:46] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[17:02:46] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1f67b29bca0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[16:45:01] [info] VELOCITY: Available extensions:
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_display
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_surface
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[16:45:01] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[16:45:01] [trace] VELOCITY: 	 VK_EXT_debug_report
-[16:45:01] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[16:45:01] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[16:45:01] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[16:45:01] [info] VELOCITY: Created Vulkan Instance!
-[16:45:01] [info] VELOCITY: Created debug messenger!
-[16:45:01] [info] VELOCITY: Created window surface!
-[16:45:02] [info] VELOCITY: Selected GPU: GeForce GT 710
-[16:45:02] [info] VELOCITY: Created Logical device!
-[16:45:02] [info] VELOCITY: Created swapchain with size:(1280,720)
-[16:45:02] [info] VELOCITY: Loaded default shaders!
-[16:45:02] [info] VELOCITY: Created graphics pipeline!
-[16:45:02] [info] VELOCITY: Created command pool!
-[16:45:02] [info] VELOCITY: Created framebuffers!
-[16:45:02] [info] VELOCITY: Allocated command buffers!
-[16:45:02] [info] VELOCITY: Created syncronisation primitives!
+[17:02:46] [info] VELOCITY: Available extensions:
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_display
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_surface
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[17:02:46] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[17:02:46] [trace] VELOCITY: 	 VK_EXT_debug_report
+[17:02:46] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[17:02:46] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[17:02:46] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[17:02:46] [info] VELOCITY: Created Vulkan Instance!
+[17:02:46] [info] VELOCITY: Created debug messenger!
+[17:02:46] [info] VELOCITY: Created window surface!
+[17:02:47] [info] VELOCITY: Selected GPU: GeForce GT 710
+[17:02:47] [info] VELOCITY: Created Logical device!
+[17:02:47] [info] VELOCITY: Created swapchain with size:(1280,720)
+[17:02:47] [info] VELOCITY: Loaded default shaders!
+[17:02:47] [info] VELOCITY: Created graphics pipeline!
+[17:02:47] [info] VELOCITY: Created command pool!
+[17:02:47] [info] VELOCITY: Created framebuffers!
+[17:02:47] [info] VELOCITY: Allocated command buffers!
+[17:02:47] [info] VELOCITY: Created syncronisation primitives!

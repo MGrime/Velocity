@@ -619,7 +619,7 @@ namespace Velocity
 			VK_FALSE,
 			VK_FALSE,
 			vk::PolygonMode::eFill,
-			vk::CullModeFlagBits::eBack,
+			vk::CullModeFlagBits::eNone,
 			vk::FrontFace::eClockwise,
 			VK_FALSE,
 			0.0f,

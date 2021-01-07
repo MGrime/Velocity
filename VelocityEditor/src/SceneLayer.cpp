@@ -15,6 +15,7 @@ void SceneLayer::OnAttach()
 	r_Renderer->LoadMesh(m_Verts, m_Indices, "Square");
 
 	r_Renderer->LoadMesh("assets/models/room.obj", "Room");
+	r_Renderer->CreateTexture("assets/textures/room.png", "Room");
 	
 	// Load textures
 	m_Textures.at(0) = r_Renderer->CreateTexture("assets/textures/logo.png", "Logo");
@@ -71,7 +72,7 @@ void SceneLayer::OnUpdate()
 		// Pick a random texture
 		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
 
-		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Room"), m_Textures.at(0), newPos);
+		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Room"), r_Renderer->GetTextureByReference("Room"), newPos);
 	}
 
 	Velocity::Renderer::GetRenderer()->EndScene();
