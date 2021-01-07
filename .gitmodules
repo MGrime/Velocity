@@ -10,3 +10,7 @@
 [submodule "Velocity/vendor/assimp"]
 	path = Velocity/vendor/assimp
 	url = https://github.com/MGrime/assimp
+[submodule "Velocity/vendor/imgui"]
+	path = Velocity/vendor/imgui
+	url = https://github.com/mgrime/imgui
+	branch = docking

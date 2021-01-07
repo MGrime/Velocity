@@ -6,6 +6,8 @@
 
 #include <Velocity/Core/Layers/LayerStack.hpp>
 
+#include <Velocity/ImGui/ImGuiLayer.hpp>
+
 struct GLFWwindow;
 
 namespace Velocity 
@@ -47,6 +49,9 @@ namespace Velocity
 
 		// Stores layer implementions of the users app so we can update and dispatch events
 		LayerStack m_LayerStack;
+
+		// Always have a gui layer
+		ImGuiLayer* m_ImGuiLayer;
 	};
 
 	// To be defined in client

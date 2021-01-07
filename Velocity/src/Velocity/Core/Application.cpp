@@ -19,6 +19,10 @@ namespace Velocity
 
 		// This will init everything
 		r_Renderer = Renderer::GetRenderer();
+
+		// Push the gui layer
+		m_ImGuiLayer = new ImGuiLayer();
+		m_LayerStack.PushOverlay(m_ImGuiLayer);
 	}
 
 	void Application::Run()
@@ -32,7 +36,8 @@ namespace Velocity
 			}
 
 			// TODO: GUI HERE
-			// begin gui 
+			// begin gui
+			m_ImGuiLayer->Begin();
 
 			// Render each layer
 			for (Layer* layer : m_LayerStack)
@@ -40,7 +45,7 @@ namespace Velocity
 				layer->OnGuiRender();
 			}
 			// end gui
-			
+			m_ImGuiLayer->End();
 
 			// Now update window
 			s_Window->OnUpdate();

@@ -1,6 +1,7 @@
 #include "velpch.h"
 
 #include "Renderer.hpp"
+
 #include <Velocity/Core/Log.hpp>
 
 #include <Velocity/Core/Window.hpp>
@@ -12,6 +13,12 @@
 #include <Velocity/Renderer/Vertex.hpp>
 #include <Velocity/Renderer/BufferManager.hpp>
 #include <Velocity/Renderer/Texture.hpp>
+
+#include "imgui.h"
+#include <Velocity/ImGui/fonts/roboto.cpp>	// I know this is really odd but its how its done
+
+#include <backends/imgui_impl_vulkan.h>
+#include <backends/imgui_impl_glfw.h>
 
 namespace Velocity
 {
@@ -26,7 +33,7 @@ namespace Velocity
 		PickPhysicalDevice();
 		CreateLogicalDevice();
 		CreateSwapchain();
-		CreateGraphicsPipeline();
+		CreateGraphicsPipelines();
 		CreateCommandPool();
 		CreateDepthResources();
 		CreateFramebuffers();
@@ -37,6 +44,7 @@ namespace Velocity
 		CreateDescriptorSets();
 		CreateCommandBuffers();
 		CreateSyncronizer();
+		InitaliseImgui();
 	}
 
 	#pragma region USER API
@@ -135,6 +143,9 @@ namespace Velocity
 		// Records everything submitted
 		RecordCommandBuffers();
 
+		// Records submitted gui
+		RecordImGuiCommandBuffers();
+
 		// Which semaphores to wait on before starting submission
 		std::array<vk::Semaphore,1> waitSemaphores = { m_Syncronizer.ImageAvailable.at(m_CurrentFrame).get() };
 
@@ -148,12 +159,18 @@ namespace Velocity
 		UpdateUniformBuffers();
 		
 		// Combine all above data
+
+		std::array<vk::CommandBuffer, 2> submitBuffer = {
+			m_CommandBuffers.at(m_CurrentImage).get(),
+			m_ImGuiCommandBuffers.at(m_CurrentImage).get()
+		};
+		
 		vk::SubmitInfo submitInfo = {
 			static_cast<uint32_t>(waitSemaphores.size()),
 			waitSemaphores.data(),
 			waitStages.data(),
-			1,
-			&m_CommandBuffers.at(m_CurrentImage).get(),
+			static_cast<uint32_t>(submitBuffer.size()),
+			submitBuffer.data(),
 			1,
 			signalSemaphores.data()
 		};
@@ -211,12 +228,13 @@ namespace Velocity
 
 		// Now remake everything we need to
 		CreateSwapchain();
-		CreateGraphicsPipeline();
+		CreateGraphicsPipelines();
 		CreateFramebuffers();
 		CreateUniformBuffers();
 		CreateDescriptorPool();
 		CreateDescriptorSets();
 		CreateCommandBuffers();
+		InitaliseImgui();
 	}
 
 	#pragma region INITALISATION FUNCTIONS
@@ -513,7 +531,7 @@ namespace Velocity
 	}
 
 	// Chonky function that creates a full pipeline
-	void Renderer::CreateGraphicsPipeline()
+	void Renderer::CreateGraphicsPipelines()
 	{
 		// Load shaders as spv bytecode
 		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/vert.spv");
@@ -709,7 +727,7 @@ namespace Velocity
 			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eDontCare,
 			vk::ImageLayout::eUndefined,
-			vk::ImageLayout::ePresentSrcKHR
+			vk::ImageLayout::eColorAttachmentOptimal
 		};
 
 		// And a depth attachment
@@ -775,6 +793,46 @@ namespace Velocity
 			1,
 			&implicitDependency
 		};
+
+		// We also need to create a render pass for ImGui to use!
+		auto copyColorAttachment = colorAttachment;
+		auto copySubpass = subpass;
+		auto copyDependency = implicitDependency;
+
+		// Gui shouldn't clear
+		copyColorAttachment.loadOp = vk::AttachmentLoadOp::eLoad;
+		copyColorAttachment.initialLayout = vk::ImageLayout::eColorAttachmentOptimal;
+		copyColorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
+		
+		// Remove depth buffer reference from subpass
+		copySubpass.pDepthStencilAttachment = nullptr;
+		// Also remove wait on depth buffer
+		copyDependency.srcStageMask &= vk::PipelineStageFlagBits::eEarlyFragmentTests;
+		copyDependency.dstStageMask &= vk::PipelineStageFlagBits::eEarlyFragmentTests;
+		copyDependency.dstAccessMask &= vk::AccessFlagBits::eDepthStencilAttachmentWrite;
+		// Everything else is the same
+		vk::RenderPassCreateInfo imguiRenderPassInfo = {
+			vk::RenderPassCreateFlags{},
+			1,
+			& copyColorAttachment,
+			1,
+			& copySubpass,
+			1,
+			& copyDependency
+		};
+
+		// We actually create this one here
+		try
+		{
+			m_ImGuiRenderPass = m_LogicalDevice->createRenderPassUnique(imguiRenderPassInfo);
+		}
+		catch(vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false);
+			VEL_CORE_ERROR("Failed to create imgui render pass! Error: {0}",e.what());
+		}
+		
+		
 		
 		#pragma endregion
 
@@ -854,6 +912,8 @@ namespace Velocity
 	{
 		// Each swapchain image needs a framebuffer
 		m_Framebuffers.resize(m_Swapchain->GetImageViews().size());
+		m_ImGuiFramebuffers.resize(m_Swapchain->GetImages().size());
+		
 		for (size_t i = 0; i < m_Swapchain->GetImageViews().size(); ++i)
 		{
 			std::array<vk::ImageView, 2> attachments = {
@@ -879,6 +939,22 @@ namespace Velocity
 				VEL_CORE_ASSERT(false, "Failed to create framebuffer! Error {0}", e.what());
 				VEL_CORE_ERROR("An error occurred in creating the framebuffers: {0}", e.what());
 			}
+
+			// Update needed information to imgui
+			framebufferInfo.renderPass = m_ImGuiRenderPass.get();
+			framebufferInfo.attachmentCount = 1;
+			framebufferInfo.pAttachments = &m_Swapchain->GetImageViews().at(i);
+
+			// Create
+			try
+			{
+				m_ImGuiFramebuffers.at(i) = m_LogicalDevice->createFramebufferUnique(framebufferInfo);
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ASSERT(false, "Failed to create imgui framebuffer! Error {0}", e.what());
+				VEL_CORE_ERROR("An error occurred in creating the imgui framebuffers: {0}", e.what());
+			}
 			
 		}
 
@@ -899,6 +975,7 @@ namespace Velocity
 		try
 		{
 			m_CommandPool = m_LogicalDevice->createCommandPoolUnique(poolInfo);
+			m_ImGuiCommandPool = m_LogicalDevice->createCommandPoolUnique(poolInfo);
 		}
 		catch (vk::SystemError& e)
 		{
@@ -1060,6 +1137,18 @@ namespace Velocity
 			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
 		}
 
+		allocInfo.commandPool = m_ImGuiCommandPool.get();
+
+		try
+		{
+			m_ImGuiCommandBuffers = m_LogicalDevice->allocateCommandBuffersUnique(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
+		}
+
 		VEL_CORE_INFO("Allocated command buffers!");
 	}
 
@@ -1084,7 +1173,6 @@ namespace Velocity
 			poolSizes.data()
 		};
 
-		
 		try
 		{
 			m_DescriptorPool = m_LogicalDevice->createDescriptorPoolUnique(poolInfo);
@@ -1094,6 +1182,44 @@ namespace Velocity
 			VEL_CORE_ASSERT(false, "Failed to create descriptor pool! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in creating the descriptor pool: {0}", e.what());
 		}
+
+		// Now create for imgui
+
+		vk::DescriptorPoolSize imguiPoolSizes[] =
+		{
+			  { vk::DescriptorType::eSampler, 1000 },
+			  { vk::DescriptorType::eCombinedImageSampler, 1000 },
+			  { vk::DescriptorType::eSampledImage, 1000 },
+			  { vk::DescriptorType::eStorageImage, 1000 },
+			  { vk::DescriptorType::eUniformTexelBuffer, 1000 },
+			  { vk::DescriptorType::eStorageTexelBuffer, 1000 },
+			  { vk::DescriptorType::eUniformBuffer, 1000 },
+			  { vk::DescriptorType::eStorageBuffer, 1000 },
+			  { vk::DescriptorType::eUniformBufferDynamic, 1000 },
+			  { vk::DescriptorType::eStorageBufferDynamic, 1000 },
+			  { vk::DescriptorType::eInputAttachment, 1000 }
+		};
+
+		vk::DescriptorPoolCreateInfo imguiPoolInfo = {
+			vk::DescriptorPoolCreateFlagBits::eFreeDescriptorSet,
+			1000 * IM_ARRAYSIZE(imguiPoolSizes),
+			static_cast<uint32_t>(IM_ARRAYSIZE(imguiPoolSizes)),
+			imguiPoolSizes
+		};
+
+		try
+		{
+			m_ImGuiDescriptorPool = m_LogicalDevice->createDescriptorPoolUnique(poolInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ASSERT(false, "Failed to create imgui descriptor pool! Error {0}", e.what());
+			VEL_CORE_ERROR("An error occured in creating the imgui descriptor pool: {0}", e.what());
+		}
+		
+
+		#pragma endregion 
+		
 
 	}
 
@@ -1232,6 +1358,69 @@ namespace Velocity
 		}
 		VEL_CORE_INFO("Created syncronisation primitives!");
 	}
+
+	// Initalises ImGui
+	void Renderer::InitaliseImgui()
+	{
+		// Setup Dear ImGui context
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGuiIO& io = ImGui::GetIO(); (void)io;
+		io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;       // Enable Keyboard Controls
+		//io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
+		io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;           // Enable Docking
+		io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;         // Enable Multi-Viewport / Platform Windows
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoTaskBarIcons;
+		//io.ConfigFlags |= ImGuiConfigFlags_ViewportsNoMerge;
+
+		// Setup Dear ImGui style
+		ImGui::StyleColorsDark();
+		//ImGui::StyleColorsClassic();
+
+		// When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+		ImGuiStyle& style = ImGui::GetStyle();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			style.WindowRounding = 0.0f;
+			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
+		}
+
+		ImGui_ImplGlfw_InitForVulkan(Application::GetWindow()->GetNative(), true);
+
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		
+		ImGui_ImplVulkan_InitInfo initInfo = {
+			m_Instance.get(),
+			m_PhysicalDevice,
+			m_LogicalDevice.get(),
+			indices.GraphicsFamily.value(),
+			m_GraphicsQueue,
+			nullptr,
+			m_ImGuiDescriptorPool.get(),
+			0,
+			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
+			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
+			VK_SAMPLE_COUNT_1_BIT,
+			nullptr,
+			[](VkResult err)
+			{
+				if (err != VK_SUCCESS)
+				{
+					std::cout << "Imgui error: " << err << "/n";
+				}
+			}
+		};
+
+		ImGui_ImplVulkan_Init(&initInfo, m_ImGuiRenderPass.get());
+
+		io.Fonts->AddFontFromMemoryCompressedTTF(Roboto_compressed_data, Roboto_compressed_size, 15.0f);
+		{
+			TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(m_LogicalDevice, m_ImGuiCommandPool.get(), m_GraphicsQueue);
+			auto buffer = bufferWrapper.GetBuffer();
+			ImGui_ImplVulkan_CreateFontsTexture(buffer);
+		}
+		
+	}
 	#pragma endregion 
 
 	#pragma region RENDERING FUNCTIONS
@@ -1244,7 +1433,7 @@ namespace Velocity
 		
 		// Start a command buffer recording
 		vk::CommandBufferBeginInfo beginInfo = {
-			vk::CommandBufferUsageFlags{},
+			vk::CommandBufferUsageFlagBits::eOneTimeSubmit,
 			nullptr
 		};
 
@@ -1402,6 +1591,46 @@ namespace Velocity
 
 		m_LogicalDevice->unmapMemory(m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get());
 		
+	}
+
+	// Takes all ImGui commands sent and records the buffers for them
+	void Renderer::RecordImGuiCommandBuffers()
+	{
+		// Start a command buffer
+		vk::CommandBufferBeginInfo cmdInfo = {
+			vk::CommandBufferUsageFlagBits::eOneTimeSubmit
+		};
+		
+		m_ImGuiCommandBuffers.at(m_CurrentImage)->begin(cmdInfo);
+
+		vk::ClearValue clearColor = { vk::ClearColorValue{std::array<float,4>{0.0f,0.0f,0.0f,1.0f}} };
+		vk::RenderPassBeginInfo renderPassInfo = {
+			m_ImGuiRenderPass.get(),
+			m_ImGuiFramebuffers.at(m_CurrentImage).get(),
+			vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
+			 1,
+			&clearColor
+		};
+
+		m_ImGuiCommandBuffers.at(m_CurrentImage)->beginRenderPass(renderPassInfo,vk::SubpassContents::eInline);
+
+		// Add imgui draw calls
+		if (ImGui::GetDrawData() != nullptr)
+		{
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_ImGuiCommandBuffers.at(m_CurrentImage).get());
+		}
+
+		m_ImGuiCommandBuffers.at(m_CurrentImage)->endRenderPass();
+		
+		m_ImGuiCommandBuffers.at(m_CurrentImage)->end();
+
+		// Manage multi-viewport
+		auto& io = ImGui::GetIO();
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+		}
 	}
 
 	#pragma endregion 
@@ -1624,5 +1853,9 @@ namespace Velocity
 	{
 		// Need to force this to happen before the other variables go out of scope
 		m_Swapchain.reset();
+
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
 	}
 }

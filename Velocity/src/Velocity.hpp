@@ -24,6 +24,9 @@
 
 #include "Velocity/Renderer/Renderer.hpp"
 #include "Velocity/Renderer/Texture.hpp"
+
+#include "imgui/imgui.h"
+
 // Math includes
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

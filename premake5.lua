@@ -24,10 +24,11 @@ IncludeDir["glm"] = "Velocity/vendor/glm"
 IncludeDir["vulkan"] = vulkanpath .. "/Include"
 IncludeDir["stb"] = "Velocity/vendor/stb"
 IncludeDir["assimp"] = "Velocity/vendor/assimp/include"
+IncludeDir["imgui"] = "Velocity/vendor/imgui"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
-
+	include "Velocity/vendor/imgui"
 	
 group ""
 
@@ -60,13 +61,15 @@ project "Velocity"
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.stb}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.imgui}"
 	}
 	
 	links
 	{
 		"GLFW",
-		vulkanpath .. "/Lib/vulkan-1.lib"
+		vulkanpath .. "/Lib/vulkan-1.lib",
+		"imgui"
 	}
 	
 	filter "system:windows"
@@ -121,8 +124,9 @@ project "VelocityEditor"
 		"Velocity/src",
 		"Velocity/vendor",
 		"%{IncludeDir.glm}",
-		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.vulkan}",
+		"%{IncludeDir.GLFW}",
+		"%{IncludeDir.imgui}"
 	}
 	
 	links

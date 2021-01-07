@@ -75,3 +75,11 @@ void SceneLayer::OnUpdate()
 	Velocity::Renderer::GetRenderer()->EndScene();
 
 }
+void SceneLayer::OnGuiRender()
+{
+	ImGui::Begin("GUI from scene layer!");
+
+	ImGui::Button("Click me!");
+	
+	ImGui::End();
+}

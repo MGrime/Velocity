@@ -14,6 +14,8 @@ public:
 
 	void OnUpdate() override;
 
+	void OnGuiRender() override;
+
 private:
 	// Square with rainbow tint and standard uv
 	std::vector<Velocity::Vertex> m_Verts = {

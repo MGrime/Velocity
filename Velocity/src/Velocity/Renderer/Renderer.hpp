@@ -211,7 +211,7 @@ namespace Velocity {
 		void CreateSwapchain();
 
 		// Chonky function that creates a full pipeline
-		void CreateGraphicsPipeline();
+		void CreateGraphicsPipelines();
 
 		// Creates framebuffers using the pipeline render pass details and the swapchain
 		void CreateFramebuffers();
@@ -243,6 +243,8 @@ namespace Velocity {
 		// Creates all required sync primitives
 		void CreateSyncronizer();
 
+		// Initalises ImGui
+		void InitaliseImgui();
 		
 		#pragma endregion
 
@@ -250,6 +252,9 @@ namespace Velocity {
 
 		// Takes all commands sent through Renderer::Submit and records the buffers for them
 		void RecordCommandBuffers();
+
+		// Takes all ImGui commands sent and records the buffers for them
+		void RecordImGuiCommandBuffers();
 
 		// Updates uniform buffers with scene data
 		void UpdateUniformBuffers();
@@ -395,6 +400,16 @@ namespace Velocity {
 
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, BufferManager::Renderable> m_Renderables;
+
+		#pragma region IMGUI ADDITIONS
+
+		vk::UniqueDescriptorPool			m_ImGuiDescriptorPool;
+		vk::UniqueRenderPass				m_ImGuiRenderPass;
+		vk::UniqueCommandPool				m_ImGuiCommandPool;
+		std::vector<vk::UniqueCommandBuffer>m_ImGuiCommandBuffers;
+		std::vector<vk::UniqueFramebuffer>	m_ImGuiFramebuffers;
+		
+		#pragma endregion
 		
 		#pragma endregion
 
