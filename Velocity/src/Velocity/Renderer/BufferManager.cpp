@@ -2,6 +2,10 @@
 
 #include "BufferManager.hpp"
 
+#include <assimp/Importer.hpp>
+#include <assimp/scene.h>
+#include <assimp/postprocess.h>
+
 namespace Velocity
 {
 	BufferManager::BufferManager(vk::PhysicalDevice& pDevice, vk::UniqueDevice& device, vk::CommandPool& pool, vk::Queue& copyQueue)
@@ -136,6 +140,81 @@ namespace Velocity
 		return newRenderable;
 	
 	}
+
+	BufferManager::Renderable BufferManager::AddMesh(const std::string& filepath)
+	{
+		// Create assimp importer
+		Assimp::Importer Importer;
+
+		// Standard import flags
+		unsigned int assimpFlags =
+			aiProcess_GenSmoothNormals |
+			aiProcess_FixInfacingNormals |
+			aiProcess_GenUVCoords |
+			aiProcess_TransformUVCoords |
+			aiProcess_FlipUVs |
+			aiProcess_JoinIdenticalVertices |
+			aiProcess_Triangulate |
+			aiProcess_ImproveCacheLocality |
+			aiProcess_SortByPType |
+			aiProcess_FindInvalidData |
+			aiProcess_OptimizeMeshes |
+			aiProcess_FindInstances |
+			aiProcess_FindDegenerates |
+			aiProcess_RemoveRedundantMaterials |
+			aiProcess_Debone |
+			aiProcess_RemoveComponent |
+			aiProcess_CalcTangentSpace;
+
+		// Load model
+		const auto* pScene = Importer.ReadFile(filepath.c_str(), assimpFlags);
+
+		if (pScene == nullptr)
+		{
+			VEL_CORE_ASSERT(false,"Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
+			VEL_CORE_ERROR("Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
+			return Renderable();
+		}
+
+		std::vector<Vertex>		m_ModelVertices;
+		std::vector<uint32_t>	m_ModelIndices;
+
+		// For each mesh
+		for (size_t i = 0; i < pScene->mNumMeshes; ++i)
+		{
+			// Get mesh
+			const auto& mesh = pScene->mMeshes[i];
+			for (size_t j = 0; j < mesh->mNumVertices; ++j)
+			{
+				// Get vertex
+				const auto& rawVert = mesh->mVertices[j];
+				const auto& rawUV = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][j] : aiVector3t<float>{};
+
+				Vertex vert = {
+					{rawVert.x, rawVert.y, rawVert.z},
+					{1.0f,1.0f,1.0f},
+					{rawUV.x, rawUV.y}
+				};
+
+				m_ModelVertices.push_back(vert);
+			}
+
+
+			for (size_t face = 0; face < mesh->mNumFaces; ++face)
+			{
+				// Get face
+				const auto& currFace = mesh ->mFaces[face];
+
+				// Load indices
+				m_ModelIndices.push_back(currFace.mIndices[0]);
+				m_ModelIndices.push_back(currFace.mIndices[1]);
+				m_ModelIndices.push_back(currFace.mIndices[2]);
+			}
+		}
+
+		return AddMesh(m_ModelVertices, m_ModelIndices);	
+	}
+
 	// Binds the buffers
 	void BufferManager::Bind(vk::CommandBuffer& commandBuffer)
 	{

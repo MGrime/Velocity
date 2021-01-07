@@ -14,6 +14,8 @@ void SceneLayer::OnAttach()
 	// "Load a mesh"
 	r_Renderer->LoadMesh(m_Verts, m_Indices, "Square");
 
+	r_Renderer->LoadMesh("assets/models/chair.fbx", "Chair");
+	
 	// Load textures
 	m_Textures.at(0) = r_Renderer->CreateTexture("assets/textures/logo.png");
 	m_Textures.at(1) = r_Renderer->CreateTexture("assets/textures/bronze.png");

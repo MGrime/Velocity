@@ -24,6 +24,8 @@ namespace Velocity
 		// TODO: Update as we change how this works
 		Renderable AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
 
+		Renderable AddMesh(const std::string& filepath);
+
 		// Binds the buffers
 		void Bind(vk::CommandBuffer& commandBuffer);
 	

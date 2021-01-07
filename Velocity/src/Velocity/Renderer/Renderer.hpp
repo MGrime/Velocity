@@ -47,11 +47,19 @@ namespace Velocity {
 		// This is called to end the rendering of a scene
 		void EndScene();
 
-		// Loads the given mesh into a renderable object
+		// Loads the given raw mesh into a renderable object
 		// Pass this to Renderer::Submit
 		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
 		{
 			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(verts, indices) });
+			return m_Renderables.at(referenceName);
+		}
+
+		// Loads the given mesh file into a renderable object
+		// Pass this to Renderer::Submit
+		BufferManager::Renderable LoadMesh(const std::string& filepath, const std::string& referenceName)
+		{
+			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(filepath) });
 			return m_Renderables.at(referenceName);
 		}
 
