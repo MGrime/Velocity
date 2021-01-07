@@ -413,11 +413,11 @@ namespace Velocity {
 
 		#pragma region IMGUI ADDITIONS
 
-		vk::UniqueDescriptorPool			m_ImGuiDescriptorPool;
-		vk::UniqueRenderPass				m_ImGuiRenderPass;
-		vk::UniqueCommandPool				m_ImGuiCommandPool;
-		std::vector<vk::UniqueCommandBuffer>m_ImGuiCommandBuffers;
-		std::vector<vk::UniqueFramebuffer>	m_ImGuiFramebuffers;
+		vk::DescriptorPool			m_ImGuiDescriptorPool;
+		vk::RenderPass				m_ImGuiRenderPass;
+		vk::CommandPool				m_ImGuiCommandPool;
+		std::vector<vk::CommandBuffer>m_ImGuiCommandBuffers;
+		std::vector<vk::Framebuffer>	m_ImGuiFramebuffers;
 		
 		#pragma endregion
 		

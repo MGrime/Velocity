@@ -16,6 +16,8 @@ namespace Velocity
 		ImGui_ImplVulkan_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
+		ImGui::GetIO().ViewportDrawCalled = false;
 		
 	}
 	void ImGuiLayer::End()
@@ -23,6 +25,16 @@ namespace Velocity
 		// Finalise render data
 		ImGui::EndFrame();
 		ImGui::Render();
+
+		// Manage multiviewport
+		auto& io = ImGui::GetIO();
+
+		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
+		{
+			ImGui::UpdatePlatformWindows();
+			ImGui::RenderPlatformWindowsDefault();
+			io.ViewportDrawCalled = true;
+		}
 	}
 
 }

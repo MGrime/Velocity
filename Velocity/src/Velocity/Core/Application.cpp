@@ -3,6 +3,8 @@
 
 #include <GLFW/glfw3.h>
 
+
+#include "imgui.h"
 #include "Velocity/Core/Events/ApplicationEvent.hpp"
 #include "Velocity/Core/Log.hpp"
 
@@ -28,7 +30,7 @@ namespace Velocity
 	void Application::Run()
 	{
 		while (m_Running)
-		{
+		{			
 			// First go through layer stack and update
 			for (Layer* layer : m_LayerStack)
 			{
@@ -56,6 +58,7 @@ namespace Velocity
 			{
 				r_Renderer->Render();
 			}
+	
 		}
 
 		r_Renderer->Finalise();
@@ -95,11 +98,15 @@ namespace Velocity
 
 	bool Application::OnWindowResize(WindowResizeEvent& e)
 	{
+		static uint32_t resizeCount = 0;
 		if (e.GetWidth() == 0 && e.GetHeight() == 0)
 		{
 			return true;
 		}
 		r_Renderer->OnWindowResize();
+		VEL_CORE_INFO("Resizing {0}", resizeCount);
+
+		++resizeCount;
 		return true;
 	}
 

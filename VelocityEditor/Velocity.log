@@ -1,34 +1,1456 @@
-[17:02:46] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[17:02:46] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1f67b29bca0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[20:09:42] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[20:09:43] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1e20df4c530, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[17:02:46] [info] VELOCITY: Available extensions:
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_display
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_surface
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[17:02:46] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[17:02:46] [trace] VELOCITY: 	 VK_EXT_debug_report
-[17:02:46] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[17:02:46] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[17:02:46] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[17:02:46] [info] VELOCITY: Created Vulkan Instance!
-[17:02:46] [info] VELOCITY: Created debug messenger!
-[17:02:46] [info] VELOCITY: Created window surface!
-[17:02:47] [info] VELOCITY: Selected GPU: GeForce GT 710
-[17:02:47] [info] VELOCITY: Created Logical device!
-[17:02:47] [info] VELOCITY: Created swapchain with size:(1280,720)
-[17:02:47] [info] VELOCITY: Loaded default shaders!
-[17:02:47] [info] VELOCITY: Created graphics pipeline!
-[17:02:47] [info] VELOCITY: Created command pool!
-[17:02:47] [info] VELOCITY: Created framebuffers!
-[17:02:47] [info] VELOCITY: Allocated command buffers!
-[17:02:47] [info] VELOCITY: Created syncronisation primitives!
+[20:09:43] [info] VELOCITY: Available extensions:
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_display
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_surface
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[20:09:43] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[20:09:43] [trace] VELOCITY: 	 VK_EXT_debug_report
+[20:09:43] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[20:09:43] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[20:09:43] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[20:09:43] [info] VELOCITY: Created Vulkan Instance!
+[20:09:43] [info] VELOCITY: Created debug messenger!
+[20:09:43] [info] VELOCITY: Created window surface!
+[20:09:43] [info] VELOCITY: Selected GPU: GeForce GT 710
+[20:09:44] [info] VELOCITY: Created Logical device!
+[20:09:44] [info] VELOCITY: Created swapchain with size:(1280,720)
+[20:09:44] [info] VELOCITY: Loaded default shaders!
+[20:09:44] [info] VELOCITY: Created graphics pipeline!
+[20:09:44] [info] VELOCITY: Created command pool!
+[20:09:44] [info] VELOCITY: Created framebuffers!
+[20:09:44] [info] VELOCITY: Allocated command buffers!
+[20:09:44] [info] VELOCITY: Created syncronisation primitives!
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1281,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 0
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1676,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 1
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1842,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 2
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1746,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 3
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1012,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 4
+[20:09:50] [info] VELOCITY: Created swapchain with size:(667,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 5
+[20:09:50] [info] VELOCITY: Created swapchain with size:(647,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 6
+[20:09:50] [info] VELOCITY: Created swapchain with size:(783,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 7
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1135,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 8
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1408,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 9
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1441,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 10
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1319,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 11
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1118,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 12
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1048,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 13
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1055,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 14
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1153,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 15
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1371,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 16
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1445,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 17
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1415,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 18
+[20:09:50] [info] VELOCITY: Created swapchain with size:(1166,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 19
+[20:09:50] [info] VELOCITY: Created swapchain with size:(764,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 20
+[20:09:50] [info] VELOCITY: Created swapchain with size:(521,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 21
+[20:09:50] [info] VELOCITY: Created swapchain with size:(512,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:50] [info] VELOCITY: Resizing 22
+[20:09:50] [info] VELOCITY: Created swapchain with size:(636,720)
+[20:09:50] [info] VELOCITY: Loaded default shaders!
+[20:09:50] [info] VELOCITY: Created graphics pipeline!
+[20:09:50] [info] VELOCITY: Created framebuffers!
+[20:09:50] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 23
+[20:09:51] [info] VELOCITY: Created swapchain with size:(955,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 24
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1300,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 25
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1454,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 26
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1432,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 27
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1191,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 28
+[20:09:51] [info] VELOCITY: Created swapchain with size:(691,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 29
+[20:09:51] [info] VELOCITY: Created swapchain with size:(280,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 30
+[20:09:51] [info] VELOCITY: Created swapchain with size:(178,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 31
+[20:09:51] [info] VELOCITY: Created swapchain with size:(216,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 32
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1060,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 33
+[20:09:51] [info] VELOCITY: Created swapchain with size:(2174,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 34
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1872,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 35
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1157,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 36
+[20:09:51] [info] VELOCITY: Created swapchain with size:(432,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 37
+[20:09:51] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 38
+[20:09:51] [info] VELOCITY: Created swapchain with size:(124,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 39
+[20:09:51] [info] VELOCITY: Created swapchain with size:(922,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 40
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1989,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 41
+[20:09:51] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 42
+[20:09:51] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 43
+[20:09:51] [info] VELOCITY: Created swapchain with size:(2088,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 44
+[20:09:51] [info] VELOCITY: Created swapchain with size:(1506,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 45
+[20:09:51] [info] VELOCITY: Created swapchain with size:(469,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 46
+[20:09:51] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:51] [info] VELOCITY: Loaded default shaders!
+[20:09:51] [info] VELOCITY: Created graphics pipeline!
+[20:09:51] [info] VELOCITY: Created framebuffers!
+[20:09:51] [info] VELOCITY: Allocated command buffers!
+[20:09:51] [info] VELOCITY: Resizing 47
+[20:09:52] [info] VELOCITY: Created swapchain with size:(126,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 48
+[20:09:52] [info] VELOCITY: Created swapchain with size:(1280,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 49
+[20:09:52] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 50
+[20:09:52] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 51
+[20:09:52] [info] VELOCITY: Created swapchain with size:(1842,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 52
+[20:09:52] [info] VELOCITY: Created swapchain with size:(852,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 53
+[20:09:52] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 54
+[20:09:52] [info] VELOCITY: Created swapchain with size:(121,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 55
+[20:09:52] [info] VELOCITY: Created swapchain with size:(234,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 56
+[20:09:52] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 57
+[20:09:52] [info] VELOCITY: Created swapchain with size:(652,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 58
+[20:09:52] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 59
+[20:09:52] [info] VELOCITY: Created swapchain with size:(130,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 60
+[20:09:52] [info] VELOCITY: Created swapchain with size:(1796,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 61
+[20:09:52] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:52] [info] VELOCITY: Loaded default shaders!
+[20:09:52] [info] VELOCITY: Created graphics pipeline!
+[20:09:52] [info] VELOCITY: Created framebuffers!
+[20:09:52] [info] VELOCITY: Allocated command buffers!
+[20:09:52] [info] VELOCITY: Resizing 62
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 63
+[20:09:53] [info] VELOCITY: Created swapchain with size:(1683,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 64
+[20:09:53] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 65
+[20:09:53] [info] VELOCITY: Created swapchain with size:(145,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 66
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 67
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 68
+[20:09:53] [info] VELOCITY: Created swapchain with size:(979,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 69
+[20:09:53] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 70
+[20:09:53] [info] VELOCITY: Created swapchain with size:(156,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 71
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 72
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 73
+[20:09:53] [info] VELOCITY: Created swapchain with size:(1631,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 74
+[20:09:53] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 75
+[20:09:53] [info] VELOCITY: Created swapchain with size:(144,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 76
+[20:09:53] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:53] [info] VELOCITY: Loaded default shaders!
+[20:09:53] [info] VELOCITY: Created graphics pipeline!
+[20:09:53] [info] VELOCITY: Created framebuffers!
+[20:09:53] [info] VELOCITY: Allocated command buffers!
+[20:09:53] [info] VELOCITY: Resizing 77
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 78
+[20:09:54] [info] VELOCITY: Created swapchain with size:(1144,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 79
+[20:09:54] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 80
+[20:09:54] [info] VELOCITY: Created swapchain with size:(157,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 81
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 82
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 83
+[20:09:54] [info] VELOCITY: Created swapchain with size:(570,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 84
+[20:09:54] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 85
+[20:09:54] [info] VELOCITY: Created swapchain with size:(137,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 86
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 87
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 88
+[20:09:54] [info] VELOCITY: Created swapchain with size:(1547,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 89
+[20:09:54] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 90
+[20:09:54] [info] VELOCITY: Created swapchain with size:(147,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 91
+[20:09:54] [info] VELOCITY: Created swapchain with size:(1794,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 92
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 93
+[20:09:54] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 94
+[20:09:54] [info] VELOCITY: Created swapchain with size:(1879,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 95
+[20:09:54] [info] VELOCITY: Created swapchain with size:(714,720)
+[20:09:54] [info] VELOCITY: Loaded default shaders!
+[20:09:54] [info] VELOCITY: Created graphics pipeline!
+[20:09:54] [info] VELOCITY: Created framebuffers!
+[20:09:54] [info] VELOCITY: Allocated command buffers!
+[20:09:54] [info] VELOCITY: Resizing 96
+[20:09:55] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 97
+[20:09:55] [info] VELOCITY: Created swapchain with size:(136,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 98
+[20:09:55] [info] VELOCITY: Created swapchain with size:(1292,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 99
+[20:09:55] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 100
+[20:09:55] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 101
+[20:09:55] [info] VELOCITY: Created swapchain with size:(1901,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 102
+[20:09:55] [info] VELOCITY: Created swapchain with size:(641,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 103
+[20:09:55] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 104
+[20:09:55] [info] VELOCITY: Created swapchain with size:(126,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 105
+[20:09:55] [info] VELOCITY: Created swapchain with size:(833,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 106
+[20:09:55] [info] VELOCITY: Created swapchain with size:(1328,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 107
+[20:09:55] [info] VELOCITY: Created swapchain with size:(1355,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 108
+[20:09:55] [info] VELOCITY: Created swapchain with size:(1207,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 109
+[20:09:55] [info] VELOCITY: Created swapchain with size:(997,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 110
+[20:09:55] [info] VELOCITY: Created swapchain with size:(963,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 111
+[20:09:55] [info] VELOCITY: Created swapchain with size:(988,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 112
+[20:09:55] [info] VELOCITY: Created swapchain with size:(993,720)
+[20:09:55] [info] VELOCITY: Loaded default shaders!
+[20:09:55] [info] VELOCITY: Created graphics pipeline!
+[20:09:55] [info] VELOCITY: Created framebuffers!
+[20:09:55] [info] VELOCITY: Allocated command buffers!
+[20:09:55] [info] VELOCITY: Resizing 113
+[20:11:22] [info] VELOCITY: Created swapchain with size:(993,720)
+[20:11:22] [info] VELOCITY: Loaded default shaders!
+[20:11:22] [info] VELOCITY: Created graphics pipeline!
+[20:11:22] [info] VELOCITY: Created framebuffers!
+[20:11:22] [info] VELOCITY: Allocated command buffers!
+[20:11:22] [info] VELOCITY: Resizing 114
+[20:11:24] [info] VELOCITY: Created swapchain with size:(994,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 115
+[20:11:24] [info] VELOCITY: Created swapchain with size:(1783,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 116
+[20:11:24] [info] VELOCITY: Created swapchain with size:(920,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 117
+[20:11:24] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 118
+[20:11:24] [info] VELOCITY: Created swapchain with size:(792,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 119
+[20:11:24] [info] VELOCITY: Created swapchain with size:(1656,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 120
+[20:11:24] [info] VELOCITY: Created swapchain with size:(1552,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 121
+[20:11:24] [info] VELOCITY: Created swapchain with size:(1013,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 122
+[20:11:24] [info] VELOCITY: Created swapchain with size:(581,720)
+[20:11:24] [info] VELOCITY: Loaded default shaders!
+[20:11:24] [info] VELOCITY: Created graphics pipeline!
+[20:11:24] [info] VELOCITY: Created framebuffers!
+[20:11:24] [info] VELOCITY: Allocated command buffers!
+[20:11:24] [info] VELOCITY: Resizing 123
+[20:11:25] [info] VELOCITY: Created swapchain with size:(852,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 124
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2168,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 125
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 126
+[20:11:25] [info] VELOCITY: Created swapchain with size:(1486,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 127
+[20:11:25] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 128
+[20:11:25] [info] VELOCITY: Created swapchain with size:(141,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 129
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 130
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 131
+[20:11:25] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 132
+[20:11:25] [info] VELOCITY: Created swapchain with size:(184,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 133
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 134
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2188,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 135
+[20:11:25] [info] VELOCITY: Created swapchain with size:(479,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 136
+[20:11:25] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 137
+[20:11:25] [info] VELOCITY: Created swapchain with size:(600,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 138
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 139
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2013,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 140
+[20:11:25] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 141
+[20:11:25] [info] VELOCITY: Created swapchain with size:(185,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 142
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 143
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2191,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 144
+[20:11:25] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 145
+[20:11:25] [info] VELOCITY: Created swapchain with size:(142,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 146
+[20:11:25] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:25] [info] VELOCITY: Loaded default shaders!
+[20:11:25] [info] VELOCITY: Created graphics pipeline!
+[20:11:25] [info] VELOCITY: Created framebuffers!
+[20:11:25] [info] VELOCITY: Allocated command buffers!
+[20:11:25] [info] VELOCITY: Resizing 147
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2207,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 148
+[20:11:26] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 149
+[20:11:26] [info] VELOCITY: Created swapchain with size:(164,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 150
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 151
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 152
+[20:11:26] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 153
+[20:11:26] [info] VELOCITY: Created swapchain with size:(136,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 154
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 155
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 156
+[20:11:26] [info] VELOCITY: Created swapchain with size:(1714,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 157
+[20:11:26] [info] VELOCITY: Created swapchain with size:(903,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 158
+[20:11:26] [info] VELOCITY: Created swapchain with size:(393,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 159
+[20:11:26] [info] VELOCITY: Created swapchain with size:(1142,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 160
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 161
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2121,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 162
+[20:11:26] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 163
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 164
+[20:11:26] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 165
+[20:11:26] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:26] [info] VELOCITY: Loaded default shaders!
+[20:11:26] [info] VELOCITY: Created graphics pipeline!
+[20:11:26] [info] VELOCITY: Created framebuffers!
+[20:11:26] [info] VELOCITY: Allocated command buffers!
+[20:11:26] [info] VELOCITY: Resizing 166
+[20:11:27] [info] VELOCITY: Created swapchain with size:(149,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 167
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 168
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 169
+[20:11:27] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 170
+[20:11:27] [info] VELOCITY: Created swapchain with size:(194,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 171
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 172
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2207,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 173
+[20:11:27] [info] VELOCITY: Created swapchain with size:(378,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 174
+[20:11:27] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 175
+[20:11:27] [info] VELOCITY: Created swapchain with size:(152,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 176
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 177
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 178
+[20:11:27] [info] VELOCITY: Created swapchain with size:(267,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 179
+[20:11:27] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 180
+[20:11:27] [info] VELOCITY: Created swapchain with size:(170,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 181
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 182
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2207,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 183
+[20:11:27] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 184
+[20:11:27] [info] VELOCITY: Created swapchain with size:(133,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 185
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 186
+[20:11:27] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:27] [info] VELOCITY: Loaded default shaders!
+[20:11:27] [info] VELOCITY: Created graphics pipeline!
+[20:11:27] [info] VELOCITY: Created framebuffers!
+[20:11:27] [info] VELOCITY: Allocated command buffers!
+[20:11:27] [info] VELOCITY: Resizing 187
+[20:11:28] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 188
+[20:11:28] [info] VELOCITY: Created swapchain with size:(132,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 189
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 190
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2206,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 191
+[20:11:28] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 192
+[20:11:28] [info] VELOCITY: Created swapchain with size:(130,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 193
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 194
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2207,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 195
+[20:11:28] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 196
+[20:11:28] [info] VELOCITY: Created swapchain with size:(144,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 197
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 198
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 199
+[20:11:28] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 200
+[20:11:28] [info] VELOCITY: Created swapchain with size:(137,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 201
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 202
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2205,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 203
+[20:11:28] [info] VELOCITY: Created swapchain with size:(284,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 204
+[20:11:28] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 205
+[20:11:28] [info] VELOCITY: Created swapchain with size:(151,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 206
+[20:11:28] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:28] [info] VELOCITY: Loaded default shaders!
+[20:11:28] [info] VELOCITY: Created graphics pipeline!
+[20:11:28] [info] VELOCITY: Created framebuffers!
+[20:11:28] [info] VELOCITY: Allocated command buffers!
+[20:11:28] [info] VELOCITY: Resizing 207
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2207,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 208
+[20:11:29] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 209
+[20:11:29] [info] VELOCITY: Created swapchain with size:(121,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 210
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2209,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 211
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2208,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 212
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1154,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 213
+[20:11:29] [info] VELOCITY: Created swapchain with size:(120,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 214
+[20:11:29] [info] VELOCITY: Created swapchain with size:(140,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 215
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1363,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 216
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2148,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 217
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1984,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 218
+[20:11:29] [info] VELOCITY: Created swapchain with size:(963,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 219
+[20:11:29] [info] VELOCITY: Created swapchain with size:(413,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 220
+[20:11:29] [info] VELOCITY: Created swapchain with size:(884,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 221
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2112,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 222
+[20:11:29] [info] VELOCITY: Created swapchain with size:(2205,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 223
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1875,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 224
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1295,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 225
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1144,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 226
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1159,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 227
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1161,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 228
+[20:11:29] [info] VELOCITY: Created swapchain with size:(1160,720)
+[20:11:29] [info] VELOCITY: Loaded default shaders!
+[20:11:29] [info] VELOCITY: Created graphics pipeline!
+[20:11:29] [info] VELOCITY: Created framebuffers!
+[20:11:29] [info] VELOCITY: Allocated command buffers!
+[20:11:29] [info] VELOCITY: Resizing 229
+[20:11:31] [info] VELOCITY: Created swapchain with size:(2560,1377)
+[20:11:31] [info] VELOCITY: Loaded default shaders!
+[20:11:31] [info] VELOCITY: Created graphics pipeline!
+[20:11:31] [info] VELOCITY: Created framebuffers!
+[20:11:31] [info] VELOCITY: Allocated command buffers!
+[20:11:31] [info] VELOCITY: Resizing 230
+[20:11:31] [info] VELOCITY: Created swapchain with size:(1160,720)
+[20:11:31] [info] VELOCITY: Loaded default shaders!
+[20:11:31] [info] VELOCITY: Created graphics pipeline!
+[20:11:31] [info] VELOCITY: Created framebuffers!
+[20:11:31] [info] VELOCITY: Allocated command buffers!
+[20:11:31] [info] VELOCITY: Resizing 231
+[20:11:34] [info] VELOCITY: Created swapchain with size:(2560,1377)
+[20:11:34] [info] VELOCITY: Loaded default shaders!
+[20:11:34] [info] VELOCITY: Created graphics pipeline!
+[20:11:34] [info] VELOCITY: Created framebuffers!
+[20:11:34] [info] VELOCITY: Allocated command buffers!
+[20:11:34] [info] VELOCITY: Resizing 232
+[20:11:35] [info] VELOCITY: Created swapchain with size:(1160,720)
+[20:11:35] [info] VELOCITY: Loaded default shaders!
+[20:11:35] [info] VELOCITY: Created graphics pipeline!
+[20:11:35] [info] VELOCITY: Created framebuffers!
+[20:11:35] [info] VELOCITY: Allocated command buffers!
+[20:11:35] [info] VELOCITY: Resizing 233
+[20:11:36] [info] VELOCITY: Created swapchain with size:(2560,1377)
+[20:11:36] [info] VELOCITY: Loaded default shaders!
+[20:11:36] [info] VELOCITY: Created graphics pipeline!
+[20:11:36] [info] VELOCITY: Created framebuffers!
+[20:11:36] [info] VELOCITY: Allocated command buffers!
+[20:11:36] [info] VELOCITY: Resizing 234
+[20:11:37] [info] VELOCITY: Created swapchain with size:(1160,720)
+[20:11:37] [info] VELOCITY: Loaded default shaders!
+[20:11:37] [info] VELOCITY: Created graphics pipeline!
+[20:11:37] [info] VELOCITY: Created framebuffers!
+[20:11:37] [info] VELOCITY: Allocated command buffers!
+[20:11:37] [info] VELOCITY: Resizing 235
+[20:11:38] [info] VELOCITY: Created swapchain with size:(2560,1377)
+[20:11:38] [info] VELOCITY: Loaded default shaders!
+[20:11:38] [info] VELOCITY: Created graphics pipeline!
+[20:11:38] [info] VELOCITY: Created framebuffers!
+[20:11:38] [info] VELOCITY: Allocated command buffers!
+[20:11:38] [info] VELOCITY: Resizing 236

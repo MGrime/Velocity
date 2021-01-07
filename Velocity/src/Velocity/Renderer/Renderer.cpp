@@ -162,7 +162,7 @@ namespace Velocity
 
 		std::array<vk::CommandBuffer, 2> submitBuffer = {
 			m_CommandBuffers.at(m_CurrentImage).get(),
-			m_ImGuiCommandBuffers.at(m_CurrentImage).get()
+			m_ImGuiCommandBuffers.at(m_CurrentImage)
 		};
 		
 		vk::SubmitInfo submitInfo = {
@@ -205,6 +205,16 @@ namespace Velocity
 	{
 		// Wait until device is done
 		m_LogicalDevice->waitIdle();
+		auto result = m_LogicalDevice->waitForFences(1, &m_Syncronizer.ImagesInFlight.at(m_CurrentFrame), VK_TRUE, UINT64_MAX);
+		
+		m_DepthImageView.reset();
+		m_DepthImage.reset();
+		m_DepthMemory.reset();
+
+		for (auto& buffer : m_Framebuffers)
+		{
+			buffer.reset();
+		}
 
 		// Reset uniform buffers
 		for (auto& buffer : m_ViewProjectionBuffers)
@@ -226,9 +236,27 @@ namespace Velocity
 		// Reset pipeline
 		m_TexturedPipeline.reset();
 
+		// Cleanup imgui
+		for (auto& buffer : m_ImGuiFramebuffers)
+		{
+			m_LogicalDevice->destroyFramebuffer(buffer);
+		}
+
+		m_LogicalDevice->destroyRenderPass(m_ImGuiRenderPass);
+
+		m_LogicalDevice->freeCommandBuffers(m_ImGuiCommandPool, static_cast<uint32_t>(m_ImGuiFramebuffers.size()),m_ImGuiCommandBuffers.data());
+
+		m_LogicalDevice->destroyDescriptorPool(m_ImGuiDescriptorPool);
+		//m_LogicalDevice->destroyCommandPool(m_ImGuiCommandPool);
+
+		ImGui_ImplVulkan_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+		
 		// Now remake everything we need to
 		CreateSwapchain();
 		CreateGraphicsPipelines();
+		CreateDepthResources();
 		CreateFramebuffers();
 		CreateUniformBuffers();
 		CreateDescriptorPool();
@@ -825,7 +853,7 @@ namespace Velocity
 		// We actually create this one here
 		try
 		{
-			m_ImGuiRenderPass = m_LogicalDevice->createRenderPassUnique(imguiRenderPassInfo);
+			m_ImGuiRenderPass = m_LogicalDevice->createRenderPass(imguiRenderPassInfo);
 		}
 		catch(vk::SystemError& e)
 		{
@@ -942,14 +970,14 @@ namespace Velocity
 			}
 
 			// Update needed information to imgui
-			framebufferInfo.renderPass = m_ImGuiRenderPass.get();
+			framebufferInfo.renderPass = m_ImGuiRenderPass;
 			framebufferInfo.attachmentCount = 1;
 			framebufferInfo.pAttachments = &m_Swapchain->GetImageViews().at(i);
 
 			// Create
 			try
 			{
-				m_ImGuiFramebuffers.at(i) = m_LogicalDevice->createFramebufferUnique(framebufferInfo);
+				m_ImGuiFramebuffers.at(i) = m_LogicalDevice->createFramebuffer(framebufferInfo);
 			}
 			catch (vk::SystemError& e)
 			{
@@ -976,7 +1004,7 @@ namespace Velocity
 		try
 		{
 			m_CommandPool = m_LogicalDevice->createCommandPoolUnique(poolInfo);
-			m_ImGuiCommandPool = m_LogicalDevice->createCommandPoolUnique(poolInfo);
+			m_ImGuiCommandPool = m_LogicalDevice->createCommandPool(poolInfo);
 		}
 		catch (vk::SystemError& e)
 		{
@@ -1138,11 +1166,11 @@ namespace Velocity
 			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
 		}
 
-		allocInfo.commandPool = m_ImGuiCommandPool.get();
+		allocInfo.commandPool = m_ImGuiCommandPool;
 
 		try
 		{
-			m_ImGuiCommandBuffers = m_LogicalDevice->allocateCommandBuffersUnique(allocInfo);
+			m_ImGuiCommandBuffers = m_LogicalDevice->allocateCommandBuffers(allocInfo);
 		}
 		catch (vk::SystemError& e)
 		{
@@ -1210,7 +1238,7 @@ namespace Velocity
 
 		try
 		{
-			m_ImGuiDescriptorPool = m_LogicalDevice->createDescriptorPoolUnique(poolInfo);
+			m_ImGuiDescriptorPool = m_LogicalDevice->createDescriptorPool(poolInfo);
 		}
 		catch (vk::SystemError& e)
 		{
@@ -1363,6 +1391,7 @@ namespace Velocity
 	// Initalises ImGui
 	void Renderer::InitaliseImgui()
 	{
+
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -1386,7 +1415,7 @@ namespace Velocity
 			style.Colors[ImGuiCol_WindowBg].w = 1.0f;
 		}
 
-		ImGui_ImplGlfw_InitForVulkan(Application::GetWindow()->GetNative(), true);
+		ImGui_ImplGlfw_InitForVulkan(Application::GetWindow()->GetNative(), false);
 
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
 		
@@ -1397,7 +1426,7 @@ namespace Velocity
 			indices.GraphicsFamily.value(),
 			m_GraphicsQueue,
 			nullptr,
-			m_ImGuiDescriptorPool.get(),
+			m_ImGuiDescriptorPool,
 			0,
 			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
 			static_cast<uint32_t>(m_Swapchain->GetImages().size()),
@@ -1412,11 +1441,11 @@ namespace Velocity
 			}
 		};
 
-		ImGui_ImplVulkan_Init(&initInfo, m_ImGuiRenderPass.get());
+		ImGui_ImplVulkan_Init(&initInfo, m_ImGuiRenderPass);
 
-		io.Fonts->AddFontFromMemoryCompressedTTF(Roboto_compressed_data, Roboto_compressed_size, 15.0f);
+		ImGui::GetIO().Fonts->AddFontFromMemoryCompressedTTF(Roboto_compressed_data, Roboto_compressed_size, 15.0f);
 		{
-			TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(m_LogicalDevice, m_ImGuiCommandPool.get(), m_GraphicsQueue);
+			TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(m_LogicalDevice, m_ImGuiCommandPool, m_GraphicsQueue);
 			auto buffer = bufferWrapper.GetBuffer();
 			ImGui_ImplVulkan_CreateFontsTexture(buffer);
 		}
@@ -1602,36 +1631,28 @@ namespace Velocity
 			vk::CommandBufferUsageFlagBits::eOneTimeSubmit
 		};
 		
-		m_ImGuiCommandBuffers.at(m_CurrentImage)->begin(cmdInfo);
+		m_ImGuiCommandBuffers.at(m_CurrentImage).begin(cmdInfo);
 
 		vk::ClearValue clearColor = { vk::ClearColorValue{std::array<float,4>{0.0f,0.0f,0.0f,1.0f}} };
 		vk::RenderPassBeginInfo renderPassInfo = {
-			m_ImGuiRenderPass.get(),
-			m_ImGuiFramebuffers.at(m_CurrentImage).get(),
+			m_ImGuiRenderPass,
+			m_ImGuiFramebuffers.at(m_CurrentImage),
 			vk::Rect2D{{0,0},m_Swapchain->GetExtent()},
 			 1,
 			&clearColor
 		};
 
-		m_ImGuiCommandBuffers.at(m_CurrentImage)->beginRenderPass(renderPassInfo,vk::SubpassContents::eInline);
+		m_ImGuiCommandBuffers.at(m_CurrentImage).beginRenderPass(renderPassInfo,vk::SubpassContents::eInline);
 
 		// Add imgui draw calls
 		if (ImGui::GetDrawData() != nullptr)
 		{
-			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_ImGuiCommandBuffers.at(m_CurrentImage).get());
+			ImGui_ImplVulkan_RenderDrawData(ImGui::GetDrawData(), m_ImGuiCommandBuffers.at(m_CurrentImage));
 		}
 
-		m_ImGuiCommandBuffers.at(m_CurrentImage)->endRenderPass();
+		m_ImGuiCommandBuffers.at(m_CurrentImage).endRenderPass();
 		
-		m_ImGuiCommandBuffers.at(m_CurrentImage)->end();
-
-		// Manage multi-viewport
-		auto& io = ImGui::GetIO();
-		if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)
-		{
-			ImGui::UpdatePlatformWindows();
-			ImGui::RenderPlatformWindowsDefault();
-		}
+		m_ImGuiCommandBuffers.at(m_CurrentImage).end();
 	}
 
 	#pragma endregion 
@@ -1855,6 +1876,18 @@ namespace Velocity
 		// Need to force this to happen before the other variables go out of scope
 		m_Swapchain.reset();
 
+		// Cleanup imgui
+		for (auto& buffer : m_ImGuiFramebuffers)
+		{
+			m_LogicalDevice->destroyFramebuffer(buffer);
+		}
+
+		m_LogicalDevice->destroyRenderPass(m_ImGuiRenderPass);
+
+		m_LogicalDevice->freeCommandBuffers(m_ImGuiCommandPool, static_cast<uint32_t>(m_ImGuiFramebuffers.size()), m_ImGuiCommandBuffers.data());
+		m_LogicalDevice->destroyCommandPool(m_ImGuiCommandPool);
+		m_LogicalDevice->destroyDescriptorPool(m_ImGuiDescriptorPool);
+		
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();

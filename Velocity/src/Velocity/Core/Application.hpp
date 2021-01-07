@@ -52,6 +52,7 @@ namespace Velocity
 
 		// Always have a gui layer
 		ImGuiLayer* m_ImGuiLayer;
+
 	};
 
 	// To be defined in client
