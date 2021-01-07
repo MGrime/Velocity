@@ -67,7 +67,7 @@ void SceneLayer::OnUpdate()
 		// Move by a unit left in X
 		float iF = static_cast<float>(i) * 3.0f;
 
-		glm::mat4 newPos = translate(transform, glm::vec3(iF, 0.0f, 0.0f));
+		glm::mat4 newPos = translate(transform, glm::vec3(iF, 1.0f * static_cast<float>(i),0.0f));
 
 		// Pick a random texture
 		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);

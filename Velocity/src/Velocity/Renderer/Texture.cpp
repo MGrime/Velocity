@@ -21,6 +21,8 @@ namespace Velocity
 		int width, height, channels;
 		stbi_uc* pixels = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
 
+		m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max<int>(width, height)))) + 1;
+		
 		// 4 bytes per pixel for 32 bit images
 		VkDeviceSize imageSize = width * height * 4;	
 		
@@ -72,14 +74,14 @@ namespace Velocity
 			vk::ImageType::e2D,
 			m_CurrentFormat,
 			vk::Extent3D{m_Width,m_Height,1},
-			1,
+			m_MipLevels,
 			1,
 			vk::SampleCountFlagBits::e1,
 			vk::ImageTiling::eOptimal,
-			vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+			vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc,
 			vk::SharingMode::eExclusive,
-			1,
-			&r_GraphicsQueueIndex,
+			{},
+			{},
 			m_CurrentLayout
 		};
 
@@ -136,10 +138,14 @@ namespace Velocity
 
 			// Copy buffer
 			CopyBufferToImage(processBuffer, stagingBuffer->Buffer.get(), width, height);
+		}
 
-			// Transition to shader read
-			TransitionImageLayout(processBuffer, vk::ImageLayout::eShaderReadOnlyOptimal);
-			
+		{
+			vk::Queue queue = r_Device->get().getQueue(graphicsQueueIndex, 0);
+			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, pool, queue);
+			auto& processBuffer = processBufferWrapper.GetBuffer();
+			// Mipmap (also transfers to shader layout)
+			GenerateMipmaps(processBuffer);
 		}
 		
 		#pragma endregion
@@ -156,7 +162,7 @@ namespace Velocity
 			{
 				vk::ImageAspectFlagBits::eColor,
 				0,
-				1,
+				m_MipLevels,
 				0,
 				1
 			}
@@ -188,7 +194,7 @@ namespace Velocity
 			{
 				vk::ImageAspectFlagBits::eColor,
 				0,
-				1,
+				texture.m_MipLevels,
 				0,
 				1
 			}
@@ -258,6 +264,122 @@ namespace Velocity
 		};
 
 		cmdBuffer.copyBufferToImage(buffer, texture.m_Image.get(), vk::ImageLayout::eTransferDstOptimal, 1, &region);
+	}
+
+	void Texture::GenerateMipmaps(vk::CommandBuffer& cmdBuffer, Texture& texture)
+	{
+		// Check for compability
+		vk::FormatProperties formatProperties = texture.r_PhysicalDevice.getFormatProperties(texture.m_CurrentFormat);
+
+		if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
+		{
+			VEL_CORE_ERROR("Texture doesn't support mipmap generation!");
+			VEL_CORE_ASSERT(false, "Texture doesn't support mipmap generation!");
+			return;
+		}
+		
+		// Set up a barrier. We will reuse it, so some things will not be changed
+		vk::ImageMemoryBarrier barrier = {
+			vk::AccessFlags{},
+			vk::AccessFlags{},
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eUndefined,
+			VK_QUEUE_FAMILY_IGNORED,
+			VK_QUEUE_FAMILY_IGNORED,
+			texture.m_Image.get(),
+			vk::ImageSubresourceRange{
+				vk::ImageAspectFlagBits::eColor,
+				0,
+				1,0,1
+			}
+		};
+
+		int mipWidth = texture.GetWidth();
+		int mipHeight = texture.GetHeight();
+		
+		for (uint32_t i = 1; i < texture.m_MipLevels; ++i)
+		{
+			// 1. Transition level i-1 to transfer src
+			
+			barrier.subresourceRange.baseMipLevel = i - 1;
+			barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+			barrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+			barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+			cmdBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::DependencyFlags{},
+				0, nullptr,
+				0, nullptr,
+				1, &barrier
+			);
+
+			// 2. Blit from i-1 -> i with half size each time
+			vk::ImageBlit blit{};
+
+			blit.srcOffsets[0] = vk::Offset3D{ 0, 0, 0 };
+			blit.srcOffsets[1] = vk::Offset3D{ mipWidth,mipHeight, 1 };
+			blit.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.srcSubresource.mipLevel = i - 1;
+			blit.srcSubresource.baseArrayLayer = 0;
+			blit.srcSubresource.layerCount = 1;
+			blit.dstOffsets[0] = vk::Offset3D{ 0,0,0 };
+			blit.dstOffsets[1] = vk::Offset3D{
+				mipWidth > 1 ? mipWidth / 2 : 1,
+				mipHeight > 1 ? mipHeight / 2 : 1,
+				1
+			};
+			blit.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.dstSubresource.mipLevel = i;
+			blit.dstSubresource.baseArrayLayer = 0;
+			blit.dstSubresource.layerCount = 1;
+			
+			cmdBuffer.blitImage(
+				texture.m_Image.get(),
+				vk::ImageLayout::eTransferSrcOptimal,
+				texture.m_Image.get(),
+				vk::ImageLayout::eTransferDstOptimal,
+				1,
+				&blit,
+				vk::Filter::eLinear
+			);
+
+			barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+			barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+			cmdBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::PipelineStageFlagBits::eFragmentShader,
+				vk::DependencyFlags{},
+				0,nullptr,
+				0,nullptr,
+				1,&barrier
+			);
+
+			if (mipWidth > 1) mipWidth /= 2;
+			if (mipHeight > 1) mipHeight /= 2;
+			
+		}
+
+		barrier.subresourceRange.baseMipLevel = texture.m_MipLevels - 1;
+		barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+		barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+		barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+		barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+		cmdBuffer.pipelineBarrier(
+			vk::PipelineStageFlagBits::eTransfer,
+			vk::PipelineStageFlagBits::eFragmentShader,
+			vk::DependencyFlags{},
+			0, nullptr,
+			0, nullptr,
+			1, &barrier
+		);
+		
 	}
 
 	// Convert stbi channels into vulkan image format

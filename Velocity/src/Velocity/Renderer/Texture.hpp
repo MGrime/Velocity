@@ -28,7 +28,8 @@ namespace Velocity
 		// Can be called to transition an image
 		static void TransitionImageLayout(vk::CommandBuffer& buffer, Texture& texture, vk::ImageLayout newLayout);
 		static void CopyBufferToImage(vk::CommandBuffer& cmdBuffer, Texture& texture, vk::Buffer& buffer, uint32_t width, uint32_t height);
-
+		static void GenerateMipmaps(vk::CommandBuffer& cmdBuffer, Texture& texture);
+		
 		// Member function proxy to allow texture->transition..
 		void TransitionImageLayout(vk::CommandBuffer& buffer, vk::ImageLayout newLayout)
 		{
@@ -38,6 +39,11 @@ namespace Velocity
 		void CopyBufferToImage(vk::CommandBuffer& cmdBuffer, vk::Buffer& buffer, uint32_t width, uint32_t height)
 		{
 			CopyBufferToImage(cmdBuffer, *this, buffer, width, height);
+		}
+
+		void GenerateMipmaps(vk::CommandBuffer& cmdBuffer)
+		{
+			GenerateMipmaps(cmdBuffer, *this);
 		}
 		
 		// Convert stbi channels into vulkan image format
@@ -50,8 +56,11 @@ namespace Velocity
 		// Tells the GPU how to
 		vk::UniqueImageView			m_ImageView;
 
+		// Store amount of mips created
+		uint32_t					m_MipLevels;
+
 		// Tells the pipeline how to bind this texture
-		vk::DescriptorImageInfo			m_DescriptorImageInfo;
+		vk::DescriptorImageInfo		m_DescriptorImageInfo;
 
 		// Variables
 		std::string		m_DebugPath;
