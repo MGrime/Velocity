@@ -115,8 +115,8 @@ namespace Velocity
 			vk::Result result = r_LogicalDevice->get().mapMemory(stagingBuffer->Memory.get(), 0, stagingSize, vk::MemoryMapFlags{}, &data);
 			if (result != vk::Result::eSuccess)
 			{
-				VEL_CORE_ASSERT(false, "Failed to map memory!");
 				VEL_CORE_ERROR("Failed to map memory!");
+				VEL_CORE_ASSERT(false, "Failed to map memory!");
 				return Renderable();	// Return an empty renderable. will crash anyway and be logged
 			}
 			memcpy(data, &m_Indices.at(newRenderable.IndexStart), stagingSize);
@@ -172,7 +172,7 @@ namespace Velocity
 		if (pScene == nullptr)
 		{
 			VEL_CORE_ERROR("Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
-			VEL_CORE_ASSERT(false,"Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
+			VEL_CORE_ASSERT(false, "Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
 			return Renderable();
 		}
 

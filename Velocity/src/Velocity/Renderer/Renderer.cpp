@@ -181,8 +181,8 @@ namespace Velocity
 		result = m_GraphicsQueue.submit(1, &submitInfo,m_Syncronizer.InFlightFences.at(m_CurrentFrame).get());
 		if (result != vk::Result::eSuccess)
 		{
-			VEL_CORE_ASSERT(false, "Failed to submit command buffer!");
 			VEL_CORE_ERROR("Failed to submit command buffer!");
+			VEL_CORE_ASSERT(false, "Failed to submit command buffer!");
 		}
 
 		// Time to present
@@ -318,8 +318,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, e.what());
 			VEL_CORE_ERROR("An error occured in Renderer: {0}", e.what());
+			VEL_CORE_ASSERT(false, e.what());
 		}
 
 		m_InstanceLoader = vk::DispatchLoaderDynamic(m_Instance.get(), vkGetInstanceProcAddr);
@@ -362,8 +362,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create debug messenger! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in Renderer: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create debug messenger! Error {0}", e.what());
 		}
 
 		VEL_CORE_INFO("Created debug messenger!");
@@ -376,8 +376,8 @@ namespace Velocity
 
 		if (glfwCreateWindowSurface(m_Instance.get(), Application::GetWindow()->GetNative(), nullptr, &tmpSurface) != VK_SUCCESS)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create swapchain window surface!");
 			VEL_CORE_ERROR("Failed to create window surface!");
+			VEL_CORE_ASSERT(false, "Failed to create swapchain window surface!");
 		}
 
 		m_Surface = vk::UniqueSurfaceKHR(tmpSurface, m_Instance.get());
@@ -397,10 +397,10 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
+			VEL_CORE_ERROR("Failed to find any GPUs with Vulkan support! Message:{0}", e.what());
 			// Assert in debug
 			VEL_CORE_ASSERT(false, "Failed to find any GPUs with Vulkan support! Message:{0}", e.what());
 			// Log in release
-			VEL_CORE_ERROR("Failed to find any GPUs with Vulkan support! Message:{0}", e.what());
 		}
 
 		bool foundGPU = false;
@@ -416,10 +416,10 @@ namespace Velocity
 
 		if (!foundGPU)
 		{
+			VEL_CORE_ERROR("Failed to find a suitable GPU with Vulkan support!");
 			// Assert in debug
 			VEL_CORE_ASSERT(false, "Failed to find a suitable GPU with Vulkan support!");
 			// Log in release
-			VEL_CORE_ERROR("Failed to find a suitable GPU with Vulkan support!");
 		}
 
 		auto chosenProps = m_PhysicalDevice.getProperties();
@@ -490,8 +490,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create logical device! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in creating the logical device: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create logical device! Error {0}", e.what());
 		}
 
 		m_GraphicsQueue = m_LogicalDevice->getQueue(indices.GraphicsFamily.value(), 0);
@@ -857,8 +857,8 @@ namespace Velocity
 		}
 		catch(vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false);
 			VEL_CORE_ERROR("Failed to create imgui render pass! Error: {0}",e.what());
+			VEL_CORE_ASSERT(false);
 		}
 		
 		
@@ -981,8 +981,8 @@ namespace Velocity
 			}
 			catch (vk::SystemError& e)
 			{
-				VEL_CORE_ASSERT(false, "Failed to create imgui framebuffer! Error {0}", e.what());
 				VEL_CORE_ERROR("An error occurred in creating the imgui framebuffers: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create imgui framebuffer! Error {0}", e.what());
 			}
 			
 		}
@@ -1008,8 +1008,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create command pool! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the command pool: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create command pool! Error {0}", e.what());
 		}
 
 		VEL_CORE_INFO("Created command pool!");
@@ -1048,8 +1048,8 @@ namespace Velocity
 		}
 		catch(vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Could not create depth buffer image. Error: {0}", e.what());
 			VEL_CORE_ERROR("Could not create depth buffer image. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not create depth buffer image. Error: {0}", e.what());
 			return;
 		}
 		
@@ -1067,8 +1067,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Could not create depth buffer memory. Error: {0}", e.what());
 			VEL_CORE_ERROR("Could not create depth buffer memory. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not create depth buffer memory. Error: {0}", e.what());
 			return;
 		}
 
@@ -1098,8 +1098,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Could not create depth buffer imageview. Error: {0}", e.what());
 			VEL_CORE_ERROR("Could not create depth buffer imageview. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not create depth buffer imageview. Error: {0}", e.what());
 		}
 		
 	}
@@ -1135,8 +1135,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create texture sampler! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the texture samplers: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create texture sampler! Error {0}", e.what());
 			return;
 		}
 	}
@@ -1162,8 +1162,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
 		}
 
 		allocInfo.commandPool = m_ImGuiCommandPool;
@@ -1174,8 +1174,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in creating the command buffer: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create command buffer! Error {0}", e.what());
 		}
 
 		VEL_CORE_INFO("Allocated command buffers!");
@@ -1208,8 +1208,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create descriptor pool! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in creating the descriptor pool: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create descriptor pool! Error {0}", e.what());
 		}
 
 		// Now create for imgui
@@ -1242,8 +1242,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create imgui descriptor pool! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in creating the imgui descriptor pool: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create imgui descriptor pool! Error {0}", e.what());
 		}
 		
 
@@ -1271,8 +1271,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}",e.what());
 			VEL_CORE_INFO("Failed to create descriptor sets! Error:{0}",e.what());
+			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}", e.what());
 		}
 
 		// Configure descriptors
@@ -1380,8 +1380,8 @@ namespace Velocity
 			}
 			catch (vk::SystemError& e)
 			{
-				VEL_CORE_ASSERT(false, "Failed to create sync primitives! Error {0}", e.what());
 				VEL_CORE_ERROR("An error occurred in creating the sync primitives: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create sync primitives! Error {0}", e.what());
 			}
 
 		}
@@ -1473,8 +1473,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to start record commandbuffers! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in starting recording commandbuffers: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to start record commandbuffers! Error {0}", e.what());
 		}
 
 		// Now we make the draw commands
@@ -1581,8 +1581,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occurred in recording commandbuffers: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to record commandbuffers! Error {0}", e.what());
 		}
 	}
 
@@ -1612,8 +1612,8 @@ namespace Velocity
 
 		if (result != vk::Result::eSuccess)
 		{
+			VEL_CORE_ERROR("Failed to update uniform buffers");
 			VEL_CORE_ASSERT(false, "Failed to update uniform buffers");
-			VEL_CORE_INFO("Failed to update uniform buffers");
 			return;
 		}
 
@@ -1862,8 +1862,8 @@ namespace Velocity
 
 		}
 
-		VEL_CORE_ASSERT(false, "Failed to find a suitable depth format!");
 		VEL_CORE_ERROR("Failed to find a suitable depth format!");
+		VEL_CORE_ASSERT(false, "Failed to find a suitable depth format!");
 		return vk::Format::eR8Srgb;	// Return a dumb value to break it. The error is logged
 		
 	}

@@ -31,8 +31,8 @@ namespace Velocity
 			}
 			catch (vk::SystemError& e)
 			{
-				VEL_CORE_ASSERT(false, "Failed to create buffer! Error: {0}", e.what());
 				VEL_CORE_ERROR("Failed to create buffer! Error: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create buffer! Error: {0}", e.what());
 			}
 
 			vk::MemoryRequirements memoryRequirements = device->getBufferMemoryRequirements(Buffer.get());
@@ -48,8 +48,8 @@ namespace Velocity
 			}
 			catch (vk::SystemError& e)
 			{
-				VEL_CORE_ASSERT(false, "Failed to allocate buffer memory! Error: {0}", e.what());
 				VEL_CORE_ERROR("Failed to allocate buffer memory! Error: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to allocate buffer memory! Error: {0}", e.what());
 			}
 
 			device->bindBufferMemory(Buffer.get(), Memory.get(), 0);
@@ -72,8 +72,8 @@ namespace Velocity
 				}
 			}
 
-			VEL_CORE_ASSERT(false, "Failed to find suitable memory for buffer!");
 			VEL_CORE_ERROR("Failed to find suitable memory for buffer");
+			VEL_CORE_ASSERT(false, "Failed to find suitable memory for buffer!");
 			return 0u;
 		}
 

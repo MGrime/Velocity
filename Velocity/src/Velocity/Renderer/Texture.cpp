@@ -26,8 +26,8 @@ namespace Velocity
 		
 		if (!pixels)
 		{
-			VEL_CORE_ASSERT(false,"Failed to load texture image!");
 			VEL_CORE_ERROR("Failed to load texture image!");
+			VEL_CORE_ASSERT(false, "Failed to load texture image!");
 			return;
 		}
 
@@ -91,8 +91,8 @@ namespace Velocity
 		}
 		catch(vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image) Error: {1}", filepath,e.what());
 			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image) Error: {1}", filepath,e.what());
+			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image) Error: {1}", filepath, e.what());
 			return;
 		}
 		
@@ -167,8 +167,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image view) Error: {1}", filepath, e.what());
 			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image view) Error: {1}", filepath, e.what());
+			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image view) Error: {1}", filepath, e.what());
 			return;
 		}
 		
@@ -216,8 +216,8 @@ namespace Velocity
 		}
 		else
 		{
-			VEL_CORE_ASSERT(false, "Unsupported layout transition!");
 			VEL_CORE_ERROR("Unsupported layout transition!");
+			VEL_CORE_ASSERT(false, "Unsupported layout transition!");
 		}
 		
 

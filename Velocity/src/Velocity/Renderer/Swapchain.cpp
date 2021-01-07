@@ -21,8 +21,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create swapchain! Error {0}", e.what());
 			VEL_CORE_ERROR("An error occured in creating the swapchain: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create swapchain! Error {0}", e.what());
 		}
 
 		// Access the images
@@ -72,8 +72,8 @@ namespace Velocity
 			}
 			catch (vk::SystemError& e)
 			{
-				VEL_CORE_ASSERT(false, "Failed to create swapchain! Error {0}", e.what());
 				VEL_CORE_ERROR("An error occured in creating the swapchain: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create swapchain! Error {0}", e.what());
 			}
 		}
 	}
@@ -90,8 +90,8 @@ namespace Velocity
 		}
 		if (*result != vk::Result::eSuccess && *result != vk::Result::eSuboptimalKHR)
 		{
-			VEL_CORE_ASSERT("Failed to acquire swapchain image!");
 			VEL_CORE_ERROR("Failed to acquire swapchain image!");
+			VEL_CORE_ASSERT("Failed to acquire swapchain image!");
 
 			return 0u;
 		}

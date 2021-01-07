@@ -23,8 +23,8 @@ namespace Velocity {
 		}
 		catch (vk::SystemError&)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create shader module from: {0]", shaderPath);
 			VEL_CORE_ERROR("Failed to create shader module from: {0}", shaderPath);
+			VEL_CORE_ASSERT(false, "Failed to create shader module from: {0]", shaderPath);
 			return nullptr;
 		}
 
@@ -42,8 +42,8 @@ namespace Velocity {
 		// Check it was accessed correctly
 		if (!file.is_open())
 		{
-			VEL_CORE_ASSERT(false, "Failed to open file {0]", filename);
 			VEL_CORE_ERROR("Failed to open file {0}", filename);
+			VEL_CORE_ASSERT(false, "Failed to open file {0]", filename);
 			return bufferChar;
 		}
 

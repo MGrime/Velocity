@@ -15,8 +15,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create descriptor set layout! Error: {0}", e.what());
 			VEL_CORE_ERROR("Failed to create descriptor set layout! Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create descriptor set layout! Error: {0}", e.what());
 			return;
 		}
 		// Update the pipeline layout info
@@ -30,8 +30,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create pipeline layout! Error: {0}",e.what());
 			VEL_CORE_ERROR("Failed to create pipeline layout! Error: {0}",e.what());
+			VEL_CORE_ASSERT(false, "Failed to create pipeline layout! Error: {0}", e.what());
 			return;	// If something breaks here the program will break, but the error will be logged which means it can be spotted
 		}
 		
@@ -42,8 +42,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create render pass! Error: {0}",e.what());
 			VEL_CORE_ERROR("Failed to create render pass! Error: {0}",e.what());
+			VEL_CORE_ASSERT(false, "Failed to create render pass! Error: {0}", e.what());
 			return;	// If something breaks here the program will break, but the error will be logged which means it can be spotted
 		}
 
@@ -62,8 +62,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to create pipeline! Error: {0}", e.what());
 			VEL_CORE_ERROR("Failed to create pipeline! Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create pipeline! Error: {0}", e.what());
 			return;	// If something breaks here the program will break, but the error will be logged which means it can be spotted
 		}
 		

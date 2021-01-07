@@ -98,9 +98,9 @@ namespace Velocity {
 					return i;
 				}
 			}
-			
-			VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
+
 			VEL_CORE_ERROR("Tried to get a texture that hasnt been loaded!. Returning the default texture (white square)");
+			VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
 			return 0;
 		}
 		

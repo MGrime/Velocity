@@ -27,8 +27,8 @@ namespace Velocity
 			auto result = device->allocateCommandBuffers(&allocInfo, &m_CommandBuffer);
 			if (result != vk::Result::eSuccess)
 			{
-				VEL_CORE_ASSERT(false, "Failed to copy buffer!");
 				VEL_CORE_ERROR("A buffer copy failed to allocate! Please check log!");
+				VEL_CORE_ASSERT(false, "Failed to copy buffer!");
 				return;
 			}
 
@@ -40,8 +40,8 @@ namespace Velocity
 
 			if (result != vk::Result::eSuccess)
 			{
-				VEL_CORE_ASSERT(false, "Failed to start buffer copy!");
 				VEL_CORE_ERROR("A buffer copy failed to start! Please check log!");
+				VEL_CORE_ASSERT(false, "Failed to start buffer copy!");
 				return;
 			}
 		}
@@ -57,8 +57,8 @@ namespace Velocity
 			vk::Result result = r_Queue.submit(1, &submitInfo, nullptr);
 			if (result != vk::Result::eSuccess)
 			{
-				VEL_CORE_ASSERT(false, "Failed to submit buffer copy!");
 				VEL_CORE_ERROR("A buffer copy failed to submit! Please check log!");
+				VEL_CORE_ASSERT(false, "Failed to submit buffer copy!");
 				return;
 			}
 			// Wait on the queue to end
