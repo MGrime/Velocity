@@ -28,9 +28,6 @@ IncludeDir["assimp"] = "Velocity/vendor/assimp/include"
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
 
-	externalproject "assimp"
-		location "Velocity/vendor/assimp"
-
 	
 group ""
 
@@ -62,7 +59,8 @@ project "Velocity"
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.vulkan}",
-		"%{IncludeDir.stb}"
+		"%{IncludeDir.stb}",
+		"%{IncludeDir.assimp}"
 	}
 	
 	links
@@ -84,11 +82,21 @@ project "Velocity"
 		defines "VEL_DEBUG"
 		runtime "Debug"
 		symbols "on"
+
+		links
+		{
+			"Velocity/vendor/assimp/build/lib/Debug/assimp-vc142-mtd.lib"
+		}
+
 		
 	filter "configurations:Release"
 		defines "VEL_RELEASE"
 		runtime "Release"
 		optimize "on"
+		links
+		{
+			"Velocity/vendor/assimp/build/lib/Release/assimp-vc142-mt.lib"
+		}
 	
 project "VelocityEditor"
 	location "VelocityEditor"
