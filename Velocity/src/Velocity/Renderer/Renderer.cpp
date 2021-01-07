@@ -83,14 +83,14 @@ namespace Velocity
 		m_SceneData.m_DynamicSorted = true;
 	}
 
-	// Returns a new texture. You are responsible for cleaning it up!
-	uint32_t Renderer::CreateTexture(const std::string& filepath)
+	// Returns a new texture.
+	uint32_t Renderer::CreateTexture(const std::string& filepath, const std::string& referenceName)
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
-		m_Textures.push_back(std::make_unique<Texture>(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
+		m_Textures.push_back({ referenceName,std::make_unique<Texture>(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
 		auto newIndex = static_cast<uint32_t>(m_Textures.size()) - 1u;
 		// Update the texture info
-		m_TextureInfos.at(newIndex).imageView = m_Textures.back()->m_ImageView.get();
+		m_TextureInfos.at(newIndex).imageView = m_Textures.back().second->m_ImageView.get();
 
 		m_LogicalDevice->waitIdle();
 
@@ -1253,8 +1253,8 @@ namespace Velocity
 		if (m_Textures.size() == 0)
 		{
 			auto indices = FindQueueFamilies(m_PhysicalDevice);
-			m_Textures.push_back(std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()));
-			m_DefaultBindingTexture = &m_Textures.back();
+			m_Textures.push_back({ "DEFAULT",std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
+			m_DefaultBindingTexture = &m_Textures.back().second;
 			m_TextureInfos.resize(128);
 			for (auto& info : m_TextureInfos)
 			{

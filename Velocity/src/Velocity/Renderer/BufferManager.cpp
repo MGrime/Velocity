@@ -171,8 +171,8 @@ namespace Velocity
 
 		if (pScene == nullptr)
 		{
-			VEL_CORE_ASSERT(false,"Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
 			VEL_CORE_ERROR("Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
+			VEL_CORE_ASSERT(false,"Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
 			return Renderable();
 		}
 

@@ -14,14 +14,14 @@ void SceneLayer::OnAttach()
 	// "Load a mesh"
 	r_Renderer->LoadMesh(m_Verts, m_Indices, "Square");
 
-	r_Renderer->LoadMesh("assets/models/chair.fbx", "Chair");
+	r_Renderer->LoadMesh("assets/models/room.obj", "Room");
 	
 	// Load textures
-	m_Textures.at(0) = r_Renderer->CreateTexture("assets/textures/logo.png");
-	m_Textures.at(1) = r_Renderer->CreateTexture("assets/textures/bronze.png");
-	m_Textures.at(2) = r_Renderer->CreateTexture("assets/textures/gold.png");
-	m_Textures.at(3) = r_Renderer->CreateTexture("assets/textures/marble.png");
-	m_Textures.at(4) = r_Renderer->CreateTexture("assets/textures/tiles.png");
+	m_Textures.at(0) = r_Renderer->CreateTexture("assets/textures/logo.png", "Logo");
+	m_Textures.at(1) = r_Renderer->CreateTexture("assets/textures/bronze.png","Bronze");
+	m_Textures.at(2) = r_Renderer->CreateTexture("assets/textures/gold.png","Gold");
+	m_Textures.at(3) = r_Renderer->CreateTexture("assets/textures/marble.png","Marble");
+	m_Textures.at(4) = r_Renderer->CreateTexture("assets/textures/tiles.png","Tiles");
 
 	// Setup matrix
 	m_ModelMatrix = scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.8f, 0.8f));
@@ -64,14 +64,14 @@ void SceneLayer::OnUpdate()
 	for (int i = -5; i < 5; ++i)
 	{
 		// Move by a unit left in X
-		float iF = static_cast<float>(i) * 1.1f;
+		float iF = static_cast<float>(i) * 3.0f;
 
 		glm::mat4 newPos = translate(transform, glm::vec3(iF, 0.0f, 0.0f));
 
 		// Pick a random texture
 		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
 
-		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Square"), m_Textures.at(0), newPos);
+		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Room"), m_Textures.at(0), newPos);
 	}
 
 	Velocity::Renderer::GetRenderer()->EndScene();
