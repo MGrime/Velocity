@@ -27,6 +27,9 @@
 
 #include "imgui/imgui.h"
 
+// Utility includes
+#include "Velocity/Utility/DefaultCameraController.hpp"
+
 // Math includes
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

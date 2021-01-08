@@ -7,7 +7,7 @@
 template<typename T>
 constexpr auto BIT(T x) { return 1 << x; }
 
-#define BIND_EVENT_FN(x) std::bind(&Application::x, this, std::placeholders::_1)
+#define BIND_EVENT_FN(x) std::bind(&x, this, std::placeholders::_1)
 
 #ifdef VEL_DEBUG
 #define VEL_ASSERT(x, ...) { if(!(x)) { VEL_CLIENT_ERROR("Assertion Failed: {0}", x); __debugbreak(); } }

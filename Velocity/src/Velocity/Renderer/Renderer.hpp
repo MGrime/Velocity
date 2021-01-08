@@ -95,7 +95,7 @@ namespace Velocity {
 			{
 				if (m_Textures.at(i).first.compare(texture) == 0)
 				{
-					return i;
+					return static_cast<uint32_t>(i);
 				}
 			}
 

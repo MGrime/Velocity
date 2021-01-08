@@ -12,7 +12,9 @@ public:
 
 	void OnAttach() override;
 
-	void OnUpdate() override;
+	void OnUpdate(Velocity::Timestep deltaTime) override;
+
+	void OnEvent(Velocity::Event& event) override;
 
 	void OnGuiRender() override;
 
@@ -34,6 +36,8 @@ private:
 
 	// "Fake" camera as we dont have one right now
 	glm::mat4 m_View, m_Projection;
+
+	std::unique_ptr<Velocity::DefaultCameraController> m_CameraController;
 
 	// Reuse matrix for models
 	glm::mat4 m_ModelMatrix;

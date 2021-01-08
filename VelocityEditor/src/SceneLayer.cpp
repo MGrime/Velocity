@@ -5,11 +5,11 @@ void SceneLayer::OnAttach()
 	r_Renderer = Velocity::Renderer::GetRenderer();
 	
 	// Prepare the "camera"
-	m_View = lookAt(glm::vec3(0.0f, 3.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-	const float width = static_cast<float>(Velocity::Application::GetWindow()->GetWidth());
-	const float height = static_cast<float>(Velocity::Application::GetWindow()->GetHeight());
-	m_Projection = glm::perspective(glm::radians(80.0f), width / height, 0.1f, 100.0f);
-	//m_Projection[1][1] *= -1.0f;
+	m_CameraController = std::make_unique<Velocity::DefaultCameraController>();
+	m_CameraController->GetCamera()->SetPosition({ 0.0f,3.0f,3.0f });
+	m_CameraController->GetCamera()->SetRotation({ 0.0f,0.0f,0.0f });
+
+	m_CameraController->GetCamera()->GetViewMatrix();
 
 	// "Load a mesh"
 	r_Renderer->LoadMesh(m_Verts, m_Indices, "Square");
@@ -44,7 +44,7 @@ void SceneLayer::OnAttach()
 	
 }
 
-void SceneLayer::OnUpdate()
+void SceneLayer::OnUpdate(Velocity::Timestep deltaTime)
 {
 	// Dont update when paused. TODO TEMPORARY
 	if (Velocity::Application::GetWindow()->IsPaused())
@@ -52,7 +52,12 @@ void SceneLayer::OnUpdate()
 		return;
 	}
 
-	Velocity::Renderer::GetRenderer()->BeginScene(m_View, m_Projection);
+	m_CameraController->OnUpdate(deltaTime);
+
+	Velocity::Renderer::GetRenderer()->BeginScene(
+		m_CameraController->GetCamera()->GetViewMatrix(),
+		m_CameraController->GetCamera()->GetProjectionMatrix()
+	);
 
 	// Nothing dynmaic yet
 	static auto startTime = std::chrono::high_resolution_clock::now();
@@ -69,20 +74,19 @@ void SceneLayer::OnUpdate()
 
 		glm::mat4 newPos = translate(transform, glm::vec3(iF, 1.0f * static_cast<float>(i),0.0f));
 
-		// Pick a random texture
-		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
-
 		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Room"), r_Renderer->GetTextureByReference("Room"), newPos);
 	}
 
 	Velocity::Renderer::GetRenderer()->EndScene();
 
 }
+void SceneLayer::OnEvent(Velocity::Event& event)
+{
+	m_CameraController->OnEvent(event);
+}
 void SceneLayer::OnGuiRender()
 {
 	ImGui::Begin("GUI from scene layer!");
-
-	ImGui::Button("Click me!");
 	
 	ImGui::End();
 }

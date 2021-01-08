@@ -8,6 +8,8 @@
 
 #include <Velocity/ImGui/ImGuiLayer.hpp>
 
+#include <Velocity/Utility/Timer.hpp>
+
 struct GLFWwindow;
 
 namespace Velocity 
@@ -52,6 +54,8 @@ namespace Velocity
 
 		// Always have a gui layer
 		ImGuiLayer* m_ImGuiLayer;
+
+		FrameTimer m_Timer;
 
 	};
 

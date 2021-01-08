@@ -14,6 +14,8 @@
 #include <Velocity/Renderer/BufferManager.hpp>
 #include <Velocity/Renderer/Texture.hpp>
 
+#include <Velocity/Utility/Camera.hpp>
+
 #include "imgui.h"
 #include <Velocity/ImGui/fonts/roboto.cpp>	// I know this is really odd but its how its done
 
@@ -50,10 +52,10 @@ namespace Velocity
 	#pragma region USER API
 	
 	// This is called when you want to start the rendering of a scene!
-	void Renderer::BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix)
+	void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& proj)
 	{
-		m_SceneData.m_ViewMatrix = viewMatrix;
-		m_SceneData.m_ProjectionMatrix = projectionMatrix;
+		m_SceneData.m_ViewMatrix = view;
+		m_SceneData.m_ProjectionMatrix = proj;
 	}
 
 	// Submits a renderer command to be done

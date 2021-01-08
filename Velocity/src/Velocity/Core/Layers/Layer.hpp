@@ -1,6 +1,7 @@
 #pragma once
 
 #include "Velocity/Core/Events/Event.hpp"
+#include "Velocity/Utility/Timer.hpp"
 
 namespace Velocity
 {
@@ -18,7 +19,7 @@ namespace Velocity
 		virtual void OnDetach() {}
 
 		// Called when layer is updated
-		virtual void OnUpdate() {}
+		virtual void OnUpdate(Timestep deltaTime) {}
 
 		// Called each frame to draw GUI
 		virtual void OnGuiRender(){}

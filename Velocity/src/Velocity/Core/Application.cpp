@@ -17,7 +17,7 @@ namespace Velocity
 	Application::Application(const std::string& windowTitle,const uint32_t width, const uint32_t height)
 	{
 		s_Window = std::make_shared<Window>(WindowProps( windowTitle,width,height ));
-		s_Window->SetEventCallback(BIND_EVENT_FN(OnEvent));
+		s_Window->SetEventCallback(BIND_EVENT_FN(Application::OnEvent));
 
 		// This will init everything
 		r_Renderer = Renderer::GetRenderer();
@@ -25,16 +25,20 @@ namespace Velocity
 		// Push the gui layer
 		m_ImGuiLayer = new ImGuiLayer();
 		m_LayerStack.PushOverlay(m_ImGuiLayer);
+
+		m_Timer = FrameTimer();
 	}
 
 	void Application::Run()
 	{
 		while (m_Running)
-		{			
+		{
+			const Timestep time = m_Timer.GetDeltaTime();
+			
 			// First go through layer stack and update
 			for (Layer* layer : m_LayerStack)
 			{
-				layer->OnUpdate();
+				layer->OnUpdate(time);
 			}
 
 			// TODO: GUI HERE
@@ -67,8 +71,8 @@ namespace Velocity
 	void Application::OnEvent(Event& e)
 	{
 		EventDispatcher dispatcher(e);
-		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(OnWindowClose));
-		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(OnWindowResize));
+		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
+		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
 		{
 			(*--it)->OnEvent(e);
@@ -101,13 +105,13 @@ namespace Velocity
 		static uint32_t resizeCount = 0;
 		if (e.GetWidth() == 0 && e.GetHeight() == 0)
 		{
-			return true;
+			return false;
 		}
 		r_Renderer->OnWindowResize();
 		VEL_CORE_INFO("Resizing {0}", resizeCount);
 
 		++resizeCount;
-		return true;
+		return false;
 	}
 
 	Application::~Application()
