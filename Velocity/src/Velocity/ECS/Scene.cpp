@@ -13,6 +13,7 @@ namespace Velocity
 		entity.AddComponent<TransformComponent>();
 		auto& tag = entity.AddComponent<TagComponent>();
 		tag.Tag = name.empty() ? "New Entity" : name;
+		m_Entities.push_back(entity);
 		return entity;
 	}
 }
