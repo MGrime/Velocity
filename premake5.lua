@@ -25,7 +25,7 @@ IncludeDir["vulkan"] = vulkanpath .. "/Include"
 IncludeDir["stb"] = "Velocity/vendor/stb"
 IncludeDir["assimp"] = "Velocity/vendor/assimp/include"
 IncludeDir["imgui"] = "Velocity/vendor/imgui"
-IncludeDir["entt"] = "Velocity/vendor/entt"
+IncludeDir["entt"] = "Velocity/vendor/entt/src"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
@@ -119,7 +119,8 @@ project "VelocityEditor"
 		"%{IncludeDir.vulkan}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.imgui}",
-		"%{IncludeDir.assimp}"
+		"%{IncludeDir.assimp}",
+		"%{IncludeDir.entt}"
 	}
 	
 	links

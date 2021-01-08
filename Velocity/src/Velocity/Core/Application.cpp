@@ -24,7 +24,6 @@ namespace Velocity
 
 		// Push the gui layer
 		m_ImGuiLayer = new ImGuiLayer();
-		m_LayerStack.PushOverlay(m_ImGuiLayer);
 
 		m_Timer = FrameTimer();
 	}
@@ -73,6 +72,10 @@ namespace Velocity
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+
+		// Dispatch to imgui layer first
+		m_ImGuiLayer->OnEvent(e);
+		
 		for (auto it = m_LayerStack.end(); it != m_LayerStack.begin();)
 		{
 			(*--it)->OnEvent(e);

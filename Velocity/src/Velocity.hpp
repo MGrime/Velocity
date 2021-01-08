@@ -30,6 +30,11 @@
 // Utility includes
 #include "Velocity/Utility/DefaultCameraController.hpp"
 
+// ECS
+#include "Velocity/ECS/Scene.hpp"
+#include "Velocity/ECS/Entity.hpp"
+#include "Velocity/ECS/Components.hpp"
+
 // Math includes
 #define GLM_FORCE_RADIANS
 #define GLM_FORCE_DEPTH_ZERO_TO_ONE

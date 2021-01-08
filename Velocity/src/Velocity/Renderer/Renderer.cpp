@@ -16,6 +16,10 @@
 
 #include <Velocity/Utility/Camera.hpp>
 
+#include "Velocity/ECS/Scene.hpp"
+
+#include <glm/gtc/type_ptr.hpp>
+
 #include "imgui.h"
 #include <Velocity/ImGui/fonts/roboto.cpp>	// I know this is really odd but its how its done
 
@@ -52,39 +56,12 @@ namespace Velocity
 	#pragma region USER API
 	
 	// This is called when you want to start the rendering of a scene!
-	void Renderer::BeginScene(const glm::mat4& view, const glm::mat4& proj)
+	void Renderer::BeginScene(Scene* scene)
 	{
-		m_SceneData.m_ViewMatrix = view;
-		m_SceneData.m_ProjectionMatrix = proj;
+		m_ActiveScene = scene;
 	}
 
 	// Submits a renderer command to be done
-
-	// This allows you to add an object that will never move. Add it once and it will always be drawn
-	void Renderer::AddStatic(BufferManager::Renderable object,uint32_t textureID, const glm::mat4& modelMatrix)
-	{
-		RenderBatchedObject newStatic = {
-			object,modelMatrix,textureID
-		};
-		
-		m_SceneData.m_StaticScene.push_back(newStatic);
-
-		m_SceneData.m_StaticSorted = false;
-	}
-
-	// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
-	// TODO: PROFILE THIS. I think this copy is expensive
-	void Renderer::DrawDynamic(BufferManager::Renderable object, uint32_t textureID, const glm::mat4& modelMatrix)
-	{
-		RenderBatchedObject newDynamic = {
-			object, modelMatrix,textureID
-		};
-
-		m_SceneData.m_DynamicScene.push_back(newDynamic);
-
-		m_SceneData.m_DynamicSorted = true;
-	}
-
 	// Returns a new texture.
 	uint32_t Renderer::CreateTexture(const std::string& filepath, const std::string& referenceName)
 	{
@@ -1508,70 +1485,22 @@ namespace Velocity
 		// 1. Bind pipeline and buffer
 		m_TexturedPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));
 		m_BufferManager->Bind(cmdBuffer.get());
-
-		// TODO: CACHE DYNAMIC SO WE DONT HAVE TO SORT EACH FRAME? PROFILE IT
-		// 1b. Batch together textures to limit amount of descriptor writes
-		// If we havent done it since last push
-		if (!m_SceneData.m_StaticSorted)
-		{
-			// Sort by texture index
-			std::sort(m_SceneData.m_StaticScene.begin(), m_SceneData.m_StaticScene.end(), [](RenderBatchedObject a, RenderBatchedObject b)
-				{
-					return a.m_Texture > b.m_Texture;
-				});
-
-			m_SceneData.m_StaticSorted = true;
-		}
-
-		if (!m_SceneData.m_DynamicSorted)
-		{
-			std::sort(m_SceneData.m_DynamicScene.begin(), m_SceneData.m_DynamicScene.end(), [](RenderBatchedObject a, RenderBatchedObject b)
-				{
-					return a.m_Texture > b.m_Texture;
-				});
-
-			m_SceneData.m_DynamicSorted = true;
-		}
 		
 
 		// 2. Draw static objects
 
-		// The user has submitted static geometry
-		if (m_SceneData.m_StaticScene.size() != 0)
+		if (m_ActiveScene)
 		{
+			auto view = m_ActiveScene->m_Registry.view<TransformComponent, MeshComponent, TextureComponent>();
 
-			uint32_t staticCounter = 0;
-			for (auto batchedObject : m_SceneData.m_StaticScene)
-			{				
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &batchedObject.m_Transform);
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &batchedObject.m_Texture);
-				cmdBuffer->drawIndexed(batchedObject.m_Object.IndexCount, 1, batchedObject.m_Object.IndexStart, batchedObject.m_Object.VertexOffset, 0);
-
-				// Track for update texture calls
-				++staticCounter;
+			for (auto [entity, transform, mesh, texture] : view.each())
+			{
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &texture.TextureID);
+				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
 			}
 		}
 		
-
-
-		// 2b. Draw dynamic objects and CLEAR
-		if (m_SceneData.m_DynamicScene.size() != 0)
-		{
-
-			uint32_t dynamicCounter = 0;
-			for (auto batchedObject : m_SceneData.m_DynamicScene)
-			{
-				
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), &batchedObject.m_Transform);
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &batchedObject.m_Texture);
-				cmdBuffer->drawIndexed(batchedObject.m_Object.IndexCount, 1, batchedObject.m_Object.IndexStart, batchedObject.m_Object.VertexOffset, 0);
-
-				// Track for texture update calls
-				++dynamicCounter;
-			}
-			m_SceneData.m_DynamicScene.clear();
-		}
-
 		
 		// 3. End
 		cmdBuffer->endRenderPass();
@@ -1592,36 +1521,40 @@ namespace Velocity
 	void Renderer::UpdateUniformBuffers()
 	{
 		ViewProjection flattenedData;
-		if (m_SceneData.m_ViewMatrix == glm::mat4()|| m_SceneData.m_ProjectionMatrix == glm::mat4())
+		if (m_ActiveScene)
 		{
-			VEL_CORE_WARN("You didnt set a camera!");
+			if (!m_ActiveScene->m_Camera)
+			{
+				VEL_CORE_WARN("You didnt set a camera!");
+			}
+
+			flattenedData = {
+				m_ActiveScene->m_Camera->GetViewMatrix(),
+				m_ActiveScene->m_Camera->GetProjectionMatrix()
+			};
+
+			void* data;
+
+			auto result = m_LogicalDevice->mapMemory(
+				m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get(),
+				0,
+				sizeof(ViewProjection),
+				vk::MemoryMapFlags{},
+				&data
+			);
+
+			if (result != vk::Result::eSuccess)
+			{
+				VEL_CORE_ERROR("Failed to update uniform buffers");
+				VEL_CORE_ASSERT(false, "Failed to update uniform buffers");
+				return;
+			}
+
+			memcpy(data, &flattenedData, sizeof(ViewProjection));
+
+			m_LogicalDevice->unmapMemory(m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get());
 		}
 
-		flattenedData = {
-			m_SceneData.m_ViewMatrix,
-			m_SceneData.m_ProjectionMatrix
-		};
-	
-		void* data;
-	
-		auto result = m_LogicalDevice->mapMemory(
-			m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get(),
-			0,
-			sizeof(ViewProjection),
-			vk::MemoryMapFlags{},
-			&data
-		);
-
-		if (result != vk::Result::eSuccess)
-		{
-			VEL_CORE_ERROR("Failed to update uniform buffers");
-			VEL_CORE_ASSERT(false, "Failed to update uniform buffers");
-			return;
-		}
-
-		memcpy(data, &flattenedData, sizeof(ViewProjection));
-
-		m_LogicalDevice->unmapMemory(m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get());
 		
 	}
 

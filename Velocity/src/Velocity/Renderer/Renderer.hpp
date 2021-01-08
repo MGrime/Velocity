@@ -9,6 +9,7 @@
 
 #include "BufferManager.hpp"
 
+
 namespace Velocity {
 
 	// Forward declaration
@@ -19,6 +20,7 @@ namespace Velocity {
 	class Shader;
 	class BufferManager;
 	class Texture;
+	class Scene;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -42,14 +44,14 @@ namespace Velocity {
 		#pragma region USER API
 
 		// This is called when you want to start the rendering of a scene!
-		void BeginScene(const glm::mat4& viewMatrix, const glm::mat4& projectionMatrix);
+		void BeginScene(Scene* scene);
 
 		// This is called to end the rendering of a scene
 		void EndScene();
 
 		// Loads the given raw mesh into a renderable object
 		// Pass this to Renderer::Submit
-		BufferManager::Renderable LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
+		MeshComponent LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
 		{
 			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(verts, indices) });
 			return m_Renderables.at(referenceName);
@@ -57,30 +59,22 @@ namespace Velocity {
 
 		// Loads the given mesh file into a renderable object
 		// Pass this to Renderer::Submit
-		BufferManager::Renderable LoadMesh(const std::string& filepath, const std::string& referenceName)
+		MeshComponent LoadMesh(const std::string& filepath, const std::string& referenceName)
 		{
 			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(filepath) });
 			return m_Renderables.at(referenceName);
 		}
 
 		// Gets a mesh by name
-		BufferManager::Renderable GetMesh(const std::string& referenceName)
+		MeshComponent GetMesh(const std::string& referenceName)
 		{
 			if (m_Renderables.find(referenceName) != m_Renderables.end())
 			{
 				return m_Renderables.at(referenceName);
 			}
 			VEL_CORE_WARN("Tried to get mesh {0} which has not been loaded yet! The returned renderable will not be what you are expecting and may cause errors!", referenceName);
-			return BufferManager::Renderable();
+			return MeshComponent();
 		}
-
-		// Submits a renderer command to be done.
-
-		// This allows you to add an object that will never move. Add it once and it will always be drawn
-		void AddStatic(BufferManager::Renderable object,uint32_t textureID, const glm::mat4& modelMatrix);
-
-		// This allows you to add an object that may change from frame to frame. YOU MUST CALL THIS EACH FRAME WITH THINGS YOU WANT TO DRAW
-		void DrawDynamic(BufferManager::Renderable object, uint32_t textureID, const glm::mat4& modelMatrix);
 
 		// Create assets
 
@@ -166,31 +160,6 @@ namespace Velocity {
 			std::array<vk::UniqueFence, MAX_FRAMES_IN_FLIGHT>		InFlightFences;
 			std::vector<vk::Fence>									ImagesInFlight;
 		};
-
-		// Contains a group of renderering data
-		struct RenderBatchedObject
-		{
-			BufferManager::Renderable	m_Object;
-			glm::mat4					m_Transform;
-			uint32_t					m_Texture;
-		};
-		
-		// Contains the data for a scene
-		struct SceneData
-		{
-			glm::mat4 m_ViewMatrix;
-			glm::mat4 m_ProjectionMatrix;
-
-			// These objects CANNOT be modified after you push them
-			// TODO: Make it so you can at least remove them
-			bool									m_StaticSorted = false;
-			std::vector<RenderBatchedObject>		m_StaticScene;
-
-			// These objects are flushed each frame. So they must be pushed per frame
-			bool									m_DynamicSorted = false;
-			std::vector<RenderBatchedObject>		m_DynamicScene;
-		};
-
 		
 		// Matches the UBO used to pass over view & projection data per scene
 		struct ViewProjection
@@ -373,7 +342,7 @@ namespace Velocity {
 
 		// This structure is flushed every frame
 		// TODO: UNLESS renderer::setstatic is called ?
-		SceneData									m_SceneData;
+		Scene*									m_ActiveScene = nullptr;
 
 		// One buffer with a copy of the view projection per frame. Because we may need to update it for a new frame whilst other is in flight
 		std::vector<std::unique_ptr<BaseBuffer>>	m_ViewProjectionBuffers;
@@ -409,7 +378,7 @@ namespace Velocity {
 		vk::UniqueImageView						m_DepthImageView;
 
 		// Store all loaded meshes in a map so they can accessed easily
-		std::unordered_map<std::string, BufferManager::Renderable> m_Renderables;
+		std::unordered_map<std::string, MeshComponent> m_Renderables;
 
 		#pragma region IMGUI ADDITIONS
 

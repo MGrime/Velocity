@@ -1,14 +1,11 @@
 #pragma once
 #include <Velocity.hpp>
 
-#include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
-
 #pragma once
 class SceneLayer : public Velocity::Layer
 {
 public:
-	SceneLayer() : Layer("Scene Layer"), m_View {}, m_Projection{} {}
+	SceneLayer() : Layer("Scene Layer"){};
 
 	void OnAttach() override;
 
@@ -32,14 +29,18 @@ private:
 	// Store renderer handle
 	std::shared_ptr<Velocity::Renderer> r_Renderer;
 
+	// Store loaded textures
 	std::array<uint32_t, 5> m_Textures;
 
-	// "Fake" camera as we dont have one right now
-	glm::mat4 m_View, m_Projection;
-
+	// Use a velocity default camera
 	std::unique_ptr<Velocity::DefaultCameraController> m_CameraController;
 
-	// Reuse matrix for models
-	glm::mat4 m_ModelMatrix;
+	// Store our scene
+	std::unique_ptr<Velocity::Scene> m_Scene;
+
+	// Store our entities
+	std::vector<Velocity::Entity> m_StaticEntities;
+
+	std::vector<Velocity::Entity> m_DynamicEntities;
 	
 };

@@ -24,8 +24,12 @@ void SceneLayer::OnAttach()
 	m_Textures.at(3) = r_Renderer->CreateTexture("assets/textures/marble.png","Marble");
 	m_Textures.at(4) = r_Renderer->CreateTexture("assets/textures/tiles.png","Tiles");
 
+	m_Scene = std::make_unique<Velocity::Scene>();
+	m_Scene->SetCamera(m_CameraController->GetCamera().get());
+	
+
 	// Setup matrix
-	m_ModelMatrix = scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.8f, 0.8f));
+	glm::mat4 scaleBase = scale(glm::mat4(1.0f), glm::vec3(0.8f, 0.8f, 0.8f));
 	
 	// Add more meshes
 	std::srand(std::time(nullptr));
@@ -34,12 +38,38 @@ void SceneLayer::OnAttach()
 		// Move by a unit left in X
 		float iF = static_cast<float>(i) * 1.1f;
 		
-		glm::mat4 newPos = translate(m_ModelMatrix, glm::vec3(iF, 0.0f, 0.0f));
+		// Create an entity
+		m_StaticEntities.push_back(m_Scene->CreateEntity("Square" + std::to_string(i)));
 
-		// Pick a random texture
-		size_t indexRand = static_cast<size_t>(std::rand() % 4 + 1);
+		// Get transform
+		auto& transform = m_StaticEntities.back().GetComponent<Velocity::TransformComponent>();
+		transform.Translation = glm::vec3(iF, 0.0f, 0.0f);
 		
-		r_Renderer->AddStatic(r_Renderer->GetMesh("Square"), m_Textures.at(indexRand), newPos);
+		// Pick a random texture
+		uint32_t indexRand = static_cast<uint32_t>(std::rand() % 4 + 1);
+		m_StaticEntities.back().AddComponent<Velocity::TextureComponent>(indexRand);
+
+		// Add a mesh
+		m_StaticEntities.back().AddComponent<Velocity::MeshComponent>(r_Renderer->GetMesh("Square"));	
+	}
+
+	for (int i = -5; i < 5; ++i)
+	{
+		// Move by a unit left in X
+		float iF = static_cast<float>(i) * 3.0f;
+
+		// Create an entity
+		m_DynamicEntities.push_back(m_Scene->CreateEntity("Room" + std::to_string(i)));
+
+		// Get transform
+		auto& transform = m_DynamicEntities.back().GetComponent<Velocity::TransformComponent>();
+		transform.Translation = glm::vec3(iF, 1.0f * static_cast<float>(i),0.0f);
+
+		// Pick a texture
+		m_DynamicEntities.back().AddComponent<Velocity::TextureComponent>(r_Renderer->GetTextureByReference("Room"));
+
+		// Add a mesh
+		m_DynamicEntities.back().AddComponent<Velocity::MeshComponent>(r_Renderer->GetMesh("Room"));
 	}
 	
 }
@@ -55,26 +85,14 @@ void SceneLayer::OnUpdate(Velocity::Timestep deltaTime)
 	m_CameraController->OnUpdate(deltaTime);
 
 	Velocity::Renderer::GetRenderer()->BeginScene(
-		m_CameraController->GetCamera()->GetViewMatrix(),
-		m_CameraController->GetCamera()->GetProjectionMatrix()
+		m_Scene.get()
 	);
 
-	// Nothing dynmaic yet
-	static auto startTime = std::chrono::high_resolution_clock::now();
-
-	auto currentTime = std::chrono::high_resolution_clock::now();
-	float time = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-
-	auto transform = translate(glm::mat4(1.0f),glm::vec3(0.0f,1.0f,1.0f)) * rotate(glm::mat4(1.0f), time * glm::radians(90.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-	for (int i = -5; i < 5; ++i)
+	for (auto& entity : m_DynamicEntities)
 	{
-		// Move by a unit left in X
-		float iF = static_cast<float>(i) * 3.0f;
-
-		glm::mat4 newPos = translate(transform, glm::vec3(iF, 1.0f * static_cast<float>(i),0.0f));
-
-		r_Renderer->DrawDynamic(r_Renderer->GetMesh("Room"), r_Renderer->GetTextureByReference("Room"), newPos);
+		auto& transform = entity.GetComponent<Velocity::TransformComponent>();
+		transform.Rotation = glm::vec3(0.0f, 0.0f, 90.0f * deltaTime);
+		
 	}
 
 	Velocity::Renderer::GetRenderer()->EndScene();
@@ -87,6 +105,9 @@ void SceneLayer::OnEvent(Velocity::Event& event)
 void SceneLayer::OnGuiRender()
 {
 	ImGui::Begin("GUI from scene layer!");
+
+	static bool show = true;
+	ImGui::ShowDemoWindow(&show);
 	
 	ImGui::End();
 }

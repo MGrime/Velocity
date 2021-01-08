@@ -3,28 +3,21 @@
 #include "BaseBuffer.hpp"
 #include "Vertex.hpp"
 
+#include <Velocity/ECS/Components.hpp>
+
 namespace Velocity
 {
 	// Stores and keeps syncronised a vertex buffer and an index buffer
 	class BufferManager
 	{
 	public:
-		// Submit this to the gpu to tell it you want to render this "mesh"
-		struct Renderable
-		{
-			int32_t		VertexOffset = 0;
-			uint32_t	VertexCount = 0u;
-			uint32_t	IndexStart = 0u;
-			uint32_t	IndexCount = 0u;
-		};
-
 		// CopyQueue is 99.9% the Graphics Queue
 		BufferManager(vk::PhysicalDevice& pDevice, vk::UniqueDevice& device, vk::CommandPool& pool, vk::Queue& copyQueue);
 
 		// TODO: Update as we change how this works
-		Renderable AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
+		MeshComponent AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
 
-		Renderable AddMesh(const std::string& filepath);
+		MeshComponent AddMesh(const std::string& filepath);
 
 		// Binds the buffers
 		void Bind(vk::CommandBuffer& commandBuffer);

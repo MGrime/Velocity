@@ -42,9 +42,9 @@ namespace Velocity
 		
 	}
 
-	BufferManager::Renderable BufferManager::AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices)
+	MeshComponent BufferManager::AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices)
 	{
-		Renderable newRenderable;
+		MeshComponent newRenderable;
 		newRenderable.VertexOffset = static_cast<int32_t>(m_Vertices.size());
 		newRenderable.VertexCount = static_cast<uint32_t>(verts.size());
 		newRenderable.IndexStart = static_cast<uint32_t>(m_Indices.size());
@@ -75,7 +75,7 @@ namespace Velocity
 			{
 				VEL_CORE_ASSERT(false, "Failed to map memory!");
 				VEL_CORE_ERROR("Failed to map memory!");
-				return Renderable();	// Return an empty renderable. will crash anyway and be logged
+				return MeshComponent();	// Return an empty renderable. will crash anyway and be logged
 			}
 			memcpy(data, &m_Vertices.at(newRenderable.VertexOffset), stagingSize);
 			r_LogicalDevice->get().unmapMemory(stagingBuffer->Memory.get());
@@ -117,7 +117,7 @@ namespace Velocity
 			{
 				VEL_CORE_ERROR("Failed to map memory!");
 				VEL_CORE_ASSERT(false, "Failed to map memory!");
-				return Renderable();	// Return an empty renderable. will crash anyway and be logged
+				return MeshComponent();	// Return an empty renderable. will crash anyway and be logged
 			}
 			memcpy(data, &m_Indices.at(newRenderable.IndexStart), stagingSize);
 			r_LogicalDevice->get().unmapMemory(stagingBuffer->Memory.get());
@@ -141,7 +141,7 @@ namespace Velocity
 	
 	}
 
-	BufferManager::Renderable BufferManager::AddMesh(const std::string& filepath)
+	MeshComponent BufferManager::AddMesh(const std::string& filepath)
 	{
 		// Create assimp importer
 		Assimp::Importer Importer;
@@ -173,7 +173,7 @@ namespace Velocity
 		{
 			VEL_CORE_ERROR("Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
 			VEL_CORE_ASSERT(false, "Failed to load model: {0}, Error: {1}", filepath, Importer.GetErrorString());
-			return Renderable();
+			return MeshComponent();
 		}
 
 		std::vector<Vertex>		m_ModelVertices;
