@@ -27,6 +27,10 @@ void EditorLayer::OnAttach()
 
 	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/clouds/clouds1", ".png"));
 
+	auto room = m_Scene->CreateEntity("Room");
+	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Room"));
+	room.AddComponent<TextureComponent>(TextureComponent{ Renderer::GetRenderer()->GetTextureByReference("Room") });
+
 	m_Scene->SetSkybox(m_Skybox.get());
 }
 
