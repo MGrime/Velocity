@@ -91,6 +91,12 @@ namespace Velocity {
 			return "";
 		}
 
+		// Gets the list of meshes
+		const std::unordered_map<std::string,MeshComponent>& GetMeshList()
+		{
+			return m_Renderables;
+		}
+
 		// Create assets
 
 		// TODO: Check ownership here
@@ -112,7 +118,12 @@ namespace Velocity {
 			VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
 			return 0;
 		}
-		
+
+		// Gets the list of textures
+		const std::vector<std::pair<std::string,Texture*>>& GetTexturesList()
+		{
+			return m_Textures;
+		}
 
 		#pragma endregion 
 		
@@ -381,10 +392,10 @@ namespace Velocity {
 		vk::UniqueSampler					m_TextureSampler;
 
 		// Limitation of wanting to stick to no extensions, I need a texture to bind to by default
-		std::unique_ptr<Texture>*			m_DefaultBindingTexture;
+		Texture*			m_DefaultBindingTexture;
 
 		// List of textures loaded by the user
-		std::vector<std::pair<std::string,std::unique_ptr<Texture>>>	m_Textures;
+		std::vector<std::pair<std::string,Texture*>>	m_Textures;
 		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
 
 		// Depth Buffer

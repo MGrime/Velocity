@@ -2,7 +2,10 @@
 
 #include "imgui_internal.h"
 #include "imgui/imgui.h"
+
 #include "Velocity/ECS/Entity.hpp"
+
+#include <unordered_map>
 
 namespace ImGui
 {
@@ -16,7 +19,7 @@ namespace ImGui
 			ImVec2 contentRegionAvailable = GetContentRegionAvail();
 
 			PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
-			float lineHeight = 15.0f + 2.5f * 2.0f;
+			float lineHeight = 20.0f;
 			Separator();
 			bool open = TreeNodeEx((void*)typeid(T).hash_code(), treeNodeFlags, name.c_str());
 			PopStyleVar();
@@ -109,6 +112,20 @@ namespace ImGui
 
 		
 	}
+	
+	static auto vector_getter = [](void* vec, int idx, const char** out_text)
+	{
+		auto& vector = *static_cast<std::vector<std::string>*>(vec);
+		if (idx < 0 || idx >= static_cast<int>(vector.size())) { return false; }
+		*out_text = vector.at(idx).c_str();
+		return true;
+	};
 
+	bool Combo(const char* label, int* currIndex, std::vector<std::string>& values)
+	{
+		if (values.empty()) { return false; }
+		return Combo(label, currIndex, vector_getter,
+			static_cast<void*>(&values), values.size());
+	}	
 	
 }

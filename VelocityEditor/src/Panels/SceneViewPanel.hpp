@@ -16,7 +16,7 @@ public:
 		// Loop all entities
 		for(auto& entity : scene->GetEntities())
 		{
-			DrawNode(scene, entity);
+			DrawNode(entity);
 		}
 
 		// Check for if we unselect
@@ -40,15 +40,8 @@ public:
 
 		if (m_SelectedEntity)
 		{
-			DrawEntityProps(scene, m_SelectedEntity);
-
-			if (ImGui::BeginPopupContextWindow(0, 1, false))
-			{
-				if (ImGui::MenuItem("Add New Component"))
-				{
-				}
-				ImGui::EndPopup();
-			}
+			DrawEntityProps(m_SelectedEntity);
+			DrawEntityAddComponent();
 		}
 		
 		ImGui::End();
@@ -56,13 +49,14 @@ public:
 private:
 	static Entity m_SelectedEntity;
 
-	static void DrawNode(Scene* scene,Entity entity)
+	static void DrawNode(Entity entity)
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 		ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0);
-		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
-		bool opened = ImGui::TreeNodeEx((reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity))), flags, tag.c_str()));
+		flags |= ImGuiTreeNodeFlags_SpanAvailWidth | ImGuiTreeNodeFlags_Leaf;
+		bool opened = ImGui::TreeNodeEx((reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity)))), flags, tag.c_str());
+
 		if (ImGui::IsItemClicked())
 		{
 			m_SelectedEntity = entity;
@@ -72,11 +66,9 @@ private:
 		{
 			ImGui::TreePop();
 		}
-		
-
 	}
 
-	static void DrawEntityProps(Scene* scene, Entity entity)
+	static void DrawEntityProps(Entity entity)
 	{
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -103,7 +95,108 @@ private:
 				ImGui::Text("Vertex count: %d", component.VertexCount);
 				ImGui::Text("Index count: %d", component.IndexCount);
 			});
+		ImGui::DrawComponent<TextureComponent>("Texture", entity, [](TextureComponent& component)
+			{
+				ImGui::Text("Texture ID: %s", std::to_string(component.TextureID).c_str());
+				ImGui::Text("Texture name: %s", Renderer::GetRenderer()->GetTexturesList().at(component.TextureID).first.c_str());
+			});
 
+		
+	}
+
+	static void DrawEntityAddComponent()
+	{
+		// Get the space we have to draw
+		ImVec2 contentRegionAvailable = ImGui::GetContentRegionAvail();
+
+		// Push some padding and draw a seperator line
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4,4 });
+		float lineHeight = 20.0f;
+		ImGui::Separator();
+		ImGui::PopStyleVar();
+
+		// Make a button in the middle
+		ImGui::SetCursorPosX((contentRegionAvailable.x - lineHeight * 0.5f) / 2.0f);
+		ImGui::SetNextItemWidth(ImGui::CalcTextSize("Add Component").x);
+		
+		if (ImGui::Button("+", ImVec2{ lineHeight,lineHeight }))
+		{
+			ImGui::OpenPopup("NewComponent");
+		}
+
+		// List available components. Each need their own popup
+		if (ImGui::BeginPopup("NewComponent"))
+		{
+			// OPEN POPUP
+			if (ImGui::Button("Transform Component"))
+			{
+				ImGui::OpenPopup("NewTransformComponent");
+			}
+			if (ImGui::Button("Mesh Component"))
+			{
+				ImGui::OpenPopup("NewMeshComponent");
+			}
+			if (ImGui::Button("Texture Component"))
+			{
+				ImGui::OpenPopup("NewTextureComponent");
+			}
+
+			// POPUP IMPLEMENTATIONS
+			if (ImGui::BeginPopup("NewMeshComponent"))
+			{
+				auto meshList = Renderer::GetRenderer()->GetMeshList();
+
+				if (ImGui::BeginCombo("Meshes", "..."))
+				{
+					for (auto& mesh : meshList)
+					{
+						ImGui::PushID(mesh.first.c_str());
+						if (ImGui::Selectable(mesh.first.c_str()))
+						{
+							if (m_SelectedEntity.HasComponent<MeshComponent>())
+							{
+								VEL_CLIENT_WARN("Cannot add a duplicate component!");
+								ImGui::PopID();// Need to pop the ID here to avoid imgui crash
+								break;
+							}
+							m_SelectedEntity.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh(mesh.first));
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::EndPopup();
+			}
+
+			if (ImGui::BeginPopup("NewTextureComponent"))
+			{
+				auto textureList = Renderer::GetRenderer()->GetTexturesList();
+
+				if (ImGui::BeginCombo("Textures","..."))
+				{
+					for (auto& texture : textureList)
+					{
+						ImGui::PushID(texture.first.c_str());
+						if (ImGui::Selectable(texture.first.c_str()))
+						{
+							if (m_SelectedEntity.HasComponent<TextureComponent>())
+							{
+								VEL_CLIENT_WARN("Cannot add a duplicate component!");
+								ImGui::PopID();// Need to pop the ID here to avoid imgui crash
+								break;
+							}
+							m_SelectedEntity.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference(texture.first));
+						}
+						ImGui::PopID();
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::EndPopup();
+			}
+			
+			// linked to original popup
+			ImGui::EndPopup();
+		}
 		
 	}
 };

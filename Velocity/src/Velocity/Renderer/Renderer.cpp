@@ -66,7 +66,7 @@ namespace Velocity
 	uint32_t Renderer::CreateTexture(const std::string& filepath, const std::string& referenceName)
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
-		m_Textures.push_back({ referenceName,std::make_unique<Texture>(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
+		m_Textures.push_back({ referenceName,new Texture(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
 		auto newIndex = static_cast<uint32_t>(m_Textures.size()) - 1u;
 		// Update the texture info
 		m_TextureInfos.at(newIndex).imageView = m_Textures.back().second->m_ImageView.get();
@@ -1260,14 +1260,14 @@ namespace Velocity
 		if (m_Textures.size() == 0)
 		{
 			auto indices = FindQueueFamilies(m_PhysicalDevice);
-			m_Textures.push_back({ "DEFAULT",std::make_unique<Texture>("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
-			m_DefaultBindingTexture = &m_Textures.back().second;
+			m_Textures.push_back({ "DEFAULT",new Texture("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
+			m_DefaultBindingTexture = m_Textures.back().second;
 			m_TextureInfos.resize(128);
 			for (auto& info : m_TextureInfos)
 			{
 				info = {
 				m_TextureSampler.get(),
-				*m_DefaultBindingTexture->get()->m_ImageView,
+				*m_DefaultBindingTexture->m_ImageView,
 					vk::ImageLayout::eShaderReadOnlyOptimal,
 				};
 			}
@@ -1822,6 +1822,11 @@ namespace Velocity
 		m_LogicalDevice->freeCommandBuffers(m_ImGuiCommandPool, static_cast<uint32_t>(m_ImGuiFramebuffers.size()), m_ImGuiCommandBuffers.data());
 		m_LogicalDevice->destroyCommandPool(m_ImGuiCommandPool);
 		m_LogicalDevice->destroyDescriptorPool(m_ImGuiDescriptorPool);
+
+		for (auto& texture : m_Textures)
+		{
+			delete texture.second;
+		}
 		
 		ImGui_ImplVulkan_Shutdown();
 		ImGui_ImplGlfw_Shutdown();

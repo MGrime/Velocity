@@ -16,7 +16,7 @@ void EditorLayer::OnAttach()
 	// Prepare camera
 	m_CameraController = std::make_unique<DefaultCameraController>();
 	m_CameraController->GetCamera()->SetPosition({ 0.0f,3.0f,3.0f });
-	m_CameraController->GetCamera()->SetRotation({ 0.0f,0.0f,45.0f });
+	m_CameraController->GetCamera()->SetRotation({ -50.0f,0.0f,0.0f });
 	m_Scene->SetCamera(m_CameraController->GetCamera().get());
 
 	// Load Mesh
@@ -24,13 +24,6 @@ void EditorLayer::OnAttach()
 
 	// Load texture
 	renderer->CreateTexture("assets/textures/room.png", "Room");
-
-	// Create entity
-	auto entity = m_Scene->CreateEntity("Room");
-	
-	entity.AddComponent<MeshComponent>(renderer->GetMesh("Room"));
-	entity.AddComponent<TextureComponent>(renderer->GetTextureByReference("Room"));
-	
 }
 
 void EditorLayer::OnDetach()
