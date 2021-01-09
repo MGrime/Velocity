@@ -97,8 +97,11 @@ private:
 			});
 		ImGui::DrawComponent<TextureComponent>("Texture", entity, [](TextureComponent& component)
 			{
+				auto& texture = Renderer::GetRenderer()->GetTexturesList().at(component.TextureID);
+			
 				ImGui::Text("Texture ID: %s", std::to_string(component.TextureID).c_str());
 				ImGui::Text("Texture name: %s", Renderer::GetRenderer()->GetTexturesList().at(component.TextureID).first.c_str());
+				Renderer::GetRenderer()->DrawTextureToGUI(texture.first, { ImGui::GetContentRegionAvail().y,ImGui::GetContentRegionAvail().y });
 			});
 
 		

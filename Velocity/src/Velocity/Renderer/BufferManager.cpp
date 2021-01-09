@@ -98,7 +98,7 @@ namespace Velocity
 		// Update index buffer
 		{
 			// Calculate the size of the new area
-			VkDeviceSize stagingSize = newRenderable.IndexCount * sizeof(Vertex);
+			VkDeviceSize stagingSize = newRenderable.IndexCount * sizeof(uint32_t);
 
 			// Create a CPU staging buffer
 			std::unique_ptr<BaseBuffer> stagingBuffer = std::make_unique<BaseBuffer>(
@@ -221,6 +221,5 @@ namespace Velocity
 		VkDeviceSize offsets[] = { 0 };
 		commandBuffer.bindVertexBuffers(0, 1, &m_VertexBuffer->Buffer.get(), offsets);
 		commandBuffer.bindIndexBuffer(m_IndexBuffer->Buffer.get(), 0, vk::IndexType::eUint32);
-		
 	}
 }

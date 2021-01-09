@@ -4,6 +4,9 @@
 
 #include <Velocity/Utility/Input.hpp>
 
+
+#include "Velocity/Core/Application.hpp"
+
 namespace Velocity
 {
 	DefaultCameraController::DefaultCameraController(const glm::vec3& position, const glm::vec3& rotation,
@@ -75,6 +78,10 @@ namespace Velocity
 
 	void DefaultCameraController::OnEvent(Event& e)
 	{
+		if (Application::GetWindow()->IsPaused())
+		{
+			return;
+		}
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(DefaultCameraController::OnWindowResized));
 	}

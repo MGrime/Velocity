@@ -116,8 +116,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image memory) Error: {1}", filepath, e.what());
 			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", filepath, e.what());
+			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image memory) Error: {1}", filepath, e.what());
 			return;
 		}
 
@@ -181,22 +181,22 @@ namespace Velocity
 		#pragma endregion
 	}
 
-	void Texture::TransitionImageLayout(vk::CommandBuffer& buffer, Texture& texture, vk::ImageLayout newLayout)
+	void Texture::TransitionImageLayout(vk::CommandBuffer& buffer, vk::Image image, vk::Format format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, uint32_t miplevels, uint32_t layerCount)
 	{
 		vk::ImageMemoryBarrier barrier = {
 			vk::AccessFlags{},
 			vk::AccessFlags{},
-			texture.m_CurrentLayout,
+			oldLayout,
 			newLayout,
 			VK_QUEUE_FAMILY_IGNORED,
 			VK_QUEUE_FAMILY_IGNORED,
-			texture.m_Image.get(),
+			image,
 			{
 				vk::ImageAspectFlagBits::eColor,
 				0,
-				texture.m_MipLevels,
+				miplevels,
 				0,
-				1
+				layerCount
 			}
 		};
 
@@ -204,7 +204,7 @@ namespace Velocity
 		vk::PipelineStageFlags destStage{};
 		
 		// Prepare missing parts based on data
-		if (texture.m_CurrentLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal)
+		if (oldLayout == vk::ImageLayout::eUndefined && newLayout == vk::ImageLayout::eTransferDstOptimal)
 		{
 			barrier.dstAccessMask = vk::AccessFlagBits::eTransferWrite;
 
@@ -212,7 +212,7 @@ namespace Velocity
 			destStage = vk::PipelineStageFlagBits::eTransfer;
 			
 		}
-		else if (texture.m_CurrentLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal)
+		else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::eShaderReadOnlyOptimal)
 		{
 			barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
 			barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
@@ -235,12 +235,9 @@ namespace Velocity
 			0, nullptr,
 			1, &barrier
 		);
-
-		// Technically not true at this point but will be by time it matters
-		texture.m_CurrentLayout = newLayout;
 	}
 	
-	void Texture::CopyBufferToImage(vk::CommandBuffer& cmdBuffer, Texture& texture, vk::Buffer& buffer, uint32_t width, uint32_t height)
+	void Texture::CopyBufferToImage(vk::CommandBuffer& cmdBuffer, vk::Image image, vk::Buffer& buffer, uint32_t width, uint32_t height, uint32_t layerCount)
 	{
 		vk::BufferImageCopy region = {
 			0,
@@ -250,7 +247,7 @@ namespace Velocity
 				vk::ImageAspectFlagBits::eColor,
 				0,
 				0,
-				1
+				layerCount
 			},
 			{
 				0,0,0
@@ -263,7 +260,7 @@ namespace Velocity
 
 		};
 
-		cmdBuffer.copyBufferToImage(buffer, texture.m_Image.get(), vk::ImageLayout::eTransferDstOptimal, 1, &region);
+		cmdBuffer.copyBufferToImage(buffer, image, vk::ImageLayout::eTransferDstOptimal, 1, &region);
 	}
 
 	void Texture::GenerateMipmaps(vk::CommandBuffer& cmdBuffer, Texture& texture)
@@ -379,6 +376,8 @@ namespace Velocity
 			0, nullptr,
 			1, &barrier
 		);
+
+		texture.m_CurrentLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
 		
 	}
 

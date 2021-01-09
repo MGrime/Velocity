@@ -17,6 +17,8 @@ private:
 	// Stores all the data on the visible scene
 	std::unique_ptr<Velocity::Scene> m_Scene;
 
+	std::unique_ptr<Velocity::Skybox> m_Skybox;
+
 	// Use a default camera
 	std::unique_ptr<Velocity::DefaultCameraController> m_CameraController;
 };

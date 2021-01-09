@@ -4,10 +4,13 @@
 #include <GLFW/glfw3.h>
 
 #include <optional>
+#include <backends/imgui_impl_vulkan.h>
 
 #include <Velocity/Core/Events/ApplicationEvent.hpp>
 
 #include "BufferManager.hpp"
+#include "imgui.h"
+#include "Texture.hpp"
 
 
 namespace Velocity {
@@ -21,6 +24,7 @@ namespace Velocity {
 	class BufferManager;
 	class Texture;
 	class Scene;
+	class Skybox;
 
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
@@ -97,12 +101,15 @@ namespace Velocity {
 			return m_Renderables;
 		}
 
-		// Create assets
+		// Texture functions
 
-		// TODO: Check ownership here
 		// Returns a new texture. The index is what is passed into the render commands
 		uint32_t CreateTexture(const std::string& filepath, const std::string& referenceName);
 
+		// Returns a skybox
+		Skybox* CreateSkybox(const std::string& baseFilepath, const std::string& extension);
+
+		// Gets a texture by the reference name you gave when loading it
 		uint32_t GetTextureByReference(const std::string& texture)
 		{
 			// TODO: IMPROVE SEARCH
@@ -117,6 +124,28 @@ namespace Velocity {
 			VEL_CORE_ERROR("Tried to get a texture that hasnt been loaded!. Returning the default texture (white square)");
 			VEL_CORE_ASSERT(false, "Tried to get a texture that hasnt been loaded!");
 			return 0;
+		}
+
+		// Draws the given texture to the screen (calls ImGui::Image())
+		void DrawTextureToGUI(const std::string& textureReference, const ImVec2& size)
+		{
+			// TODO: IMPROVE SEARCH
+			uint32_t textureID = 0u;
+			for (size_t i = 0; i < m_Textures.size(); ++i)
+			{
+				if (m_Textures.at(i).first.compare(textureReference) == 0)
+				{
+					textureID = static_cast<uint32_t>(i);
+					break;
+				}
+			}
+
+			auto& textureGUIID = m_TextureGUIIDs.at(textureID);
+
+			ImGui::Image(
+				textureGUIID,
+				size
+			);
 		}
 
 		// Gets the list of textures
@@ -347,6 +376,8 @@ namespace Velocity {
 		// Pipeline class - We only need one to start
 		std::unique_ptr<Pipeline>				m_TexturedPipeline;
 
+		std::unique_ptr<Pipeline>				m_SkyboxPipeline;
+
 		// Collection of framebuffers for the swapchain
 		// TODO: Check if this can be made a part of the swapchain class
 		std::vector<vk::UniqueFramebuffer>		m_Framebuffers;
@@ -388,16 +419,22 @@ namespace Velocity {
 		// Store the actualy sets
 		std::vector<vk::DescriptorSet>						m_DescriptorSets;
 
+		// Store sets for skybox pass
+		std::vector<vk::DescriptorSet>						m_SkyboxDescriptorSets;
+		
 		// Used to sample textures passed in by the user on draw commands
-		vk::UniqueSampler					m_TextureSampler;
+		vk::UniqueSampler									m_TextureSampler;
 
 		// Limitation of wanting to stick to no extensions, I need a texture to bind to by default
-		Texture*			m_DefaultBindingTexture;
+		Texture*											m_DefaultBindingTexture;
 
 		// List of textures loaded by the user
 		std::vector<std::pair<std::string,Texture*>>	m_Textures;
 		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
 
+		// Also store a list of id's to display the textures in imgui windows
+		std::vector<ImTextureID>				m_TextureGUIIDs;
+		
 		// Depth Buffer
 		vk::UniqueImage							m_DepthImage;
 		vk::UniqueDeviceMemory					m_DepthMemory;
@@ -408,10 +445,10 @@ namespace Velocity {
 
 		#pragma region IMGUI ADDITIONS
 
-		vk::DescriptorPool			m_ImGuiDescriptorPool;
-		vk::RenderPass				m_ImGuiRenderPass;
-		vk::CommandPool				m_ImGuiCommandPool;
-		std::vector<vk::CommandBuffer>m_ImGuiCommandBuffers;
+		vk::DescriptorPool				m_ImGuiDescriptorPool;
+		vk::RenderPass					m_ImGuiRenderPass;
+		vk::CommandPool					m_ImGuiCommandPool;
+		std::vector<vk::CommandBuffer>	m_ImGuiCommandBuffers;
 		std::vector<vk::Framebuffer>	m_ImGuiFramebuffers;
 		
 		#pragma endregion

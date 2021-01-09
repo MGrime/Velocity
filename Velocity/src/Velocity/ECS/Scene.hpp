@@ -2,6 +2,8 @@
 #include <entt/entt.hpp>
 #include <Velocity/Utility/Camera.hpp>
 
+#include <Velocity/Renderer/Skybox.hpp>
+
 namespace Velocity
 {
 	class Entity;
@@ -16,6 +18,8 @@ namespace Velocity
 
 		void SetCamera(Camera* camera) { m_Camera = camera; }
 
+		void SetSkybox(Skybox* skybox) { m_Skybox = skybox; }
+
 		std::vector<Entity>& GetEntities() { return m_Entities; }
 	
 	private:
@@ -27,6 +31,9 @@ namespace Velocity
 
 		// Scene camera
 		Camera* m_Camera;
+
+		// Scene skybox
+		Skybox* m_Skybox;
 
 		// Both need access to registry but the end user doesnt
 		friend class Renderer;

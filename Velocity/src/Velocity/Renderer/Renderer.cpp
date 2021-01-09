@@ -13,6 +13,7 @@
 #include <Velocity/Renderer/Vertex.hpp>
 #include <Velocity/Renderer/BufferManager.hpp>
 #include <Velocity/Renderer/Texture.hpp>
+#include <Velocity/Renderer/Skybox.hpp>
 
 #include <Velocity/Utility/Camera.hpp>
 
@@ -78,8 +79,18 @@ namespace Velocity
 			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
 
 		}
+		
+		m_TextureGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), m_Textures.back().second->m_ImageView.get(), (VkImageLayout)m_Textures.back().second->m_CurrentLayout));
+		
 		return newIndex;
 
+	}
+
+	// Returns a skybox
+	Skybox* Renderer::CreateSkybox(const std::string& baseFilepath, const std::string& extension)
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		return new Skybox(baseFilepath, extension, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
 	}
 	
 	// This is called to end the rendering of a scene
@@ -541,10 +552,13 @@ namespace Velocity
 	void Renderer::CreateGraphicsPipelines()
 	{
 		// Load shaders as spv bytecode
-		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/vert.spv");
-		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/frag.spv");
+		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/standardvert.spv");
+		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/standardfrag.spv");
 
-		VEL_CORE_INFO("Loaded default shaders!");
+		vk::ShaderModule skyboxVertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/skyboxvert.spv");
+		vk::ShaderModule skyboxFragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/skyboxfrag.spv");
+
+		VEL_CORE_INFO("Loaded shaders!");
 		
 		#pragma region CREATE SHADER MODULES
 		
@@ -565,6 +579,23 @@ namespace Velocity
 		// Combine into a contiguous structure
 		std::array<vk::PipelineShaderStageCreateInfo, 2u> shaderStages = { vertexShaderStageInfo, fragmentShaderStageInfo };
 
+		// Do the same for skybox
+		vk::PipelineShaderStageCreateInfo skyboxVertexShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{},
+			vk::ShaderStageFlagBits::eVertex,
+			skyboxVertShaderModule,
+			"main"
+		};
+
+		vk::PipelineShaderStageCreateInfo skyboxFragmentShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{},
+			vk::ShaderStageFlagBits::eFragment,
+			skyboxFragShaderModule,
+			"main"
+		};
+
+		std::array<vk::PipelineShaderStageCreateInfo, 2u> skyboxShaderStages = { skyboxVertexShaderStageInfo,skyboxFragmentShaderStageInfo };
+		
 		#pragma endregion
 
 		#pragma region VERTEX INPUT
@@ -581,6 +612,29 @@ namespace Velocity
 			attribDescription.data()
 		};
 
+		// Skybox takes a much simpler vertex
+		auto skyboxBindingDescription = vk::VertexInputBindingDescription{
+				0,
+				sizeof(glm::vec3),
+				vk::VertexInputRate::eVertex
+		};
+
+		auto skyboxAttribDescription = vk::VertexInputAttributeDescription{
+					0,
+					0,
+					vk::Format::eR32G32B32Sfloat,
+					0
+		};
+
+		vk::PipelineVertexInputStateCreateInfo skyboxVertexInputInfo = {
+			vk::PipelineVertexInputStateCreateFlags{},
+			1,
+			&skyboxBindingDescription,
+			1,
+			&skyboxAttribDescription
+		};
+		
+		
 		#pragma endregion
 
 		#pragma region INPUT ASSEMBLY
@@ -652,6 +706,33 @@ namespace Velocity
 		#pragma endregion
 
 		#pragma region DEPTH AND STENCIL
+
+		vk::PipelineDepthStencilStateCreateInfo depthStencil = {
+			vk::PipelineDepthStencilStateCreateFlags{},
+			VK_TRUE,
+			VK_TRUE,
+			vk::CompareOp::eLess,
+			VK_FALSE,
+			VK_FALSE,
+			{},
+			{},
+			0.0f,
+			1.0f,
+		};
+
+		vk::PipelineDepthStencilStateCreateInfo skyboxDepthStencil = {
+			vk::PipelineDepthStencilStateCreateFlags{},
+			VK_TRUE,
+			VK_FALSE,
+			vk::CompareOp::eLessOrEqual,
+			VK_FALSE,
+			VK_FALSE,
+			{},
+			{},
+			0.0f,
+			1.0f,
+		};
+		
 		#pragma endregion
 
 		#pragma region COLOR BLENDING
@@ -718,6 +799,15 @@ namespace Velocity
 			nullptr,		// Set in pipeline constructor
 			static_cast<uint32_t>(ranges.size()),
 			ranges.data()
+		};
+
+		// Setup for skybox
+		vk::PipelineLayoutCreateInfo skyboxPipelineLayoutInfo = {
+			vk::PipelineLayoutCreateFlags{},
+			0,	// Set in pipeline consturctor
+			nullptr,
+			0,
+			nullptr
 		};
 		
 		#pragma endregion
@@ -846,17 +936,6 @@ namespace Velocity
 
 		#pragma region PIPELINE CREATION
 
-		vk::PipelineDepthStencilStateCreateInfo depthStencil = {
-			vk::PipelineDepthStencilStateCreateFlags{},
-			VK_TRUE,
-			VK_TRUE,
-			vk::CompareOp::eLess,
-			VK_FALSE,
-			VK_FALSE,
-			{},{},
-			0.0f,1.0f
-		};
-
 		vk::GraphicsPipelineCreateInfo pipelineInfo = {
 			vk::PipelineCreateFlags{},
 			static_cast<uint32_t>(shaderStages.size()),
@@ -872,6 +951,25 @@ namespace Velocity
 			nullptr,				// No dynamic state yet
 			nullptr,				// Pipeline Layout Supplied in pipeline constructor
 			nullptr,				// Render pass supplied in pipeline constructor
+			0,
+			nullptr
+		};
+
+		vk::GraphicsPipelineCreateInfo skyboxPipelineInfo = {
+			vk::PipelineCreateFlags{},
+			static_cast<uint32_t>(skyboxShaderStages.size()),
+			skyboxShaderStages.data(),
+			&skyboxVertexInputInfo,
+			&inputAssembly,
+			nullptr,
+			&viewportState,
+			&rasterizer,
+			&multiSampling,
+			&skyboxDepthStencil,
+			&colorBlending,
+			nullptr,
+			nullptr,
+			nullptr,
 			0,
 			nullptr
 		};
@@ -903,7 +1001,26 @@ namespace Velocity
 			descriptorBindings.data()
 		};
 
+		// And for skybox
+		vk::DescriptorSetLayoutBinding skyboxLayoutBinding = {
+			1,
+			vk::DescriptorType::eCombinedImageSampler,
+			1,
+			vk::ShaderStageFlagBits::eFragment,
+			nullptr
+		};
+
+		const std::vector<vk::DescriptorSetLayoutBinding> skyboxDescriptorBindings = { vpLayoutBinding, skyboxLayoutBinding };
+
+		vk::DescriptorSetLayoutCreateInfo skyboxDescriptorSetLayoutInfo = {
+			vk::DescriptorSetLayoutCreateFlags{},
+			static_cast<uint32_t>(skyboxDescriptorBindings.size()),
+			skyboxDescriptorBindings.data()
+		};
+
 		m_TexturedPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
+
+		m_SkyboxPipeline = std::make_unique<Pipeline>(m_LogicalDevice, skyboxPipelineInfo, skyboxPipelineLayoutInfo, renderPassInfo, skyboxDescriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
 		
@@ -912,6 +1029,9 @@ namespace Velocity
 		// Modules hooked into the pipeline so we can delete here
 		m_LogicalDevice->destroyShaderModule(vertShaderModule);
 		m_LogicalDevice->destroyShaderModule(fragShaderModule);
+
+		m_LogicalDevice->destroyShaderModule(skyboxVertShaderModule);
+		m_LogicalDevice->destroyShaderModule(skyboxFragShaderModule);
 
 	}
 
@@ -1224,11 +1344,6 @@ namespace Velocity
 			VEL_CORE_ERROR("An error occured in creating the imgui descriptor pool: {0}", e.what());
 			VEL_CORE_ASSERT(false, "Failed to create imgui descriptor pool! Error {0}", e.what());
 		}
-		
-
-		#pragma endregion 
-		
-
 	}
 
 	// Allocate the descriptor sets we will use accross our program.
@@ -1237,6 +1352,8 @@ namespace Velocity
 		// For each pipeline we have made we need to create a descriptor set for each frame that matches its layout
 		// Right now we only have one pipeline
 		std::vector<vk::DescriptorSetLayout> layouts(m_Swapchain->GetImages().size(), m_TexturedPipeline->GetDescriptorSetLayout().get());
+
+		std::vector<vk::DescriptorSetLayout> skyboxLayouts(m_Swapchain->GetImages().size(), m_SkyboxPipeline->GetDescriptorSetLayout().get());
 
 		vk::DescriptorSetAllocateInfo allocInfo = {
 			m_DescriptorPool.get(),
@@ -1253,6 +1370,18 @@ namespace Velocity
 			VEL_CORE_INFO("Failed to create descriptor sets! Error:{0}",e.what());
 			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}", e.what());
 		}
+
+		allocInfo.pSetLayouts = skyboxLayouts.data();
+		try
+		{
+			m_SkyboxDescriptorSets = m_LogicalDevice->allocateDescriptorSets(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_INFO("Failed to create skybox descriptor sets! Error:{0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to skybox create descriptor sets! Error:{0}", e.what());
+		}
+		
 
 		// Configure descriptors
 		
@@ -1308,6 +1437,9 @@ namespace Velocity
 			};
 
 			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.at(i).size()), m_DescriptorWrites.at(i).data(), 0, nullptr);
+
+			// Null the second count
+			m_DescriptorWrites.at(i).at(1).descriptorCount = 128;
 		}
 		
 	}
@@ -1370,7 +1502,6 @@ namespace Velocity
 	// Initalises ImGui
 	void Renderer::InitaliseImgui()
 	{
-
 		// Setup Dear ImGui context
 		IMGUI_CHECKVERSION();
 		ImGui::CreateContext();
@@ -1428,6 +1559,16 @@ namespace Velocity
 			auto buffer = bufferWrapper.GetBuffer();
 			ImGui_ImplVulkan_CreateFontsTexture(buffer);
 		}
+
+		// We need to push back a imgui texture id for the default binding texture
+		// First empty it incase this is a resize
+		m_TextureGUIIDs.clear();
+
+		// Then loop all available textures at this point and push back. This will remake them on a resize and only make the first one the first time
+		for (auto& texture : m_Textures)
+		{
+			m_TextureGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), texture.second->m_ImageView.get(), (VkImageLayout)texture.second->m_CurrentLayout));
+		}
 		
 	}
 	#pragma endregion 
@@ -1481,6 +1622,34 @@ namespace Velocity
 			clearColorValues.data()
 		};
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
+
+
+		// 0. Draw skybox if we have it
+		if (m_ActiveScene)
+		{
+			if (m_ActiveScene->m_Skybox)
+			{
+				// Copy the descriptor writes from the main pipeline
+				auto descriptorWrites = m_DescriptorWrites;
+
+				// Update
+				descriptorWrites.at(m_CurrentImage).at(0).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
+				
+				descriptorWrites.at(m_CurrentImage).at(1) = m_ActiveScene->m_Skybox->m_WriteSet;
+
+				descriptorWrites.at(m_CurrentImage).at(1).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
+
+				m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(descriptorWrites.at(m_CurrentImage).size()), descriptorWrites.at(m_CurrentImage).data(), 0, nullptr);
+				
+				// Now bind the pipeline
+				m_SkyboxPipeline->Bind(cmdBuffer, 1, 0, m_SkyboxDescriptorSets.at(m_CurrentImage));
+
+				VkDeviceSize offsets[] = { 0 };
+				cmdBuffer->bindVertexBuffers(0, 1, &m_ActiveScene->m_Skybox->m_VertexBuffer->Buffer.get(), offsets);
+
+				cmdBuffer->draw(m_ActiveScene->m_Skybox->m_Verts.size(), 1, 0, 0);
+			}
+		}
 
 		// 1. Bind pipeline and buffer
 		m_TexturedPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));

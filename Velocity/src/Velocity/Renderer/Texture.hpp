@@ -13,6 +13,9 @@ namespace Velocity
 	{
 		// Renderer needs to vulkan specific stuff behind the scenes but i dont want the user to see it
 		friend class Renderer;
+
+		// Skybox is releated
+		friend class Skybox;
 	public:
 		// Class funcs
 		// creates a texture from a file on the pc
@@ -26,19 +29,21 @@ namespace Velocity
 	private:
 		// STATIC HELPERS
 		// Can be called to transition an image
-		static void TransitionImageLayout(vk::CommandBuffer& buffer, Texture& texture, vk::ImageLayout newLayout);
-		static void CopyBufferToImage(vk::CommandBuffer& cmdBuffer, Texture& texture, vk::Buffer& buffer, uint32_t width, uint32_t height);
+		static void TransitionImageLayout(vk::CommandBuffer& buffer, vk::Image image, vk::Format format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, uint32_t miplevels, uint32_t
+		                                  layerCount);
+		static void CopyBufferToImage(vk::CommandBuffer& cmdBuffer, vk::Image image, vk::Buffer& buffer, uint32_t width, uint32_t height, uint32_t layerCount);
 		static void GenerateMipmaps(vk::CommandBuffer& cmdBuffer, Texture& texture);
 		
 		// Member function proxy to allow texture->transition..
 		void TransitionImageLayout(vk::CommandBuffer& buffer, vk::ImageLayout newLayout)
 		{
-			TransitionImageLayout(buffer, *this, newLayout);
+			TransitionImageLayout(buffer,m_Image.get(),m_CurrentFormat,m_CurrentLayout, newLayout,m_MipLevels, 1);
+			m_CurrentLayout = newLayout;
 		}
 
 		void CopyBufferToImage(vk::CommandBuffer& cmdBuffer, vk::Buffer& buffer, uint32_t width, uint32_t height)
 		{
-			CopyBufferToImage(cmdBuffer, *this, buffer, width, height);
+			CopyBufferToImage(cmdBuffer, m_Image.get(), buffer, width, height, 1);
 		}
 
 		void GenerateMipmaps(vk::CommandBuffer& cmdBuffer)
