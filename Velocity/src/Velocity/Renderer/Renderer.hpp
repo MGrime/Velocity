@@ -76,6 +76,21 @@ namespace Velocity {
 			return MeshComponent();
 		}
 
+		// Gets the reference name for a given mesh
+		const std::string& GetMeshName(MeshComponent searchMesh)
+		{
+			for (auto& mesh : m_Renderables)
+			{
+				// If they have indicies starting in the same place they are the same mesh
+				if (mesh.second.IndexStart == searchMesh.IndexStart)
+				{
+					return mesh.first;
+				}
+			}
+			VEL_CORE_WARN("Couldn't find mesh! It must have been created outside of the renderer which should not possible, so however you did that... don't");
+			return "";
+		}
+
 		// Create assets
 
 		// TODO: Check ownership here

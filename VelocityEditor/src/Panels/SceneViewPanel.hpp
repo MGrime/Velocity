@@ -60,9 +60,9 @@ private:
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
 
-		ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+		ImGuiTreeNodeFlags flags = (m_SelectedEntity == entity ? ImGuiTreeNodeFlags_Selected : 0);
 		flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
-		bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
+		bool opened = ImGui::TreeNodeEx((reinterpret_cast<void*>(static_cast<uint64_t>(static_cast<uint32_t>(entity))), flags, tag.c_str()));
 		if (ImGui::IsItemClicked())
 		{
 			m_SelectedEntity = entity;
@@ -70,12 +70,9 @@ private:
 
 		if (opened)
 		{
-			ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
-			bool opened = ImGui::TreeNodeEx((void*)9817239, flags, tag.c_str());
-			if (opened)
-				ImGui::TreePop();
 			ImGui::TreePop();
 		}
+		
 
 	}
 
@@ -99,6 +96,12 @@ private:
 				ImGui::DrawVec3Control("Translation", component.Translation);
 				ImGui::DrawVec3Control("Rotation", component.Rotation);
 				ImGui::DrawVec3Control("Scale", component.Scale,1.0f);
+			});
+		ImGui::DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& component)
+			{
+				ImGui::Text("Mesh name: %s",Renderer::GetRenderer()->GetMeshName(component).c_str());
+				ImGui::Text("Vertex count: %d", component.VertexCount);
+				ImGui::Text("Index count: %d", component.IndexCount);
 			});
 
 		

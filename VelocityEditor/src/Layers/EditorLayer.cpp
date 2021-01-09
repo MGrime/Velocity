@@ -16,6 +16,7 @@ void EditorLayer::OnAttach()
 	// Prepare camera
 	m_CameraController = std::make_unique<DefaultCameraController>();
 	m_CameraController->GetCamera()->SetPosition({ 0.0f,3.0f,3.0f });
+	m_CameraController->GetCamera()->SetRotation({ 0.0f,0.0f,45.0f });
 	m_Scene->SetCamera(m_CameraController->GetCamera().get());
 
 	// Load Mesh
