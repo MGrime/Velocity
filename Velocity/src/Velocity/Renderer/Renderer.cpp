@@ -665,6 +665,20 @@ namespace Velocity
 			0.0f,
 			1.0f
 		};
+
+		vk::PipelineRasterizationStateCreateInfo skyboxRasterizer = {
+			vk::PipelineRasterizationStateCreateFlags{},
+			VK_FALSE,
+			VK_FALSE,
+			vk::PolygonMode::eFill,
+			vk::CullModeFlagBits::eBack,
+			vk::FrontFace::eCounterClockwise,
+			VK_FALSE,
+			0.0f,
+			0.0f,
+			0.0f,
+			1.0f
+		};
 		
 		#pragma endregion
 
@@ -940,7 +954,7 @@ namespace Velocity
 			&inputAssembly,
 			nullptr,
 			&viewportState,
-			&rasterizer,
+			&skyboxRasterizer,
 			&multiSampling,
 			&skyboxDepthStencil,
 			&colorBlending,
@@ -1623,7 +1637,7 @@ namespace Velocity
 				// Now bind the pipeline
 				m_SkyboxPipeline->Bind(cmdBuffer, 1, 0, m_SkyboxDescriptorSets.at(m_CurrentImage));
 
-				auto& mesh = m_ActiveScene->m_Skybox->m_CubeMesh;
+				auto& mesh = m_ActiveScene->m_Skybox->m_SphereMesh;
 
 				auto& skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
 				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), glm::value_ptr(skyboxMatrix));

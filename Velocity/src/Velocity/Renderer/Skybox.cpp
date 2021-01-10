@@ -217,7 +217,7 @@ namespace Velocity
 			nullptr
 		};
 
-		m_CubeMesh = Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj","Cube");
+		m_SphereMesh = Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj","Sphere");
 		
 		#pragma endregion
 		

@@ -27,7 +27,7 @@ namespace Velocity
         vk::DescriptorImageInfo m_ImageInfo;
         vk::WriteDescriptorSet  m_WriteSet;
 
-		MeshComponent			m_CubeMesh;
+		MeshComponent			m_SphereMesh;
 
         // References
         vk::UniqueDevice* r_Device;

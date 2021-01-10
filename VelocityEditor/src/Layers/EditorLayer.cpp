@@ -4,7 +4,7 @@
 
 void EditorLayer::OnGuiRender()
 {
-	//SceneViewPanel::Draw(m_Scene.get());
+	SceneViewPanel::Draw(m_Scene.get());
 }
 
 void EditorLayer::OnAttach()
@@ -25,7 +25,7 @@ void EditorLayer::OnAttach()
 	// Load texture
 	renderer->CreateTexture("assets/textures/room.png", "Room");
 
-	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/hot", ".png"));
+	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/tron", ".png"));
 
 	auto room = m_Scene->CreateEntity("Room");
 	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Room"));
