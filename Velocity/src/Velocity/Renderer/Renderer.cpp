@@ -1010,7 +1010,6 @@ namespace Velocity
 		};
 
 		m_TexturedPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
-
 		m_SkyboxPipeline = std::make_unique<Pipeline>(m_LogicalDevice, skyboxPipelineInfo, skyboxPipelineLayoutInfo, renderPassInfo, skyboxDescriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
