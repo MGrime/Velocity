@@ -23,6 +23,6 @@ void main() {
 	gl_Position = vp.proj * vp.view * model.world * vec4(inPosition,1.0);
 
 	fragPosition = vec3(model.world * vec4(inPosition,1.0f));
-	fragNormal = mat3(model.world) * inNormal;
+	fragNormal = vec3(model.world * vec4(inNormal,1.0f));
 	fragUV = inUV;
 }

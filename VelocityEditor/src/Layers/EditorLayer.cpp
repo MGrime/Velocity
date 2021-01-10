@@ -20,7 +20,7 @@ void EditorLayer::OnAttach()
 	m_Scene->SetCamera(m_CameraController->GetCamera().get());
 
 	// Load Mesh
-	renderer->LoadMesh("assets/models/pbrsphere.obj","Sphere");
+	renderer->LoadMesh("assets/models/cube.obj","Sphere");
 
 	// Load texture
 	renderer->CreateTexture("assets/textures/wood.jpg", "Wood");

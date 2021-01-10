@@ -44,8 +44,10 @@ void main() {
 		PointLight light = pointLights.Lights[i];
 
 		vec3 lightDirection = normalize(light.Position - fragPosition);
+		float lightLength = length(fragPosition - light.Position);
+
 		float diff = max(dot(norm,lightDirection),0.0f);
-		vec3 diffuse = light.Color * diff;
+		vec3 diffuse = light.Color * diff / lightLength;
 
 		vec3 cameraPos = vec3(pc.cameraPosX, pc.cameraPosY, pc.cameraPosZ);
 		vec3 viewDir = normalize(cameraPos - fragPosition);
@@ -53,18 +55,12 @@ void main() {
 		float spec = pow(max(dot(viewDir, reflectDir),0.0f),32.0f);
 		vec3 specular = light.Color * spec;
 
-		float distance = length(light.Position - fragPosition);
-		float attenuation = 1.0f / (1.0f + 0.09f * distance + 0.032f * (distance * distance));
-
-		diffuse *= attenuation;
-		specular *= attenuation;
-		
 		totalDiff += diffuse;
 		totalSpec += specular;
 	}
 
 	vec4 textureColor = texture(texSampler[pc.texIndex],fragUV);
 
-	outColor = vec4((ambient + totalDiff + totalSpec) * textureColor.rgb,textureColor.a);
+	outColor = vec4((ambient + totalDiff) * textureColor.rgb + totalSpec,textureColor.a);
 
 }

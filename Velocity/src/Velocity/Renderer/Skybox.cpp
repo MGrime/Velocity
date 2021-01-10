@@ -66,6 +66,8 @@ namespace Velocity
 		
 		#pragma region CREATE VULKAN IMAGE
 
+		//vk::Format::eR32G32B32Sfloat;	// THIS IS THE FORMAT FOR HDRI
+		
 		vk::ImageCreateInfo imageInfo = {
 			vk::ImageCreateFlagBits::eCubeCompatible,
 			vk::ImageType::e2D,
