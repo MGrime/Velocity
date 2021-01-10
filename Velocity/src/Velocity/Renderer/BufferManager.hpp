@@ -7,7 +7,7 @@
 
 namespace Velocity
 {
-	// Stores and keeps syncronised a vertex buffer and an index buffer
+	// Stores and sync all our the main buffers shared by the whole program
 	class BufferManager
 	{
 	public:
@@ -36,8 +36,7 @@ namespace Velocity
 		// The actual GPU memory buffers
 		std::unique_ptr<BaseBuffer> m_VertexBuffer;
 		std::unique_ptr<BaseBuffer> m_IndexBuffer;
-		
-
+	
 		// References to renderer
 		vk::PhysicalDevice r_PhysicalDevice;
 		vk::UniqueDevice* r_LogicalDevice;

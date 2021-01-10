@@ -53,6 +53,18 @@ namespace Velocity
 			pos.y += moveSpeed * worldMat[0][1];
 			pos.z += moveSpeed * worldMat[0][2];
 		}
+		if (Input::IsKeyPressed(m_Bindings.up))
+		{
+			pos.x -= moveSpeed * worldMat[1][0];
+			pos.y -= moveSpeed * worldMat[1][1];
+			pos.z -= moveSpeed * worldMat[1][2];
+		}
+		if (Input::IsKeyPressed(m_Bindings.down))
+		{
+			pos.x += moveSpeed * worldMat[1][0];
+			pos.y += moveSpeed * worldMat[1][1];
+			pos.z += moveSpeed * worldMat[1][2];
+		}
 		m_Camera->SetPosition(pos);
 		
 		// Rotation

@@ -16,6 +16,8 @@ namespace Velocity
 		int backward = VEL_KEY_S;
 		int left = VEL_KEY_A;
 		int right = VEL_KEY_D;
+		int up = VEL_KEY_Q;
+		int down = VEL_KEY_E;
 		int rotDown = VEL_KEY_DOWN;
 		int rotUp = VEL_KEY_UP;
 		int rotRight = VEL_KEY_RIGHT;

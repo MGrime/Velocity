@@ -14,7 +14,7 @@ namespace Velocity
 		friend class Renderer;
 	public:
 		// Assumes 6 images with name format "baseFilepath_front.extension" etc
-        Skybox(const std::string& baseFilepath, const std::string& extension, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
+        Skybox(const std::string& basefolder, const std::string& extension, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
 
         ~Skybox();  
 	private:
@@ -37,7 +37,7 @@ namespace Velocity
 		// Helper functions
         std::string CalculateFile(const std::string& base, const std::string& extension, int count);
 
-		const glm::mat4 m_SkyboxMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f,0.0f,0.0f));
+		const glm::mat4 m_SkyboxMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(1000.0f, 1000.0f, 1000.0f)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f,0.0f,0.0f));
 
 		
 		

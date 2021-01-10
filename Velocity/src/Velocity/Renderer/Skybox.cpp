@@ -10,7 +10,7 @@
 namespace Velocity
 {
 	// Assumes 6 images with name format "baseFilepath_front.extension" etc
-	Skybox::Skybox(const std::string& baseFilepath, const std::string& extension, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex)
+	Skybox::Skybox(const std::string& basefolder, const std::string& extension, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex)
 	{
 		r_Device = &device;
 		r_PhysicalDevice = pDevice;
@@ -21,7 +21,7 @@ namespace Velocity
 		int width, height, channels;	// SHOULD BE SAME FOR ALL IMAGES
 		for (int i = 0; i < 6; ++i)
 		{
-			textures[i] = stbi_load(CalculateFile(baseFilepath, extension, i).c_str(), &width, &height, &channels,STBI_rgb_alpha);
+			textures[i] = stbi_load(CalculateFile(basefolder, extension, i).c_str(), &width, &height, &channels,STBI_rgb_alpha);
 		}
 
 		// Calculate sizes
@@ -42,8 +42,8 @@ namespace Velocity
 		auto result = r_Device->get().mapMemory(stagingBuffer->Memory.get(), 0, imageSize, vk::MemoryMapFlags{}, &data);
 		if (result != vk::Result::eSuccess)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to map memory)", baseFilepath);
-			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to map memory)", baseFilepath);
+			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to map memory)", basefolder);
+			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to map memory)", basefolder);
 			return;
 		}
 
@@ -88,7 +88,7 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image) Error: {1}", basefolder, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create image) Error: {1}", baseFilepath, e.what());
 			return;
 		}
@@ -111,7 +111,7 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", basefolder, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image memory) Error: {1}", baseFilepath, e.what());
 			return;
 		}
@@ -159,7 +159,7 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image view) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image view) Error: {1}", basefolder, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create image view) Error: {1}", filepath, e.what());
 			return;
 		}
@@ -194,7 +194,7 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create sampler) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create sampler) Error: {1}", basefolder, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create sampler) Error: {1}", filepath, e.what());
 			return;
 		}
@@ -222,6 +222,7 @@ namespace Velocity
 		#pragma endregion
 		
 	}
+	
 	Skybox::~Skybox()
 	{
 		r_Device->get().destroyImageView(m_ImageView);
@@ -237,22 +238,22 @@ namespace Velocity
 		switch(count)
 		{
 		case 0:
-			output = base + "_ft" + extension;
+			output = base + "/ft" + extension;
 			break;
 		case 1:
-			output = base + "_bk" + extension;
+			output = base + "/bk" + extension;
 			break;
 		case 2:
-			output = base + "_up" + extension;
+			output = base + "/up" + extension;
 			break;
 		case 3:
-			output = base + "_dn" + extension;
+			output = base + "/dn" + extension;
 			break;
 		case 4:
-			output = base + "_rt" + extension;
+			output = base + "/rt" + extension;
 			break;
 		case 5:
-			output = base + "_lf" + extension;
+			output = base + "/lf" + extension;
 			break;
 		default:
 			output = "";

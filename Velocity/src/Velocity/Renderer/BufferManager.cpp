@@ -188,11 +188,12 @@ namespace Velocity
 			{
 				// Get vertex
 				const auto& rawVert = mesh->mVertices[j];
+				const auto& rawNorm = mesh->mNormals[j];
 				const auto& rawUV = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][j] : aiVector3t<float>{};
 
 				Vertex vert = {
 					{rawVert.x, rawVert.y, rawVert.z},
-					{1.0f,1.0f,1.0f},
+					{rawNorm.x,rawNorm.y,rawNorm.z},
 					{rawUV.x, rawUV.y}
 				};
 
@@ -206,9 +207,10 @@ namespace Velocity
 				const auto& currFace = mesh ->mFaces[face];
 
 				// Load indices
-				m_ModelIndices.push_back(currFace.mIndices[0]);
-				m_ModelIndices.push_back(currFace.mIndices[1]);
-				m_ModelIndices.push_back(currFace.mIndices[2]);
+				for (unsigned int j = 0; j < currFace.mNumIndices; ++ j)
+				{
+					m_ModelIndices.push_back(currFace.mIndices[j]);
+				}
 			}
 		}
 

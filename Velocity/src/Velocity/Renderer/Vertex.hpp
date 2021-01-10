@@ -10,7 +10,7 @@ namespace Velocity
 	struct Vertex
 	{
 		glm::vec3 Position;
-		glm::vec3 Color;
+		glm::vec3 Normal;
 		glm::vec2 UV;
 
 		// Returns how the vertex shader should load the data from memory from vertex to vertex
@@ -37,7 +37,7 @@ namespace Velocity
 					1,
 					0,
 					vk::Format::eR32G32B32Sfloat,
-					offsetof(Vertex,Color)
+					offsetof(Vertex,Normal)
 				},
 				vk::VertexInputAttributeDescription{
 					2,
