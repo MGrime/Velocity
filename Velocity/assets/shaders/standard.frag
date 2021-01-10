@@ -30,41 +30,41 @@ layout(binding = 16) uniform sampler2D texSampler[128];
 void main() {
 
 	// Normalise incoming
-	vec3 normal = normalize(transpose(inverse(mat3(pc.model))) * fragNormal);
+	vec3 norm = normalize(fragNormal);
 
-	// Precalculate
-	vec3 surfacePos = vec3(pc.model * vec4(fragPosition, 1.0f));
-
-	vec3 cameraPos = vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ);
-	vec3 cameraDirection = normalize(cameraPos - surfacePos);
-
-	// Handle point Lights
-	vec3 totalDiffuse = vec3(0.0f,0.0f,0.0f);
-	vec3 totalSpecular = vec3(0.0f,0.0f,0.0f);
+	// Ambient as a fixed amount
+	vec3 ambient = vec3(0.2f,0.2f,0.2f);
+	
+	// Loop Lights
+	vec3 totalDiff = vec3(0.0f);
+	vec3 totalSpec = vec3(0.0f);
 
 	for (uint i = 0; i < pointLights.Count; ++i)
 	{
-		// Precalc
-		vec3 lightDirection = normalize(pointLights.Lights[i].Position - surfacePos);
-		float lightLength = length(surfacePos - pointLights.Lights[i].Position);
+		PointLight light = pointLights.Lights[i];
 
-		// Get diffuse
-		vec3 diffuseLight = (pointLights.Lights[i].Color * max(dot(normal,lightDirection),0) / lightLength);
+		vec3 lightDirection = normalize(light.Position - fragPosition);
+		float diff = max(dot(norm,lightDirection),0.0f);
+		vec3 diffuse = light.Color * diff;
 
-		// Get specular
-		vec3 halfway = normalize(lightDirection + cameraDirection);
-		vec3 specularLight = diffuseLight * pow(max(dot(normal,halfway),0),32.0f);
+		vec3 cameraPos = vec3(pc.cameraPosX, pc.cameraPosY, pc.cameraPosZ);
+		vec3 viewDir = normalize(cameraPos - fragPosition);
+		vec3 reflectDir = reflect(-lightDirection, norm);
+		float spec = pow(max(dot(viewDir, reflectDir),0.0f),32.0f);
+		vec3 specular = light.Color * spec;
 
-		// Sum
-		totalDiffuse += diffuseLight;
-		totalSpecular += specularLight;
+		float distance = length(light.Position - fragPosition);
+		float attenuation = 1.0f / (1.0f + 0.09f * distance + 0.032f * (distance * distance));
+
+		diffuse *= attenuation;
+		specular *= attenuation;
+		
+		totalDiff += diffuse;
+		totalSpec += specular;
 	}
 
-	vec3 textureColor = texture(texSampler[pc.texIndex],fragUV).rgb;
+	vec4 textureColor = texture(texSampler[pc.texIndex],fragUV);
 
-	vec3 ambient = vec3(0.2f,0.2f,0.2f);
-	vec3 finalColor = ((ambient + totalDiffuse) * textureColor) + (totalSpecular);
-	
-	outColor = vec4(finalColor,1.0);
-	
+	outColor = vec4((ambient + totalDiff + totalSpec) * textureColor.rgb,textureColor.a);
+
 }

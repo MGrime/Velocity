@@ -1,35 +1,36 @@
-[19:46:12] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[19:46:12] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x21c0a16fb70, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[21:32:22] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[21:32:22] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x2a9b1ac0080, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[19:46:12] [info] VELOCITY: Available extensions:
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_display
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_surface
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[19:46:12] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[19:46:12] [trace] VELOCITY: 	 VK_EXT_debug_report
-[19:46:12] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[19:46:12] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[19:46:12] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[19:46:12] [info] VELOCITY: Created Vulkan Instance!
-[19:46:12] [info] VELOCITY: Created debug messenger!
-[19:46:12] [info] VELOCITY: Created window surface!
-[19:46:12] [info] VELOCITY: Selected GPU: GeForce GT 710
-[19:46:13] [info] VELOCITY: Created Logical device!
-[19:46:13] [info] VELOCITY: Created swapchain with size:(1280,720)
-[19:46:13] [info] VELOCITY: Loaded shaders!
-[19:46:13] [info] VELOCITY: Created graphics pipeline!
-[19:46:13] [info] VELOCITY: Created command pool!
-[19:46:13] [info] VELOCITY: Created framebuffers!
-[19:46:13] [info] VELOCITY: Allocated command buffers!
-[19:46:13] [info] VELOCITY: Created syncronisation primitives!
-[19:46:28] [warning] APPLICATION: Cannot add a duplicate component!
+[21:32:22] [info] VELOCITY: Available extensions:
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_display
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_surface
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[21:32:22] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[21:32:22] [trace] VELOCITY: 	 VK_EXT_debug_report
+[21:32:22] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[21:32:22] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[21:32:22] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[21:32:22] [info] VELOCITY: Created Vulkan Instance!
+[21:32:22] [info] VELOCITY: Created debug messenger!
+[21:32:22] [info] VELOCITY: Created window surface!
+[21:32:22] [info] VELOCITY: Selected GPU: GeForce GT 710
+[21:32:23] [info] VELOCITY: Created Logical device!
+[21:32:23] [info] VELOCITY: Created swapchain with size:(1280,720)
+[21:32:23] [info] VELOCITY: Loaded shaders!
+[21:32:23] [info] VELOCITY: Created graphics pipeline!
+[21:32:23] [info] VELOCITY: Created command pool!
+[21:32:23] [info] VELOCITY: Created framebuffers!
+[21:32:23] [info] VELOCITY: Allocated command buffers!
+[21:32:23] [info] VELOCITY: Created syncronisation primitives!
+[21:32:49] [warning] APPLICATION: Please remove transform before adding a point light!
+[21:32:51] [warning] APPLICATION: Please remove transform before adding a point light!

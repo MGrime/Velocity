@@ -28,14 +28,12 @@ void EditorLayer::OnAttach()
 	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/Park2", ".jpg"));
 
 	auto room = m_Scene->CreateEntity("Sphere");
-	room.GetComponent<TransformComponent>().Rotation.x = 90.0f;
 	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Sphere"));
 	room.AddComponent<TextureComponent>(TextureComponent{ Renderer::GetRenderer()->GetTextureByReference("Wood") });
 
-	auto light = m_Scene->CreateEntity("Light");
-	light.RemoveComponent<TransformComponent>();
-	light.AddComponent<PointLightComponent>(glm::vec3{0.0f,0.0f,8.0f}, glm::vec3{1.0f,1.0f,1.0f});
-	
+	m_Light = m_Scene->CreateEntity("Light");
+	m_Light.RemoveComponent<TransformComponent>();
+	m_Light.AddComponent<PointLightComponent>();
 
 	m_Scene->SetSkybox(m_Skybox.get());
 }
@@ -48,6 +46,12 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(Timestep deltaTime)
 {
 	m_CameraController->OnUpdate(deltaTime);
+
+	// Orbit light
+	static float orbitTime = 0.0f;
+	orbitTime += deltaTime * 0.8f;
+	
+	//m_Light.GetComponent<PointLightComponent>().Position = glm::vec3{} + glm::vec3(cos(orbitTime) * 8.0f, 0.0f, sin(orbitTime) * 8.0f);
 
 	Renderer::GetRenderer()->BeginScene(m_Scene.get());
 

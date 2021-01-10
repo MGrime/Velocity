@@ -22,7 +22,7 @@ void main() {
 
 	gl_Position = vp.proj * vp.view * model.world * vec4(inPosition,1.0);
 
-	fragPosition = inPosition;
-	fragNormal = inNormal;
+	fragPosition = vec3(model.world * vec4(inPosition,1.0f));
+	fragNormal = mat3(transpose(inverse(model.world))) * inNormal;
 	fragUV = inUV;
 }
