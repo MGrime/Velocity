@@ -87,11 +87,20 @@ project "Velocity"
 		defines "VEL_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		links
+		{
+			"Velocity/vendor/assimp/Debug/assimp-vc142-mtd.lib"
+		}
+
 		
 	filter "configurations:Release"
 		defines "VEL_RELEASE"
 		runtime "Release"
 		optimize "on"
+		links
+		{
+			"Velocity/vendor/assimp/Release/assimp-vc142-mt.lib"
+		}
 	
 project "VelocityEditor"
 	location "VelocityEditor"
@@ -131,15 +140,31 @@ project "VelocityEditor"
 	filter "system:windows"
 		systemversion "latest"
 		defines "VEL_PLATFORM_WINDOWS"
-	
+
 	filter "configurations:Debug"
 		defines "VEL_DEBUG"
 		runtime "Debug"
 		symbols "on"
+		links
+		{
+			"Velocity/vendor/assimp/Debug/assimp-vc142-mtd.lib"
+		}
+		postbuildcommands
+		{
+			("{COPY} Velocity/vendor/assimp/Debug/assimp-vc142-mtd.dll %{cfg.buildtarget.relpath}/assimp.dll")
+		}
+
 		
 	filter "configurations:Release"
 		defines "VEL_RELEASE"
 		runtime "Release"
 		optimize "on"
-		
+		links
+		{
+			"Velocity/vendor/assimp/Release/assimp-vc142-mt.lib"
+		}
+		postbuildcommands
+		{
+			("{COPY} Velocity/vendor/assimp/Release/assimp-vc142-mt.dll %{cfg.buildtarget.relpath}/assimp.dll")
+		}
 		
