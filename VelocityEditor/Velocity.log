@@ -1,34 +1,28 @@
-[15:08:32] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[15:08:33] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x19ccbb73260, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
-    Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
-    Current Enables: None.
-    Current Disables: None.
-
-[15:08:33] [info] VELOCITY: Available extensions:
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_display
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_surface
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[15:08:33] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[15:08:33] [trace] VELOCITY: 	 VK_EXT_debug_report
-[15:08:33] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[15:08:33] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[15:08:33] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[15:08:33] [info] VELOCITY: Created Vulkan Instance!
-[15:08:33] [info] VELOCITY: Created debug messenger!
-[15:08:33] [info] VELOCITY: Created window surface!
-[15:08:33] [info] VELOCITY: Selected GPU: GeForce GT 710
-[15:08:33] [info] VELOCITY: Created Logical device!
-[15:08:33] [info] VELOCITY: Created swapchain with size:(1280,720)
-[15:08:33] [info] VELOCITY: Loaded shaders!
-[15:08:33] [info] VELOCITY: Created graphics pipeline!
-[15:08:33] [info] VELOCITY: Created command pool!
-[15:08:33] [info] VELOCITY: Created framebuffers!
-[15:08:33] [info] VELOCITY: Allocated command buffers!
-[15:08:33] [info] VELOCITY: Created syncronisation primitives!
+[15:32:04] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[15:32:04] [info] VELOCITY: Available extensions:
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_display
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_surface
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[15:32:04] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[15:32:04] [trace] VELOCITY: 	 VK_EXT_debug_report
+[15:32:04] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[15:32:04] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[15:32:04] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[15:32:04] [info] VELOCITY: Created Vulkan Instance!
+[15:32:04] [info] VELOCITY: Created window surface!
+[15:32:04] [info] VELOCITY: Selected GPU: GeForce GT 710
+[15:32:05] [info] VELOCITY: Created Logical device!
+[15:32:05] [info] VELOCITY: Created swapchain with size:(1280,720)
+[15:32:05] [info] VELOCITY: Loaded shaders!
+[15:32:05] [info] VELOCITY: Created graphics pipeline!
+[15:32:05] [info] VELOCITY: Created command pool!
+[15:32:05] [info] VELOCITY: Created framebuffers!
+[15:32:05] [info] VELOCITY: Allocated command buffers!
+[15:32:05] [info] VELOCITY: Created syncronisation primitives!
