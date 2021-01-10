@@ -611,29 +611,6 @@ namespace Velocity
 				static_cast<uint32_t>(attribDescription.size()),
 			attribDescription.data()
 		};
-
-		// Skybox takes a much simpler vertex
-		auto skyboxBindingDescription = vk::VertexInputBindingDescription{
-				0,
-				sizeof(glm::vec3),
-				vk::VertexInputRate::eVertex
-		};
-
-		auto skyboxAttribDescription = vk::VertexInputAttributeDescription{
-					0,
-					0,
-					vk::Format::eR32G32B32Sfloat,
-					0
-		};
-
-		vk::PipelineVertexInputStateCreateInfo skyboxVertexInputInfo = {
-			vk::PipelineVertexInputStateCreateFlags{},
-			1,
-			&skyboxBindingDescription,
-			1,
-			&skyboxAttribDescription
-		};
-		
 		
 		#pragma endregion
 
@@ -806,8 +783,8 @@ namespace Velocity
 			vk::PipelineLayoutCreateFlags{},
 			0,	// Set in pipeline consturctor
 			nullptr,
-			0,
-			nullptr
+			1,
+			&modelConstantRange
 		};
 		
 		#pragma endregion
@@ -959,7 +936,7 @@ namespace Velocity
 			vk::PipelineCreateFlags{},
 			static_cast<uint32_t>(skyboxShaderStages.size()),
 			skyboxShaderStages.data(),
-			&skyboxVertexInputInfo,
+			&vertexInputInfo,
 			&inputAssembly,
 			nullptr,
 			&viewportState,
@@ -1623,6 +1600,8 @@ namespace Velocity
 		};
 		cmdBuffer->beginRenderPass(renderPassInfo, vk::SubpassContents::eInline);
 
+		// all passes use this buffer
+		m_BufferManager->Bind(cmdBuffer.get());
 
 		// 0. Draw skybox if we have it
 		if (m_ActiveScene)
@@ -1644,18 +1623,18 @@ namespace Velocity
 				// Now bind the pipeline
 				m_SkyboxPipeline->Bind(cmdBuffer, 1, 0, m_SkyboxDescriptorSets.at(m_CurrentImage));
 
-				VkDeviceSize offsets[] = { 0 };
-				cmdBuffer->bindVertexBuffers(0, 1, &m_ActiveScene->m_Skybox->m_VertexBuffer->Buffer.get(), offsets);
+				auto& mesh = m_ActiveScene->m_Skybox->m_CubeMesh;
 
-				cmdBuffer->draw(m_ActiveScene->m_Skybox->m_Verts.size(), 1, 0, 0);
+				auto& skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
+				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), glm::value_ptr(skyboxMatrix));
+				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+				
 			}
 		}
 
 		// 1. Bind pipeline and buffer
 		m_TexturedPipeline->Bind(cmdBuffer,1,0,m_DescriptorSets.at(m_CurrentImage));
-		m_BufferManager->Bind(cmdBuffer.get());
-		
-
+	
 		// 2. Draw static objects
 
 		if (m_ActiveScene)

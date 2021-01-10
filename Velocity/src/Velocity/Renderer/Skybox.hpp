@@ -4,6 +4,7 @@
 #include <vulkan/vulkan.hpp>
 
 #include "BaseBuffer.hpp"
+#include <Velocity/ECS/Components.hpp>
 
 namespace Velocity
 {
@@ -25,53 +26,8 @@ namespace Velocity
 
         vk::DescriptorImageInfo m_ImageInfo;
         vk::WriteDescriptorSet  m_WriteSet;
-		
-		std::array<glm::vec3,36> m_Verts = {
-            // positions          
-           glm::vec3{-1.0f,  1.0f, -1.0f},
-           glm::vec3{-1.0f, -1.0f, -1.0f},
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-           glm::vec3{ 1.0f,  1.0f, -1.0f},
-           glm::vec3{-1.0f,  1.0f, -1.0f},
 
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-           glm::vec3{-1.0f, -1.0f, -1.0f},
-           glm::vec3{-1.0f,  1.0f, -1.0f},
-           glm::vec3{-1.0f,  1.0f, -1.0f},
-           glm::vec3{-1.0f,  1.0f,  1.0f},
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-           glm::vec3{ 1.0f, -1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f, -1.0f},
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-           glm::vec3{-1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f, -1.0f,  1.0f},
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-
-           glm::vec3{-1.0f,  1.0f, -1.0f},
-           glm::vec3{ 1.0f,  1.0f, -1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{ 1.0f,  1.0f,  1.0f},
-           glm::vec3{-1.0f,  1.0f,  1.0f},
-           glm::vec3{-1.0f,  1.0f, -1.0f},
-
-           glm::vec3{-1.0f, -1.0f, -1.0f},
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-           glm::vec3{ 1.0f, -1.0f, -1.0f},
-           glm::vec3{-1.0f, -1.0f,  1.0f},
-           glm::vec3{ 1.0f, -1.0f,  1.0f},
-        };
-
-        std::unique_ptr<BaseBuffer> m_VertexBuffer;
+		MeshComponent			m_CubeMesh;
 
         // References
         vk::UniqueDevice* r_Device;
@@ -80,6 +36,8 @@ namespace Velocity
 
 		// Helper functions
         std::string CalculateFile(const std::string& base, const std::string& extension, int count);
+
+		const glm::mat4 m_SkyboxMatrix = glm::scale(glm::mat4(1.0f), glm::vec3(100.0f, 100.0f, 100.0f)) * glm::rotate(glm::mat4(1.0f),glm::radians(90.0f),glm::vec3(1.0f,0.0f,0.0f));
 
 		
 		

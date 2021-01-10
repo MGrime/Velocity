@@ -4,7 +4,7 @@
 
 #include <stb_image.h>
 
-#include "Velocity/Renderer/BaseBuffer.hpp"
+#include "Velocity/Renderer/Renderer.hpp"
 #include "Velocity/Renderer/Texture.hpp"
 
 namespace Velocity
@@ -25,7 +25,7 @@ namespace Velocity
 		}
 
 		// Calculate sizes
-		const VkDeviceSize imageSize = width * height * channels * 6;
+		const VkDeviceSize imageSize = width * height * 4 * 6;
 		const VkDeviceSize layerSize = imageSize / 6;
 
 		// Create staging buffer
@@ -199,48 +199,6 @@ namespace Velocity
 			return;
 		}
 
-		// Create a buffer
-		m_VertexBuffer = std::make_unique<BaseBuffer>(
-			pDevice,
-			device,
-			sizeof(glm::vec3) * m_Verts.size(),
-			vk::BufferUsageFlagBits::eVertexBuffer | vk::BufferUsageFlagBits::eTransferDst,
-			vk::MemoryPropertyFlagBits::eDeviceLocal
-		);
-
-		VkDeviceSize stagingSize = sizeof(glm::vec3) * m_Verts.size();
-
-		std::unique_ptr<BaseBuffer> stagingVertexBuffer = std::make_unique<BaseBuffer>(
-			pDevice,
-			device,
-			stagingSize,
-			vk::BufferUsageFlagBits::eTransferSrc,
-			vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
-			);
-
-		result = device->mapMemory(stagingVertexBuffer->Memory.get(), 0, stagingSize, vk::MemoryMapFlags{}, &data);
-		if (result != vk::Result::eSuccess)
-		{
-			VEL_CORE_ASSERT(false, "Failed to map memory!");
-			VEL_CORE_ERROR("Failed to map memory!");
-			return;
-		}
-		memcpy(data, m_Verts.data(), stagingSize);
-		device->unmapMemory(stagingVertexBuffer->Memory.get());
-		{
-			vk::Queue queue = r_Device->get().getQueue(graphicsQueueIndex, 0);
-			TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(device, pool, queue);
-			auto& commandBuffer = bufferWrapper.GetBuffer();
-
-			vk::BufferCopy copyRegion = {
-				0,
-				0,
-				stagingSize
-			};
-
-			commandBuffer.copyBuffer(stagingBuffer->Buffer.get(), m_VertexBuffer->Buffer.get(), 1, &copyRegion);
-		}
-
 		m_ImageInfo = {
 			m_Sampler,
 			m_ImageView,
@@ -258,6 +216,8 @@ namespace Velocity
 			nullptr,
 			nullptr
 		};
+
+		m_CubeMesh = Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj","Cube");
 		
 		#pragma endregion
 		
@@ -277,22 +237,22 @@ namespace Velocity
 		switch(count)
 		{
 		case 0:
-			output = base + "_front" + extension;
+			output = base + "_ft" + extension;
 			break;
 		case 1:
-			output = base + "_back" + extension;
+			output = base + "_bk" + extension;
 			break;
 		case 2:
 			output = base + "_up" + extension;
 			break;
 		case 3:
-			output = base + "_down" + extension;
+			output = base + "_dn" + extension;
 			break;
 		case 4:
-			output = base + "_right" + extension;
+			output = base + "_rt" + extension;
 			break;
 		case 5:
-			output = base + "_left" + extension;
+			output = base + "_lf" + extension;
 			break;
 		default:
 			output = "";
