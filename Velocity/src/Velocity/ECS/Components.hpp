@@ -43,7 +43,7 @@ namespace Velocity
 		uint32_t	IndexCount = 0u;
 
 		MeshComponent() = default;
-		MeshComponent(const MeshComponent&) = default;		
+		MeshComponent(const MeshComponent&) = default;
 	};
 
 	struct TextureComponent
@@ -53,6 +53,16 @@ namespace Velocity
 		TextureComponent() = default;
 		TextureComponent(const TextureComponent&) = default;
 		TextureComponent(uint32_t id) { TextureID = id; }
+	};
+
+	struct PointLightComponent
+	{
+		glm::vec3 Position = glm::vec3(0.0f,0.0f,0.0f);
+		alignas(16) glm::vec3 Color = glm::vec3(1.0f,1.0f,1.0f);
+
+		PointLightComponent() = default;
+		PointLightComponent(const PointLightComponent&) = default;
+		PointLightComponent(const glm::vec3& position, const glm::vec3& color) : Position(position), Color(color) {}
 	};
 
 }

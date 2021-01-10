@@ -20,7 +20,7 @@ namespace Velocity
 		T& AddComponent(Args&&... args)
 		{
 			VEL_CORE_ASSERT(!HasComponent<T>(), "Entity already has that component!");
-			return m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
+			return  m_Scene->m_Registry.emplace<T>(m_EntityHandle, std::forward<Args>(args)...);
 		}
 
 		template<typename T>

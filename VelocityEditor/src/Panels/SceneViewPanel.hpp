@@ -103,6 +103,12 @@ private:
 				ImGui::Text("Texture name: %s", Renderer::GetRenderer()->GetTexturesList().at(component.TextureID).first.c_str());
 				Renderer::GetRenderer()->DrawTextureToGUI(texture.first, { ImGui::GetContentRegionAvail().y,ImGui::GetContentRegionAvail().y });
 			});
+		ImGui::DrawComponent<PointLightComponent>("Point Light", entity, [](PointLightComponent& component)
+			{
+				ImGui::DrawVec3Control("Position", component.Position);
+				ImGui::Separator();
+				ImGui::ColorPicker3("Color", &component.Color.x);
+			});
 
 		
 	}
@@ -133,7 +139,18 @@ private:
 			// OPEN POPUP
 			if (ImGui::Button("Transform Component"))
 			{
-				ImGui::OpenPopup("NewTransformComponent");
+				if (m_SelectedEntity.HasComponent<TransformComponent>())
+				{
+					VEL_CLIENT_WARN("Cannot add a duplicate component!");
+				}
+				else if (m_SelectedEntity.HasComponent<PointLightComponent>())
+				{
+					VEL_CLIENT_WARN("Please remove point light component before adding a transform!");
+				}
+				else
+				{
+					m_SelectedEntity.AddComponent<TransformComponent>();
+				}
 			}
 			if (ImGui::Button("Mesh Component"))
 			{
@@ -142,6 +159,21 @@ private:
 			if (ImGui::Button("Texture Component"))
 			{
 				ImGui::OpenPopup("NewTextureComponent");
+			}
+			if (ImGui::Button("Point Light Component"))
+			{
+				if (m_SelectedEntity.HasComponent<PointLightComponent>())
+				{
+					VEL_CLIENT_WARN("Cannot add a duplicate component!");
+				}
+				else if (m_SelectedEntity.HasComponent<TransformComponent>())
+				{
+					VEL_CLIENT_WARN("Please remove transform before adding a point light!");
+				}
+				else
+				{
+					m_SelectedEntity.AddComponent<PointLightComponent>(glm::vec3{ 0.0f,0.0f,0.0f }, glm::vec3{ 1.0f,1.0f,1.0f });
+				}
 			}
 
 			// POPUP IMPLEMENTATIONS
@@ -196,7 +228,6 @@ private:
 				}
 				ImGui::EndPopup();
 			}
-			
 			// linked to original popup
 			ImGui::EndPopup();
 		}

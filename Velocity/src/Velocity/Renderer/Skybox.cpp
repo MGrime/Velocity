@@ -217,7 +217,7 @@ namespace Velocity
 			nullptr
 		};
 
-		m_SphereMesh = Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj","Sphere");
+		m_SphereMesh = Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj","VEL_INTERNAL_Skybox");
 		
 		#pragma endregion
 		

@@ -29,6 +29,7 @@ namespace Velocity {
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
 	{
+		friend class Scene;	// Scene needs to update some data when components are added/removed
 	public:
 		Renderer();
 
@@ -185,6 +186,8 @@ namespace Velocity {
 
 		static const uint32_t MAX_FRAMES_IN_FLIGHT = 2u;
 
+		static const uint32_t MAX_LIGHTS = 128;
+
 		#pragma endregion
 		
 		#pragma region TYPEDEFS AND STRUCTS
@@ -221,6 +224,13 @@ namespace Velocity {
 		{
 			glm::mat4 view;
 			glm::mat4 proj;
+		};
+
+		// Matches the UBO used to pass over light data per scene
+		struct PointLights
+		{
+			uint32_t												ActiveLightCount;
+			alignas(16) std::array<PointLightComponent, MAX_LIGHTS> Lights;
 		};
 		
 		#pragma endregion 
@@ -404,6 +414,9 @@ namespace Velocity {
 		// One buffer with a copy of the view projection per frame. Because we may need to update it for a new frame whilst other is in flight
 		std::vector<std::unique_ptr<BaseBuffer>>	m_ViewProjectionBuffers;
 
+		// Same as ViewProjection but for lights
+		std::vector<std::unique_ptr<BaseBuffer>>	m_PointLightBuffers;
+
 		// Descriptor pools which are used to allocate descriptor sets
 		vk::UniqueDescriptorPool					m_DescriptorPool;
 
@@ -413,8 +426,11 @@ namespace Velocity {
 		// Store this as it will be the same for any pipeline we make 99% of time
 		vk::DescriptorBufferInfo							m_ViewProjectionBufferInfo;
 
+		vk::DescriptorBufferInfo							m_PointLightBufferInfo;
+		PointLights											m_Lights;
+		
 		// Also need to cache the writes for when we update textures
-		std::vector<std::array<vk::WriteDescriptorSet,2>>	m_DescriptorWrites;
+		std::vector<std::array<vk::WriteDescriptorSet,3>>	m_DescriptorWrites;
 
 		// Store the actualy sets
 		std::vector<vk::DescriptorSet>						m_DescriptorSets;
@@ -442,6 +458,12 @@ namespace Velocity {
 
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, MeshComponent> m_Renderables;
+
+		#pragma region ECS CALLBACKS
+
+		void UpdatePointlightArray();
+		
+		#pragma endregion
 
 		#pragma region IMGUI ADDITIONS
 

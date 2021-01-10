@@ -11,7 +11,7 @@ namespace Velocity
 	class Scene
 	{
 	public:
-		Scene() = default;
+		Scene();
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string & name = "New Entity");
@@ -35,6 +35,10 @@ namespace Velocity
 		// Scene skybox
 		Skybox* m_Skybox;
 
+		void OnPointLightChanged(entt::registry& reg, entt::entity entity);
+
+		
+		
 		// Both need access to registry but the end user doesnt
 		friend class Renderer;
 		friend class Entity;

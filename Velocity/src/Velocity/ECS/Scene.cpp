@@ -5,8 +5,16 @@
 #include "Components.hpp"
 #include "Entity.hpp"
 
+#include <Velocity/Renderer/Renderer.hpp>
+
 namespace Velocity
 {
+	Scene::Scene()
+	{
+		m_Registry.on_construct<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
+		m_Registry.on_destroy<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
+		m_Registry.on_update<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
+	}
 	Entity Scene::CreateEntity(const std::string& name)
 	{
 		Entity entity = { m_Registry.create(), this };
@@ -16,4 +24,10 @@ namespace Velocity
 		m_Entities.push_back(entity);
 		return entity;
 	}
+
+	void Scene::OnPointLightChanged(entt::registry& reg, entt::entity entity)
+	{
+		Renderer::GetRenderer()->UpdatePointlightArray();
+	}
+
 }

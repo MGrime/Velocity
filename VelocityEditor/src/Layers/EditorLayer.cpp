@@ -4,7 +4,7 @@
 
 void EditorLayer::OnGuiRender()
 {
-	//SceneViewPanel::Draw(m_Scene.get());
+	SceneViewPanel::Draw(m_Scene.get());
 }
 
 void EditorLayer::OnAttach()
@@ -31,6 +31,11 @@ void EditorLayer::OnAttach()
 	room.GetComponent<TransformComponent>().Rotation.x = 90.0f;
 	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Sphere"));
 	room.AddComponent<TextureComponent>(TextureComponent{ Renderer::GetRenderer()->GetTextureByReference("Wood") });
+
+	auto light = m_Scene->CreateEntity("Light");
+	light.RemoveComponent<TransformComponent>();
+	light.AddComponent<PointLightComponent>(glm::vec3{0.0f,0.0f,8.0f}, glm::vec3{1.0f,1.0f,1.0f});
+	
 
 	m_Scene->SetSkybox(m_Skybox.get());
 }

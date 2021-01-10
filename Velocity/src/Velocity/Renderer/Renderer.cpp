@@ -778,8 +778,8 @@ namespace Velocity
 
 		vk::PushConstantRange textureConstantRange = {
 			vk::ShaderStageFlagBits::eFragment,
-			sizeof(glm::mat4),
-			sizeof(uint32_t)
+			0,
+			sizeof(glm::mat4) + sizeof(uint32_t) + sizeof(glm::vec3)
 		};
 
 		auto ranges = std::array<vk::PushConstantRange,2>{ modelConstantRange,textureConstantRange };
@@ -792,13 +792,19 @@ namespace Velocity
 			ranges.data()
 		};
 
+		vk::PushConstantRange skyboxModelConstantRange = {
+			vk::ShaderStageFlagBits::eVertex,
+			0,
+			sizeof(glm::mat4)
+		};
+
 		// Setup for skybox
 		vk::PipelineLayoutCreateInfo skyboxPipelineLayoutInfo = {
 			vk::PipelineLayoutCreateFlags{},
 			0,	// Set in pipeline consturctor
 			nullptr,
 			1,
-			&modelConstantRange
+			& skyboxModelConstantRange
 		};
 		
 		#pragma endregion
@@ -975,16 +981,24 @@ namespace Velocity
 			nullptr
 		};
 
+		vk::DescriptorSetLayoutBinding pointLightLayoutBinding = {
+			1,
+			vk::DescriptorType::eUniformBuffer,
+			1,
+			vk::ShaderStageFlagBits::eFragment,
+			nullptr
+		};
+
 		// Texture binding
 		vk::DescriptorSetLayoutBinding textureLayoutBinding = {
-			1,
+			16,
 			vk::DescriptorType::eCombinedImageSampler,
 			128,
 			vk::ShaderStageFlagBits::eFragment,
 			nullptr
 		};
 
-		const std::vector<vk::DescriptorSetLayoutBinding> descriptorBindings = { vpLayoutBinding , textureLayoutBinding };
+		const std::vector<vk::DescriptorSetLayoutBinding> descriptorBindings = { vpLayoutBinding , textureLayoutBinding , pointLightLayoutBinding };
 
 		vk::DescriptorSetLayoutCreateInfo descriptorSetLayoutInfo = {
 			vk::DescriptorSetLayoutCreateFlags{},
@@ -1402,6 +1416,12 @@ namespace Velocity
 				0,
 				sizeof(ViewProjection)
 			};
+
+			m_PointLightBufferInfo = vk::DescriptorBufferInfo{
+				m_PointLightBuffers.at(i)->Buffer.get(),
+				0,
+				sizeof(PointLights)
+			};
 			
 			
 			m_DescriptorWrites.at(i) = { vk::WriteDescriptorSet{
@@ -1418,6 +1438,16 @@ namespace Velocity
 					m_DescriptorSets.at(i),
 					1,
 					0,
+					1,
+					vk::DescriptorType::eUniformBuffer,
+					nullptr,
+					&m_PointLightBufferInfo,
+					nullptr
+				},	
+				{
+					m_DescriptorSets.at(i),
+					16,
+					0,
 					128,
 					vk::DescriptorType::eCombinedImageSampler,
 					m_TextureInfos.data(),
@@ -1427,9 +1457,6 @@ namespace Velocity
 			};
 
 			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.at(i).size()), m_DescriptorWrites.at(i).data(), 0, nullptr);
-
-			// Null the second count
-			m_DescriptorWrites.at(i).at(1).descriptorCount = 128;
 		}
 		
 	}
@@ -1446,6 +1473,21 @@ namespace Velocity
 		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
 		{
 			m_ViewProjectionBuffers.at(i) = std::make_unique<BaseBuffer>(
+				m_PhysicalDevice,
+				m_LogicalDevice,
+				bufferSize,
+				vk::BufferUsageFlagBits::eUniformBuffer,
+				vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+			);
+		}
+
+		bufferSize = sizeof(PointLights);
+
+		m_PointLightBuffers.resize(m_Swapchain->GetImages().size());
+
+		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		{
+			m_PointLightBuffers.at(i) = std::make_unique<BaseBuffer>(
 				m_PhysicalDevice,
 				m_LogicalDevice,
 				bufferSize,
@@ -1622,16 +1664,18 @@ namespace Velocity
 			if (m_ActiveScene->m_Skybox)
 			{
 				// Copy the descriptor writes from the main pipeline
-				auto descriptorWrites = m_DescriptorWrites;
+				auto descriptorWrites = std::vector<vk::WriteDescriptorSet>{m_DescriptorWrites.at(m_CurrentImage).at(0),m_DescriptorWrites.at(m_CurrentImage).at(2)};
 
 				// Update
-				descriptorWrites.at(m_CurrentImage).at(0).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
+				descriptorWrites.at(0).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 				
-				descriptorWrites.at(m_CurrentImage).at(1) = m_ActiveScene->m_Skybox->m_WriteSet;
+				descriptorWrites.at(1) = m_ActiveScene->m_Skybox->m_WriteSet;
 
-				descriptorWrites.at(m_CurrentImage).at(1).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
+				descriptorWrites.at(1).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 
-				m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(descriptorWrites.at(m_CurrentImage).size()), descriptorWrites.at(m_CurrentImage).data(), 0, nullptr);
+				descriptorWrites.at(1).dstBinding = 1;
+
+				m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 				
 				// Now bind the pipeline
 				m_SkyboxPipeline->Bind(cmdBuffer, 1, 0, m_SkyboxDescriptorSets.at(m_CurrentImage));
@@ -1639,7 +1683,7 @@ namespace Velocity
 				auto& mesh = m_ActiveScene->m_Skybox->m_SphereMesh;
 
 				auto& skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
-				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), glm::value_ptr(skyboxMatrix));
+				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), value_ptr(skyboxMatrix));
 				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
 				
 			}
@@ -1656,10 +1700,28 @@ namespace Velocity
 
 			for (auto [entity, transform, mesh, texture] : view.each())
 			{
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &texture.TextureID);
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
 				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
 			}
+
+			// When we use lights
+			// TODO: TEMPORARY
+			auto lights = m_ActiveScene->m_Registry.view<PointLightComponent, MeshComponent>();
+			for (auto [entity, light,mesh] : lights.each())
+			{
+				glm::mat4 lightMatrix = translate(scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)), light.Position);
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), value_ptr(lightMatrix));
+
+				// This will always point to the white default texture
+				uint32_t blankTexture = 0u;
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &blankTexture);
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+			}
+
+			
 		}
 		
 		
@@ -1714,6 +1776,28 @@ namespace Velocity
 			memcpy(data, &flattenedData, sizeof(ViewProjection));
 
 			m_LogicalDevice->unmapMemory(m_ViewProjectionBuffers.at(m_CurrentImage)->Memory.get());
+
+			UpdatePointlightArray();
+
+			// Now map point lights
+			result = m_LogicalDevice->mapMemory(
+				m_PointLightBuffers.at(m_CurrentImage)->Memory.get(),
+				0,
+				sizeof(PointLights),
+				vk::MemoryMapFlags{},
+				&data
+			);
+
+			if (result != vk::Result::eSuccess)
+			{
+				VEL_CORE_ERROR("Failed to update uniform buffers");
+				VEL_CORE_ASSERT(false, "Failed to update uniform buffers");
+				return;
+			}
+
+			memcpy(data, &m_Lights, sizeof(PointLights));
+
+			m_LogicalDevice->unmapMemory(m_PointLightBuffers.at(m_CurrentImage)->Memory.get());
 		}
 
 		
@@ -1962,6 +2046,35 @@ namespace Velocity
 		VEL_CORE_ASSERT(false, "Failed to find a suitable depth format!");
 		return vk::Format::eR8Srgb;	// Return a dumb value to break it. The error is logged
 		
+	}
+
+	#pragma endregion
+
+	#pragma region ECS CALLBACKS
+
+	void Renderer::UpdatePointlightArray()
+	{
+		// Sanity check, but this will never be false if this gets called
+		if (m_ActiveScene)
+		{
+			auto view = m_ActiveScene->m_Registry.view<PointLightComponent>();
+			
+			m_Lights.ActiveLightCount = 0u;
+			for (auto [entity,pointLight] : view.each())
+			{
+				// A transform component overrides point lights internal position
+				// TODO: MAKE THIS MORE APPARANT
+				if (m_ActiveScene->m_Registry.has<TransformComponent>(entity))
+				{
+					auto& transform = m_ActiveScene->m_Registry.get<TransformComponent>(entity);
+
+					m_Lights.Lights[m_Lights.ActiveLightCount].Position = transform.Translation;
+				}
+				
+				m_Lights.Lights[m_Lights.ActiveLightCount] = pointLight;
+				m_Lights.ActiveLightCount += 1u;
+			}
+		}
 	}
 
 	#pragma endregion
