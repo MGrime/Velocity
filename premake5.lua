@@ -151,7 +151,7 @@ project "VelocityEditor"
 		}
 		postbuildcommands
 		{
-			("{COPY} Velocity/vendor/assimp/Debug/assimp-vc142-mtd.dll %{cfg.buildtarget.relpath}/assimp.dll")
+			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Debug\\assimp-vc142-mtd.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityEditor\\")
 		}
 
 		
@@ -165,6 +165,7 @@ project "VelocityEditor"
 		}
 		postbuildcommands
 		{
-			("{COPY} Velocity/vendor/assimp/Release/assimp-vc142-mt.dll %{cfg.buildtarget.relpath}/assimp.dll")
+			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Release\\assimp-vc142-mt.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityEditor\\")
 		}
+
 		
