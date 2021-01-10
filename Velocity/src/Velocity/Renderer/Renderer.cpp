@@ -1700,9 +1700,13 @@ namespace Velocity
 
 			for (auto [entity, transform, mesh, texture] : view.each())
 			{
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &texture.TextureID);
+				// Push model matrix and normal matrix
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4),value_ptr(transform.GetTransform()));
+
+				// Push texture id and camera position
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) , sizeof(uint32_t), &texture.TextureID);
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+
 				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
 			}
 
@@ -1712,8 +1716,10 @@ namespace Velocity
 			for (auto [entity, light,mesh] : lights.each())
 			{
 				glm::mat4 lightMatrix = translate(scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)), light.Position);
+				
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), value_ptr(lightMatrix));
-
+	
+				
 				// This will always point to the white default texture
 				uint32_t blankTexture = 0u;
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &blankTexture);
@@ -2062,15 +2068,6 @@ namespace Velocity
 			m_Lights.ActiveLightCount = 0u;
 			for (auto [entity,pointLight] : view.each())
 			{
-				// A transform component overrides point lights internal position
-				// TODO: MAKE THIS MORE APPARANT
-				if (m_ActiveScene->m_Registry.has<TransformComponent>(entity))
-				{
-					auto& transform = m_ActiveScene->m_Registry.get<TransformComponent>(entity);
-
-					m_Lights.Lights[m_Lights.ActiveLightCount].Position = transform.Translation;
-				}
-				
 				m_Lights.Lights[m_Lights.ActiveLightCount] = pointLight;
 				m_Lights.ActiveLightCount += 1u;
 			}

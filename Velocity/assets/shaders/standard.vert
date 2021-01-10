@@ -20,9 +20,25 @@ layout(location = 2) out vec2 fragUV;
 
 void main() {
 
-	gl_Position = vp.proj * vp.view * model.world * vec4(inPosition,1.0);
+	// For multiplications
+	vec4 modelPosition = vec4(inPosition, 1.0f);
 
-	fragPosition = vec3(model.world * vec4(inPosition,1.0f));
-	fragNormal = mat3(transpose(inverse(model.world))) * inNormal;
+	// Transform position into world space
+	vec4 worldPosition = model.world * modelPosition;
+
+	// Transform in view space
+	vec4 viewPosition = vp.view * worldPosition;
+	
+	// Finally into projection space and output
+	gl_Position = vp.proj * viewPosition;
+
+	// For multiplications
+	vec4 modelNormal = vec4(inNormal, 0.0f);
+
+	fragNormal = (model.world * modelNormal).xyz;
+
+	fragPosition = worldPosition.xyz;
+
 	fragUV = inUV;
+	
 }

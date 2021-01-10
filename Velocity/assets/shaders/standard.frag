@@ -18,7 +18,7 @@ layout(push_constant) uniform PushConstants {
 	layout(offset = 68) float cameraPosX;
 	layout(offset = 72) float cameraPosY;
 	layout(offset = 76) float cameraPosZ;
-} pc;
+}pc;
 
 layout(binding = 1) uniform PointLightData {
 	uint			Count;
@@ -28,43 +28,40 @@ layout(binding = 1) uniform PointLightData {
 layout(binding = 16) uniform sampler2D texSampler[128];
 
 void main() {
-
-	// Normalise incoming
+	// Normalize incoming data
 	vec3 norm = normalize(fragNormal);
 
-	// Ambient as a fixed amount
-	vec3 ambient = vec3(0.2f,0.2f,0.2f);
-	
-	// Loop Lights
-	vec3 totalDiff = vec3(0.0f);
-	vec3 totalSpec = vec3(0.0f);
+	// Calculate direction from camera to fragment
+	vec3 cameraDirection = normalize(vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ) - fragPosition);
+
+	vec3 totalDiffuse = vec3(0.0f);
+	vec3 totalSpecular = vec3(0.0f);
 
 	for (uint i = 0; i < pointLights.Count; ++i)
 	{
-		PointLight light = pointLights.Lights[i];
-
-		vec3 lightDirection = normalize(light.Position - fragPosition);
-		float diff = max(dot(norm,lightDirection),0.0f);
-		vec3 diffuse = light.Color * diff;
-
-		vec3 cameraPos = vec3(pc.cameraPosX, pc.cameraPosY, pc.cameraPosZ);
-		vec3 viewDir = normalize(cameraPos - fragPosition);
-		vec3 reflectDir = reflect(-lightDirection, norm);
-		float spec = pow(max(dot(viewDir, reflectDir),0.0f),32.0f);
-		vec3 specular = light.Color * spec;
-
-		float distance = length(light.Position - fragPosition);
-		float attenuation = 1.0f / (1.0f + 0.09f * distance + 0.032f * (distance * distance));
-
-		diffuse *= attenuation;
-		specular *= attenuation;
+		vec3 lightColor = pointLights.Lights[i].Color * 10.0f;
+		vec3 lightDirection = normalize(pointLights.Lights[i].Position - fragPosition);
+		float lightLength = length(fragPosition - pointLights.Lights[i].Position);
 		
-		totalDiff += diffuse;
-		totalSpec += specular;
+		vec3 diffuseLight = (lightColor * max(dot(fragNormal, lightDirection),0)/ lightLength);
+
+		vec3 halfway = normalize(lightDirection + cameraDirection);
+
+		vec3 specularLight = diffuseLight * pow(max(dot(fragNormal,halfway),0.0f),64.0f);
+
+		totalDiffuse += diffuseLight;
+		totalSpecular += specularLight;
+
+
 	}
 
 	vec4 textureColor = texture(texSampler[pc.texIndex],fragUV);
 
-	outColor = vec4((ambient + totalDiff + totalSpec) * textureColor.rgb,textureColor.a);
+	vec3 diffuseMat = textureColor.rgb;
+	float specMat = textureColor.a;
+
+	vec3 finalColor = (totalDiffuse * diffuseMat) + (totalSpecular *specMat);
+	
+	outColor = vec4(finalColor,1.0f);
 
 }
