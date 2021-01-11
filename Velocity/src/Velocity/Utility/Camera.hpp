@@ -21,7 +21,7 @@ namespace Velocity
 		// Getters
 
 		const glm::vec3& GetPosition() const { return m_Position; }
-		const glm::vec3& GetRotation() const { return m_Rotation; }
+		const glm::vec2& GetRotation() const { return m_Rotation; }
 
 		const glm::mat4& GetViewMatrix() { UpdateMatrices(); return m_ViewMatrix; }
 		const glm::mat4& GetProjectionMatrix() { UpdateMatrices(); return m_ProjectionMatrix; }
@@ -36,8 +36,8 @@ namespace Velocity
 		void SetPosition(const glm::vec3& newPos) { m_Position = newPos; }
 		void IncrementPosition(const glm::vec3& posInc) { m_Position += posInc; }
 
-		void SetRotation(const glm::vec3& newRot) { m_Rotation = newRot; }
-		void IncrementRotation(const glm::vec3& rotInc) { m_Rotation += rotInc; }
+		void SetRotation(const glm::vec2& newRot) { m_Rotation = newRot; }
+		void IncrementRotation(const glm::vec2& rotInc) { m_Rotation += rotInc; }
 
 		void SetFOV(float newFov) { m_FOVx = newFov; }
 		void SetNearClip(float newNearClip) { m_NearClip = newNearClip; }
@@ -48,13 +48,12 @@ namespace Velocity
 		// Constants
 		const glm::vec3 GLOBAL_X = glm::vec3(1.0f, 0.0f, 0.0f);
 		const glm::vec3 GLOBAL_Y = glm::vec3(0.0f, 1.0f, 0.0f);
-		const glm::vec3 GLOBAL_Z = glm::vec3(0.0f, 0.0f, 1.0f);
 
 		void UpdateMatrices();
 
 		// Representation in world
 		glm::vec3	m_Position			= glm::vec3(0.0f,0.0f,0.0f);
-		glm::vec3	m_Rotation			= glm::vec3(0.0f, 0.0f, 0.0f);
+		glm::vec2	m_Rotation			= glm::vec2(0.0f, 0.0f);
 		glm::mat4	m_WorldMatrix		= glm::mat4(1.0f);
 		glm::mat4	m_ViewMatrix		= glm::mat4(1.0f);
 		glm::mat4	m_ProjectionMatrix	= glm::mat4(1.0f);

@@ -32,6 +32,9 @@ void main() {
 	// Normalise incoming
 	vec3 norm = normalize(fragNormal);
 
+	vec3 cameraPos = vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ);
+	vec3 cameraDirection = normalize(cameraPos - fragPosition);
+
 	// Ambient as a fixed amount
 	vec3 ambient = vec3(0.2f,0.2f,0.2f);
 	
@@ -46,14 +49,10 @@ void main() {
 		vec3 lightDirection = normalize(light.Position - fragPosition);
 		float lightLength = length(fragPosition - light.Position);
 
-		float diff = max(dot(norm,lightDirection),0.0f);
-		vec3 diffuse = light.Color * diff / lightLength;
+		vec3 diffuse = light.Color * max(dot(norm,lightDirection),0) / lightLength * lightLength;
 
-		vec3 cameraPos = vec3(pc.cameraPosX, pc.cameraPosY, pc.cameraPosZ);
-		vec3 viewDir = normalize(cameraPos - fragPosition);
-		vec3 reflectDir = reflect(-lightDirection, norm);
-		float spec = pow(max(dot(viewDir, reflectDir),0.0f),32.0f);
-		vec3 specular = light.Color * spec;
+		vec3 halfway = normalize(lightDirection + cameraDirection);
+		vec3 specular = diffuse * pow(max(dot(norm,halfway),0),32.0f);
 
 		totalDiff += diffuse;
 		totalSpec += specular;

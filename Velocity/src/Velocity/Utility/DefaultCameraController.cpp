@@ -25,67 +25,68 @@ namespace Velocity
 		{
 			moveSpeed *= 3.0f;
 		}
-
-		// Movement
 		auto pos = m_Camera->GetPosition();
 		auto worldMat = m_Camera->GetWorldMatrix();
+		
 		if (Input::IsKeyPressed(m_Bindings.forward))
 		{
-			pos.x -= moveSpeed * worldMat[2][0];
-			pos.y -= moveSpeed * worldMat[2][1];
-			pos.z -= moveSpeed * worldMat[2][2];
+			pos.x -= moveSpeed * worldMat[2].x;
+			pos.y -= moveSpeed * worldMat[2].y;
+			pos.z -= moveSpeed * worldMat[2].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.backward))
 		{
-			pos.x += moveSpeed * worldMat[2][0];
-			pos.y += moveSpeed * worldMat[2][1];
-			pos.z += moveSpeed * worldMat[2][2];
+			pos.x += moveSpeed * worldMat[2].x;
+			pos.y += moveSpeed * worldMat[2].y;
+			pos.z += moveSpeed * worldMat[2].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.left))
 		{
-			pos.x -= moveSpeed * worldMat[0][0];
-			pos.y -= moveSpeed * worldMat[0][1];
-			pos.z -= moveSpeed * worldMat[0][2];
+			pos.x -= moveSpeed * worldMat[0].x;
+			pos.y -= moveSpeed * worldMat[0].y;
+			pos.z -= moveSpeed * worldMat[0].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.right))
 		{
-			pos.x += moveSpeed * worldMat[0][0];
-			pos.y += moveSpeed * worldMat[0][1];
-			pos.z += moveSpeed * worldMat[0][2];
+			pos.x += moveSpeed * worldMat[0].x;
+			pos.y += moveSpeed * worldMat[0].y;
+			pos.z += moveSpeed * worldMat[0].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.up))
 		{
-			pos.x -= moveSpeed * worldMat[1][0];
-			pos.y -= moveSpeed * worldMat[1][1];
-			pos.z -= moveSpeed * worldMat[1][2];
+			pos.x += moveSpeed * worldMat[1].x;
+			pos.y += moveSpeed * worldMat[1].y;
+			pos.z += moveSpeed * worldMat[1].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.down))
 		{
-			pos.x += moveSpeed * worldMat[1][0];
-			pos.y += moveSpeed * worldMat[1][1];
-			pos.z += moveSpeed * worldMat[1][2];
+			pos.x -= moveSpeed * worldMat[1].x;
+			pos.y -= moveSpeed * worldMat[1].y;
+			pos.z -= moveSpeed * worldMat[1].z;
 		}
+
 		m_Camera->SetPosition(pos);
-		
+
 		// Rotation
 		auto rot = m_Camera->GetRotation();
 		if (Input::IsKeyPressed(m_Bindings.rotDown))
 		{
-			rot.x += rotationSpeed;
+			rot.x -= rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotUp))
 		{
-			rot.x -= rotationSpeed;
+			rot.x += rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotLeft))
 		{
-			rot.z -= rotationSpeed;
+			rot.y += rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotRight))
 		{
-			rot.z += rotationSpeed;
+			rot.y -= rotationSpeed;
 		}
 		m_Camera->SetRotation(rot);
+		
 	}
 
 	void DefaultCameraController::OnEvent(Event& e)

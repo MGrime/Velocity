@@ -25,12 +25,18 @@ namespace Velocity
 		TransformComponent(const TransformComponent&) = default;
 
 		glm::mat4 GetTransform()
-		{			
-			glm::mat4 rotation = rotate(glm::mat4(1.0f), glm::radians(Rotation.y), {0.0f,1.0f,0.0f})
-				* rotate(glm::mat4(1.0f), glm::radians(Rotation.z), {0.0f,0.0f,1.0f})
-				* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), {1.0f,0.0f,0.0f});
-			
-			return translate(glm::mat4(1.0f), Translation) * rotation * scale(glm::mat4(1.0f), Scale);		
+		{
+			glm::mat4 output = glm::mat4(1.0f);
+
+			output *= scale(glm::mat4(1.0f), Scale);
+
+			output *= rotate(glm::mat4(1.0f), glm::radians(Rotation.y), { 0.0f,1.0f,0.0f })
+				* rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f })
+				* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f });
+
+			output *= translate(glm::mat4(1.0f), Translation);
+
+			return output;
 		}
 	};
 

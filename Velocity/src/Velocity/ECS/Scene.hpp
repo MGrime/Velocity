@@ -30,10 +30,10 @@ namespace Velocity
 		entt::registry m_Registry;
 
 		// Scene camera
-		Camera* m_Camera;
+		Camera* m_Camera = nullptr;
 
 		// Scene skybox
-		Skybox* m_Skybox;
+		Skybox* m_Skybox = nullptr;
 
 		void OnPointLightChanged(entt::registry& reg, entt::entity entity);
 

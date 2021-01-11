@@ -672,7 +672,7 @@ namespace Velocity
 			VK_FALSE,
 			vk::PolygonMode::eFill,
 			vk::CullModeFlagBits::eBack,
-			vk::FrontFace::eCounterClockwise,
+			vk::FrontFace::eClockwise,
 			VK_FALSE,
 			0.0f,
 			0.0f,

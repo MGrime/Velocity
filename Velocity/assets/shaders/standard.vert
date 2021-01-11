@@ -19,7 +19,6 @@ layout(location = 1) out vec3 fragNormal;
 layout(location = 2) out vec2 fragUV;
 
 void main() {
-
 	gl_Position = vp.proj * vp.view * model.world * vec4(inPosition,1.0);
 
 	fragPosition = vec3(model.world * vec4(inPosition,1.0f));
