@@ -189,11 +189,14 @@ namespace Velocity
 				// Get vertex
 				const auto& rawVert = mesh->mVertices[j];
 				const auto& rawNorm = mesh->mNormals[j];
+				const auto& rawTangent = mesh->HasTangentsAndBitangents() ? mesh->mTangents[j] : aiVector3t<float>{};
 				const auto& rawUV = mesh->HasTextureCoords(0) ? mesh->mTextureCoords[0][j] : aiVector3t<float>{};
+				
 
 				Vertex vert = {
 					{rawVert.x, rawVert.y, rawVert.z},
 					{rawNorm.x,rawNorm.y,rawNorm.z},
+					{rawTangent.x,rawTangent.y,rawTangent.z},
 					{rawUV.x, rawUV.y}
 				};
 

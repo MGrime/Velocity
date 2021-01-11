@@ -11,6 +11,7 @@ namespace Velocity
 	{
 		glm::vec3 Position;
 		glm::vec3 Normal;
+		glm::vec3 Tangent;
 		glm::vec2 UV;
 
 		// Returns how the vertex shader should load the data from memory from vertex to vertex
@@ -24,7 +25,7 @@ namespace Velocity
 		}
 
 		// Returns how to extract a vertex attribute from a chunk of data
-		static std::array<vk::VertexInputAttributeDescription, 3> GetAttributeDescriptions()
+		static std::array<vk::VertexInputAttributeDescription, 4> GetAttributeDescriptions()
 		{
 			return {
 				vk::VertexInputAttributeDescription{
@@ -41,6 +42,12 @@ namespace Velocity
 				},
 				vk::VertexInputAttributeDescription{
 					2,
+					0,
+					vk::Format::eR32G32B32Sfloat,
+					offsetof(Vertex,Tangent)
+				},
+				vk::VertexInputAttributeDescription{
+					3,
 					0,
 					vk::Format::eR32G32Sfloat,
 					offsetof(Vertex,UV)					

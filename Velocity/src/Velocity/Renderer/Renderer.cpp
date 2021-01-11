@@ -85,6 +85,23 @@ namespace Velocity
 		return newIndex;
 
 	}
+	// Returns a material component
+	PBRComponent Renderer::CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName)
+	{
+		PBRComponent newComponent;
+		// Mark them as internal in the texture array so they arent displayed for non PBR texture adding
+		newComponent.AlbedoID = CreateTexture(basefilepath + "_albedo" + extension, "VEL_INTERNAL_" + referenceName + "_albedo");
+		newComponent.NormalID = CreateTexture(basefilepath + "_normal" + extension, "VEL_INTERNAL_" + referenceName + "_normal");
+		newComponent.HeightID = CreateTexture(basefilepath + "_height" + extension, "VEL_INTERNAL_" + referenceName + "_height");
+		newComponent.MetallicID = CreateTexture(basefilepath + "_metallic" + extension, "VEL_INTERNAL_" + referenceName + "_metallic");
+		newComponent.RoughnessID = CreateTexture(basefilepath + "_roughness" + extension, "VEL_INTERNAL_" + referenceName + "_roughness");
+
+		// Store component for user to access later
+		m_PBRMaterials[referenceName] = newComponent;
+
+		return newComponent;
+		
+	}
 
 	// Returns a skybox
 	Skybox* Renderer::CreateSkybox(const std::string& baseFilepath, const std::string& extension)
@@ -555,6 +572,9 @@ namespace Velocity
 		vk::ShaderModule vertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/standardvert.spv");
 		vk::ShaderModule fragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/standardfrag.spv");
 
+		vk::ShaderModule pbrVertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/pbrvert.spv");
+		vk::ShaderModule pbrFragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/pbrfrag.spv");
+		
 		vk::ShaderModule skyboxVertShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/skyboxvert.spv");
 		vk::ShaderModule skyboxFragShaderModule = Shader::CreateShaderModule(m_LogicalDevice, "../Velocity/assets/shaders/skyboxfrag.spv");
 
@@ -579,6 +599,22 @@ namespace Velocity
 		// Combine into a contiguous structure
 		std::array<vk::PipelineShaderStageCreateInfo, 2u> shaderStages = { vertexShaderStageInfo, fragmentShaderStageInfo };
 
+		// Do the same for PBR
+		vk::PipelineShaderStageCreateInfo pbrVertexShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{},
+			vk::ShaderStageFlagBits::eVertex,
+			pbrVertShaderModule,
+			"main"
+		};
+		vk::PipelineShaderStageCreateInfo pbrFragmentShaderStageInfo = {
+			vk::PipelineShaderStageCreateFlags{},
+			vk::ShaderStageFlagBits::eFragment,
+			pbrFragShaderModule,
+			"main"
+		};
+
+		std::array<vk::PipelineShaderStageCreateInfo, 2u> pbrShaderStages = { pbrVertexShaderStageInfo, pbrFragmentShaderStageInfo };
+		
 		// Do the same for skybox
 		vk::PipelineShaderStageCreateInfo skyboxVertexShaderStageInfo = {
 			vk::PipelineShaderStageCreateFlags{},
@@ -792,6 +828,25 @@ namespace Velocity
 			ranges.data()
 		};
 
+		// Now for PBR
+		vk::PushConstantRange pbrConstantRange = {
+			vk::ShaderStageFlagBits::eFragment,
+			0,
+			sizeof(glm::mat4) + (sizeof(uint32_t) * 5) + sizeof(glm::vec3)
+		};
+
+
+		auto pbrRanges = std::array<vk::PushConstantRange, 2>{modelConstantRange, pbrConstantRange};
+
+		vk::PipelineLayoutCreateInfo pbrLayoutInfo = {
+			vk::PipelineLayoutCreateFlags{},
+			0,
+			nullptr,
+			static_cast<uint32_t>(pbrRanges.size()),
+			pbrRanges.data()
+		};
+		
+		// Now for Skybox
 		vk::PushConstantRange skyboxModelConstantRange = {
 			vk::ShaderStageFlagBits::eVertex,
 			0,
@@ -952,6 +1007,25 @@ namespace Velocity
 			nullptr
 		};
 
+		vk::GraphicsPipelineCreateInfo pbrPipelineInfo = {
+			vk::PipelineCreateFlags{},
+			static_cast<uint32_t>(pbrShaderStages.size()),
+			pbrShaderStages.data(),
+			&vertexInputInfo,
+			& inputAssembly,
+			nullptr,
+			& viewportState,
+			& rasterizer,
+			& multiSampling,
+			& depthStencil,
+			& colorBlending,
+			nullptr,				// No dynamic state yet
+			nullptr,				// Pipeline Layout Supplied in pipeline constructor
+			nullptr,				// Render pass supplied in pipeline constructor
+			0,
+			nullptr
+		};
+
 		vk::GraphicsPipelineCreateInfo skyboxPipelineInfo = {
 			vk::PipelineCreateFlags{},
 			static_cast<uint32_t>(skyboxShaderStages.size()),
@@ -1024,6 +1098,7 @@ namespace Velocity
 		};
 
 		m_TexturedPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
+		m_PBRPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pbrPipelineInfo, pbrLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
 		m_SkyboxPipeline = std::make_unique<Pipeline>(m_LogicalDevice, skyboxPipelineInfo, skyboxPipelineLayoutInfo, renderPassInfo, skyboxDescriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
@@ -1033,6 +1108,9 @@ namespace Velocity
 		// Modules hooked into the pipeline so we can delete here
 		m_LogicalDevice->destroyShaderModule(vertShaderModule);
 		m_LogicalDevice->destroyShaderModule(fragShaderModule);
+
+		m_LogicalDevice->destroyShaderModule(pbrVertShaderModule);
+		m_LogicalDevice->destroyShaderModule(pbrFragShaderModule);
 
 		m_LogicalDevice->destroyShaderModule(skyboxVertShaderModule);
 		m_LogicalDevice->destroyShaderModule(skyboxFragShaderModule);
@@ -1720,10 +1798,29 @@ namespace Velocity
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
 				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
 			}
-
-			
 		}
+
+		// PBR TIME
+		m_PBRPipeline->Bind(cmdBuffer, 1, 0, m_DescriptorSets.at(m_CurrentImage));
 		
+		if (m_ActiveScene)
+		{
+			auto view = m_ActiveScene->m_Registry.view<TransformComponent, MeshComponent, PBRComponent>();
+			for (auto[entity, transform, mesh, pbr] : view.each())
+			{
+				// Transform pushed in same place
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
+
+				// PBR has multiple texture indexes
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t) * 5, pbr.GetPointer());
+
+				// Camera now pushed later in constant range
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+
+				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+
+			}
+		}
 		
 		// 3. End
 		cmdBuffer->endRenderPass();

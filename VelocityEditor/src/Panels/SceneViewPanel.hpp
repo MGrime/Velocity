@@ -185,18 +185,22 @@ private:
 				{
 					for (auto& mesh : meshList)
 					{
-						ImGui::PushID(mesh.first.c_str());
-						if (ImGui::Selectable(mesh.first.c_str()))
+						// Hide any internal meshes loaded by the engine
+						if (mesh.first.find("VEL_INTERNAL") != std::string::npos)
 						{
-							if (m_SelectedEntity.HasComponent<MeshComponent>())
+							ImGui::PushID(mesh.first.c_str());
+							if (ImGui::Selectable(mesh.first.c_str()))
 							{
-								VEL_CLIENT_WARN("Cannot add a duplicate component!");
-								ImGui::PopID();// Need to pop the ID here to avoid imgui crash
-								break;
+								if (m_SelectedEntity.HasComponent<MeshComponent>())
+								{
+									VEL_CLIENT_WARN("Cannot add a duplicate component!");
+									ImGui::PopID();// Need to pop the ID here to avoid imgui crash
+									break;
+								}
+								m_SelectedEntity.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh(mesh.first));
 							}
-							m_SelectedEntity.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh(mesh.first));
-						}
-						ImGui::PopID();
+							ImGui::PopID();
+						}	
 					}
 					ImGui::EndCombo();
 				}
@@ -211,18 +215,21 @@ private:
 				{
 					for (auto& texture : textureList)
 					{
-						ImGui::PushID(texture.first.c_str());
-						if (ImGui::Selectable(texture.first.c_str()))
+						if (texture.first.find("VEL_INTERNAL") != std::string::npos)
 						{
-							if (m_SelectedEntity.HasComponent<TextureComponent>())
+							ImGui::PushID(texture.first.c_str());
+							if (ImGui::Selectable(texture.first.c_str()))
 							{
-								VEL_CLIENT_WARN("Cannot add a duplicate component!");
-								ImGui::PopID();// Need to pop the ID here to avoid imgui crash
-								break;
+								if (m_SelectedEntity.HasComponent<TextureComponent>())
+								{
+									VEL_CLIENT_WARN("Cannot add a duplicate component!");
+									ImGui::PopID();// Need to pop the ID here to avoid imgui crash
+									break;
+								}
+								m_SelectedEntity.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference(texture.first));
 							}
-							m_SelectedEntity.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference(texture.first));
+							ImGui::PopID();
 						}
-						ImGui::PopID();
 					}
 					ImGui::EndCombo();
 				}

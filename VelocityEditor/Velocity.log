@@ -1,34 +1,34 @@
-[12:36:59] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[12:36:59] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x25068f40210, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[15:39:41] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[15:39:41] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x1bd5ca47fc0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[12:36:59] [info] VELOCITY: Available extensions:
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_display
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_surface
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[12:36:59] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[12:36:59] [trace] VELOCITY: 	 VK_EXT_debug_report
-[12:36:59] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[12:36:59] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[12:36:59] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[12:36:59] [info] VELOCITY: Created Vulkan Instance!
-[12:36:59] [info] VELOCITY: Created debug messenger!
-[12:36:59] [info] VELOCITY: Created window surface!
-[12:36:59] [info] VELOCITY: Selected GPU: GeForce GT 710
-[12:37:00] [info] VELOCITY: Created Logical device!
-[12:37:00] [info] VELOCITY: Created swapchain with size:(1280,720)
-[12:37:00] [info] VELOCITY: Loaded shaders!
-[12:37:00] [info] VELOCITY: Created graphics pipeline!
-[12:37:00] [info] VELOCITY: Created command pool!
-[12:37:00] [info] VELOCITY: Created framebuffers!
-[12:37:00] [info] VELOCITY: Allocated command buffers!
-[12:37:00] [info] VELOCITY: Created syncronisation primitives!
+[15:39:41] [info] VELOCITY: Available extensions:
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_display
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_surface
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[15:39:41] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[15:39:41] [trace] VELOCITY: 	 VK_EXT_debug_report
+[15:39:41] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[15:39:41] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[15:39:41] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[15:39:41] [info] VELOCITY: Created Vulkan Instance!
+[15:39:41] [info] VELOCITY: Created debug messenger!
+[15:39:41] [info] VELOCITY: Created window surface!
+[15:39:42] [info] VELOCITY: Selected GPU: GeForce GT 710
+[15:39:42] [info] VELOCITY: Created Logical device!
+[15:39:42] [info] VELOCITY: Created swapchain with size:(1280,720)
+[15:39:42] [info] VELOCITY: Loaded shaders!
+[15:39:42] [info] VELOCITY: Created graphics pipeline!
+[15:39:42] [info] VELOCITY: Created command pool!
+[15:39:42] [info] VELOCITY: Created framebuffers!
+[15:39:42] [info] VELOCITY: Allocated command buffers!
+[15:39:42] [info] VELOCITY: Created syncronisation primitives!

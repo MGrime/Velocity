@@ -107,6 +107,9 @@ namespace Velocity {
 		// Returns a new texture. The index is what is passed into the render commands
 		uint32_t CreateTexture(const std::string& filepath, const std::string& referenceName);
 
+		// Returns a material component
+		PBRComponent CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName);
+
 		// Returns a skybox
 		Skybox* CreateSkybox(const std::string& baseFilepath, const std::string& extension);
 
@@ -386,6 +389,10 @@ namespace Velocity {
 		// Pipeline class - We only need one to start
 		std::unique_ptr<Pipeline>				m_TexturedPipeline;
 
+		// Virtually identical to above, but with different push constant ranges
+		std::unique_ptr<Pipeline>				m_PBRPipeline;
+
+		// Only draws the skybox
 		std::unique_ptr<Pipeline>				m_SkyboxPipeline;
 
 		// Collection of framebuffers for the swapchain
@@ -425,7 +432,6 @@ namespace Velocity {
 
 		// Store this as it will be the same for any pipeline we make 99% of time
 		vk::DescriptorBufferInfo							m_ViewProjectionBufferInfo;
-
 		vk::DescriptorBufferInfo							m_PointLightBufferInfo;
 		PointLights											m_Lights;
 		
@@ -446,7 +452,9 @@ namespace Velocity {
 
 		// List of textures loaded by the user
 		std::vector<std::pair<std::string,Texture*>>	m_Textures;
-		std::vector<vk::DescriptorImageInfo>	m_TextureInfos;
+		std::vector<vk::DescriptorImageInfo>			m_TextureInfos;
+		// List of PBR materials created. Each component has 5 indexes that index into m_Textures
+		std::unordered_map<std::string, PBRComponent>	m_PBRMaterials;
 
 		// Also store a list of id's to display the textures in imgui windows
 		std::vector<ImTextureID>				m_TextureGUIIDs;

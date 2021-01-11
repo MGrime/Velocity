@@ -36,7 +36,7 @@ void EditorLayer::OnAttach()
 	auto room = m_Scene->CreateEntity("Sphere");
 	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
 	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Sphere"));
-	room.AddComponent<TextureComponent>(TextureComponent{ Renderer::GetRenderer()->GetTextureByReference("Wood") });
+	room.AddComponent<PBRComponent>(Renderer::GetRenderer()->CreatePBRMaterial("assets/materials/metal", ".png", "Metal"));
 
 	m_Light = m_Scene->CreateEntity("Light");
 	m_Light.RemoveComponent<TransformComponent>();

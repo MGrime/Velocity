@@ -71,4 +71,22 @@ namespace Velocity
 		PointLightComponent(const glm::vec3& position, const glm::vec3& color) : Position(position), Color(color) {}
 	};
 
+	struct PBRComponent
+	{
+		uint32_t AlbedoID = 0u;
+		uint32_t NormalID = 0u;
+		uint32_t HeightID = 0u;
+		uint32_t MetallicID = 0u;
+		uint32_t RoughnessID = 0u;
+
+		PBRComponent() = default;
+		PBRComponent(const PBRComponent&) = default;
+
+		// This works for a single component as structs are contiguous
+		uint32_t* GetPointer()
+		{
+			return &AlbedoID;
+		}
+	};
+	
 }
