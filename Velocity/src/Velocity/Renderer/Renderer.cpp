@@ -90,11 +90,11 @@ namespace Velocity
 	{
 		PBRComponent newComponent;
 		// Mark them as internal in the texture array so they arent displayed for non PBR texture adding
-		newComponent.AlbedoID = CreateTexture(basefilepath + "_albedo" + extension, "VEL_INTERNAL_" + referenceName + "_albedo");
-		newComponent.NormalID = CreateTexture(basefilepath + "_normal" + extension, "VEL_INTERNAL_" + referenceName + "_normal");
-		newComponent.HeightID = CreateTexture(basefilepath + "_height" + extension, "VEL_INTERNAL_" + referenceName + "_height");
-		newComponent.MetallicID = CreateTexture(basefilepath + "_metallic" + extension, "VEL_INTERNAL_" + referenceName + "_metallic");
-		newComponent.RoughnessID = CreateTexture(basefilepath + "_roughness" + extension, "VEL_INTERNAL_" + referenceName + "_roughness");
+		newComponent.AlbedoID() = CreateTexture(basefilepath + "_albedo" + extension, "VEL_INTERNAL_" + referenceName + "_albedo");
+		newComponent.NormalID() = CreateTexture(basefilepath + "_normal" + extension, "VEL_INTERNAL_" + referenceName + "_normal");
+		newComponent.HeightID() = CreateTexture(basefilepath + "_height" + extension, "VEL_INTERNAL_" + referenceName + "_height");
+		newComponent.MetallicID() = CreateTexture(basefilepath + "_metallic" + extension, "VEL_INTERNAL_" + referenceName + "_metallic");
+		newComponent.RoughnessID() = CreateTexture(basefilepath + "_roughness" + extension, "VEL_INTERNAL_" + referenceName + "_roughness");
 
 		// Store component for user to access later
 		m_PBRMaterials[referenceName] = newComponent;
@@ -1812,7 +1812,7 @@ namespace Velocity
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
 
 				// PBR has multiple texture indexes
-				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t) * 5, pbr.GetPointer());
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), pbr.GetSize(), pbr.GetPointer());
 
 				// Camera now pushed later in constant range
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));

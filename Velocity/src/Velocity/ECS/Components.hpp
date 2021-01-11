@@ -73,19 +73,26 @@ namespace Velocity
 
 	struct PBRComponent
 	{
-		uint32_t AlbedoID = 0u;
-		uint32_t NormalID = 0u;
-		uint32_t HeightID = 0u;
-		uint32_t MetallicID = 0u;
-		uint32_t RoughnessID = 0u;
+		uint32_t& AlbedoID() { return TextureIDs[0]; }
+		uint32_t& NormalID() { return TextureIDs[1]; }
+		uint32_t& HeightID() { return TextureIDs[2]; }
+		uint32_t& MetallicID() { return TextureIDs[3]; }
+		uint32_t& RoughnessID() { return TextureIDs[4]; }
 
 		PBRComponent() = default;
 		PBRComponent(const PBRComponent&) = default;
 
+		std::array<uint32_t, 5> TextureIDs = { 0u,0u,0u,0u,0u };
+
+		uint32_t GetSize()
+		{
+			return sizeof(uint32_t) * TextureIDs.size();
+		}
+
 		// This works for a single component as structs are contiguous
 		uint32_t* GetPointer()
 		{
-			return &AlbedoID;
+			return TextureIDs.data();
 		}
 	};
 	
