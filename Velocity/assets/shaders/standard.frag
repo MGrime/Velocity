@@ -49,7 +49,7 @@ void main() {
 		vec3 lightDirection = normalize(light.Position - fragPosition);
 		float lightLength = length(fragPosition - light.Position);
 
-		vec3 diffuse = light.Color * max(dot(norm,lightDirection),0) / lightLength * lightLength;
+		vec3 diffuse = light.Color * max(dot(norm,lightDirection),0) / lightLength;
 
 		vec3 halfway = normalize(lightDirection + cameraDirection);
 		vec3 specular = diffuse * pow(max(dot(norm,halfway),0),32.0f);

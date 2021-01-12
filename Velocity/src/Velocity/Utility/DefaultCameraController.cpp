@@ -30,15 +30,15 @@ namespace Velocity
 		
 		if (Input::IsKeyPressed(m_Bindings.forward))
 		{
-			pos.x -= moveSpeed * worldMat[2].x;
-			pos.y -= moveSpeed * worldMat[2].y;
-			pos.z -= moveSpeed * worldMat[2].z;
-		}
-		if (Input::IsKeyPressed(m_Bindings.backward))
-		{
 			pos.x += moveSpeed * worldMat[2].x;
 			pos.y += moveSpeed * worldMat[2].y;
 			pos.z += moveSpeed * worldMat[2].z;
+		}
+		if (Input::IsKeyPressed(m_Bindings.backward))
+		{
+			pos.x -= moveSpeed * worldMat[2].x;
+			pos.y -= moveSpeed * worldMat[2].y;
+			pos.z -= moveSpeed * worldMat[2].z;
 		}
 		if (Input::IsKeyPressed(m_Bindings.left))
 		{
@@ -71,19 +71,19 @@ namespace Velocity
 		auto rot = m_Camera->GetRotation();
 		if (Input::IsKeyPressed(m_Bindings.rotDown))
 		{
-			rot.x -= rotationSpeed;
+			rot.x += rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotUp))
 		{
-			rot.x += rotationSpeed;
+			rot.x -= rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotLeft))
 		{
-			rot.y += rotationSpeed;
+			rot.y -= rotationSpeed;
 		}
 		if (Input::IsKeyPressed(m_Bindings.rotRight))
 		{
-			rot.y -= rotationSpeed;
+			rot.y += rotationSpeed;
 		}
 		m_Camera->SetRotation(rot);
 		
