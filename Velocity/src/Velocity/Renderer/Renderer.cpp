@@ -42,6 +42,7 @@ namespace Velocity
 		CreateSwapchain();
 		CreateGraphicsPipelines();
 		CreateCommandPool();
+		CreateColorResources();
 		CreateDepthResources();
 		CreateFramebuffers();
 		CreateTextureSamplers();
@@ -213,6 +214,10 @@ namespace Velocity
 		// Wait until device is done
 		m_LogicalDevice->waitIdle();
 		auto result = m_LogicalDevice->waitForFences(1, &m_Syncronizer.ImagesInFlight.at(m_CurrentFrame), VK_TRUE, UINT64_MAX);
+
+		m_ColorImageView.reset();
+		m_ColorImage.reset();
+		m_ColorMemory.reset();
 		
 		m_DepthImageView.reset();
 		m_DepthImage.reset();
@@ -263,6 +268,7 @@ namespace Velocity
 		// Now remake everything we need to
 		CreateSwapchain();
 		CreateGraphicsPipelines();
+		CreateColorResources();
 		CreateDepthResources();
 		CreateFramebuffers();
 		CreateUniformBuffers();
@@ -417,6 +423,7 @@ namespace Velocity
 			{
 				m_PhysicalDevice = device;
 				foundGPU = true;
+				m_MSAASamples = GetMaxUsableSampleCount();
 				break;
 			}
 		}
@@ -722,7 +729,7 @@ namespace Velocity
 
 		vk::PipelineMultisampleStateCreateInfo multiSampling = {
 			vk::PipelineMultisampleStateCreateFlags{},
-			vk::SampleCountFlagBits::e1,
+			m_MSAASamples,
 			VK_FALSE,
 			1.0f,
 			nullptr,
@@ -870,7 +877,7 @@ namespace Velocity
 		vk::AttachmentDescription colorAttachment = {
 			vk::AttachmentDescriptionFlags{},
 			m_Swapchain->GetFormat(),
-			vk::SampleCountFlagBits::e1,
+			m_MSAASamples,
 			vk::AttachmentLoadOp::eClear,
 			vk::AttachmentStoreOp::eStore,
 			vk::AttachmentLoadOp::eDontCare,
@@ -883,13 +890,25 @@ namespace Velocity
 		vk::AttachmentDescription depthAttachment = {
 			vk::AttachmentDescriptionFlags{},
 			FindDepthFormat(),
-			vk::SampleCountFlagBits::e1,
+			m_MSAASamples,
 			vk::AttachmentLoadOp::eClear,
 			vk::AttachmentStoreOp::eDontCare,
 			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eDontCare,
 			vk::ImageLayout::eUndefined,
 			vk::ImageLayout::eDepthStencilAttachmentOptimal
+		};
+
+		vk::AttachmentDescription colorResolveAttachment = {
+			vk::AttachmentDescriptionFlags{},
+			m_Swapchain->GetFormat(),
+			vk::SampleCountFlagBits::e1,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eStore,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eColorAttachmentOptimal
 		};
 
 		// Single subpass for now
@@ -907,6 +926,11 @@ namespace Velocity
 			vk::ImageLayout::eDepthStencilAttachmentOptimal
 		};
 
+		vk::AttachmentReference colorResolveAttachmentRef = {
+			2,
+			vk::ImageLayout::eShaderReadOnlyOptimal
+		};
+
 		vk::SubpassDescription subpass = {
 			vk::SubpassDescriptionFlags{},
 			vk::PipelineBindPoint::eGraphics,
@@ -914,7 +938,7 @@ namespace Velocity
 			nullptr,
 			1,
 			&colorAttachmentRef,
-			nullptr,
+			&colorResolveAttachmentRef,
 			&depthAttachmentRef,
 			0,
 			nullptr
@@ -931,7 +955,7 @@ namespace Velocity
 			vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite
 		};
 
-		std::array<vk::AttachmentDescription, 2> attachments = { colorAttachment,depthAttachment };
+		std::array<vk::AttachmentDescription, 3> attachments = { colorAttachment,depthAttachment, colorResolveAttachment };
 
 		vk::RenderPassCreateInfo renderPassInfo = {
 			vk::RenderPassCreateFlags{},
@@ -943,34 +967,60 @@ namespace Velocity
 			&implicitDependency
 		};
 
-		// We also need to create a render pass for ImGui to use!
-		auto copyColorAttachment = colorAttachment;
-		auto copySubpass = subpass;
-		auto copyDependency = implicitDependency;
+		#pragma region IMGUI
 
-		// Gui shouldn't clear
-		//copyColorAttachment.format = vk::Format::eB8G8R8A8Unorm;
-		copyColorAttachment.loadOp = vk::AttachmentLoadOp::eLoad;
-		copyColorAttachment.initialLayout = vk::ImageLayout::eColorAttachmentOptimal;
-		copyColorAttachment.finalLayout = vk::ImageLayout::ePresentSrcKHR;
-		
-		// Remove depth buffer reference from subpass
-		copySubpass.pDepthStencilAttachment = nullptr;
-		// Also remove wait on depth buffer
-		copyDependency.srcStageMask &= vk::PipelineStageFlagBits::eEarlyFragmentTests;
-		copyDependency.dstStageMask &= vk::PipelineStageFlagBits::eEarlyFragmentTests;
-		copyDependency.dstAccessMask &= vk::AccessFlagBits::eDepthStencilAttachmentWrite;
-		// Everything else is the same
+		vk::AttachmentDescription imguiAttachment = {
+			vk::AttachmentDescriptionFlags{},
+			m_Swapchain->GetFormat(),
+			vk::SampleCountFlagBits::e1,
+			vk::AttachmentLoadOp::eLoad,
+			vk::AttachmentStoreOp::eStore,
+			vk::AttachmentLoadOp::eDontCare,
+			vk::AttachmentStoreOp::eDontCare,
+			vk::ImageLayout::eColorAttachmentOptimal,
+			vk::ImageLayout::ePresentSrcKHR
+		};
+
+		vk::AttachmentReference imguiAttachmentRef = {
+			0,
+			vk::ImageLayout::eColorAttachmentOptimal
+		};
+
+		vk::SubpassDescription imguiSubpass = {
+			vk::SubpassDescriptionFlags{},
+			vk::PipelineBindPoint::eGraphics,
+			0,
+			nullptr,
+			1,
+			&imguiAttachmentRef,
+			nullptr,
+			nullptr,
+			0,
+			nullptr		
+		};
+
+		vk::SubpassDependency imguiDepenency = {
+			VK_SUBPASS_EXTERNAL,
+			0,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::AccessFlags{},
+			vk::AccessFlagBits::eColorAttachmentWrite
+		};
+
 		vk::RenderPassCreateInfo imguiRenderPassInfo = {
 			vk::RenderPassCreateFlags{},
 			1,
-			& copyColorAttachment,
+			&imguiAttachment,
 			1,
-			& copySubpass,
+			&imguiSubpass,
 			1,
-			& copyDependency
+			&imguiDepenency
 		};
-
+		
+		#pragma endregion
+		
+		
 		// We actually create this one here
 		try
 		{
@@ -1126,9 +1176,10 @@ namespace Velocity
 		
 		for (size_t i = 0; i < m_Swapchain->GetImageViews().size(); ++i)
 		{
-			std::array<vk::ImageView, 2> attachments = {
-			m_Swapchain->GetImageViews().at(i),
-				m_DepthImageView.get()
+			std::array<vk::ImageView, 3> attachments = {
+			m_ColorImageView.get(),
+				m_DepthImageView.get(),
+				m_Swapchain->GetImageViews().at(i)
 			};
 			
 			vk::FramebufferCreateInfo framebufferInfo = {
@@ -1195,6 +1246,93 @@ namespace Velocity
 
 		VEL_CORE_INFO("Created command pool!");
 	}
+	// Creates MSAA buffers
+	void Renderer::CreateColorResources()
+	{
+		auto colorFormat = m_Swapchain->GetFormat();
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+
+		// Create image
+		vk::ImageCreateInfo imageInfo = {
+			vk::ImageCreateFlags{},
+			vk::ImageType::e2D,
+			colorFormat,
+			vk::Extent3D{
+				m_Swapchain->GetWidth(),
+				m_Swapchain->GetHeight(),
+				1
+			},
+			1,
+			1,
+			m_MSAASamples,
+			vk::ImageTiling::eOptimal,
+			vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransientAttachment,
+			vk::SharingMode::eExclusive,
+			1,
+			&indices.GraphicsFamily.value(),
+			vk::ImageLayout::eUndefined
+		};
+
+		try
+		{
+			m_ColorImage = m_LogicalDevice->createImageUnique(imageInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ERROR("Could not create msaa buffer image. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not msaa depth buffer image. Error: {0}", e.what());
+			return;
+		}
+
+		// Create memory
+		auto memRequirements = m_LogicalDevice->getImageMemoryRequirements(m_ColorImage.get());
+
+		vk::MemoryAllocateInfo allocInfo = {
+			memRequirements.size,
+			BaseBuffer::FindMemoryType(m_PhysicalDevice,memRequirements.memoryTypeBits,vk::MemoryPropertyFlagBits::eDeviceLocal)
+		};
+
+		try
+		{
+			m_ColorMemory = m_LogicalDevice->allocateMemoryUnique(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ERROR("Could not create msaa buffer memory. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not msaa depth buffer memory. Error: {0}", e.what());
+			return;
+		}
+
+		// Bind
+		m_LogicalDevice->bindImageMemory(m_ColorImage.get(), m_ColorMemory.get(), 0);
+
+		// Create imageview
+
+		vk::ImageViewCreateInfo imageViewInfo = {
+			vk::ImageViewCreateFlags{},
+			m_ColorImage.get(),
+			vk::ImageViewType::e2D,
+			colorFormat,
+			vk::ComponentMapping{},
+			{
+				vk::ImageAspectFlagBits::eColor,
+				0,
+				1,
+				0,
+				1
+			}
+		};
+
+		try
+		{
+			m_ColorImageView = m_LogicalDevice->createImageViewUnique(imageViewInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ERROR("Could not create msaa buffer imageview. Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Could not create msaa buffer imageview. Error: {0}", e.what());
+		}
+	}
 
 	// Create the depth buffer 
 	void Renderer::CreateDepthResources()
@@ -1214,7 +1352,7 @@ namespace Velocity
 			},
 			1,
 			1,
-			vk::SampleCountFlagBits::e1,
+			m_MSAASamples,
 			vk::ImageTiling::eOptimal,
 			vk::ImageUsageFlagBits::eDepthStencilAttachment,
 			vk::SharingMode::eExclusive,

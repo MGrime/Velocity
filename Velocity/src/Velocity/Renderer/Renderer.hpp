@@ -263,6 +263,9 @@ namespace Velocity {
 		// Creates framebuffers using the pipeline render pass details and the swapchain
 		void CreateFramebuffers();
 
+		// Creates MSAA buffers
+		void CreateColorResources();
+
 		// Create the depth buffer 
 		void CreateDepthResources();
 
@@ -355,6 +358,22 @@ namespace Velocity {
 		{
 			return format == vk::Format::eD32SfloatS8Uint || format == vk::Format::eD24UnormS8Uint;
 		}
+
+		// Get the maximum supported msaa samples
+		vk::SampleCountFlagBits GetMaxUsableSampleCount()
+		{
+			vk::PhysicalDeviceProperties props = m_PhysicalDevice.getProperties();
+
+			vk::SampleCountFlags counts = props.limits.framebufferColorSampleCounts & props.limits.framebufferDepthSampleCounts;
+			if (counts & vk::SampleCountFlagBits::e64) { return vk::SampleCountFlagBits::e64; }
+			if (counts & vk::SampleCountFlagBits::e32) { return vk::SampleCountFlagBits::e32; }
+			if (counts & vk::SampleCountFlagBits::e16) { return vk::SampleCountFlagBits::e16; }
+			if (counts & vk::SampleCountFlagBits::e8) { return vk::SampleCountFlagBits::e8; }
+			if (counts & vk::SampleCountFlagBits::e4) { return vk::SampleCountFlagBits::e4; }
+			if (counts & vk::SampleCountFlagBits::e2) { return vk::SampleCountFlagBits::e2; }
+
+			return vk::SampleCountFlagBits::e1;
+		}
 		
 		#pragma endregion
 
@@ -385,6 +404,9 @@ namespace Velocity {
 
 		// Swapchain class
 		std::unique_ptr<Swapchain>				m_Swapchain;
+
+		// MSAA count
+		vk::SampleCountFlagBits					m_MSAASamples = vk::SampleCountFlagBits::e1;
 
 		// Pipeline class - We only need one to start
 		std::unique_ptr<Pipeline>				m_TexturedPipeline;
@@ -463,6 +485,11 @@ namespace Velocity {
 		vk::UniqueImage							m_DepthImage;
 		vk::UniqueDeviceMemory					m_DepthMemory;
 		vk::UniqueImageView						m_DepthImageView;
+
+		// Color MSAA buffer
+		vk::UniqueImage							m_ColorImage;
+		vk::UniqueDeviceMemory					m_ColorMemory;
+		vk::UniqueImageView						m_ColorImageView;
 
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, MeshComponent> m_Renderables;

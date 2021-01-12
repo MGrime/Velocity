@@ -186,7 +186,7 @@ private:
 					for (auto& mesh : meshList)
 					{
 						// Hide any internal meshes loaded by the engine
-						if (mesh.first.find("VEL_INTERNAL") != std::string::npos)
+						if (mesh.first.find("VEL_INTERNAL") == std::string::npos)
 						{
 							ImGui::PushID(mesh.first.c_str());
 							if (ImGui::Selectable(mesh.first.c_str()))
@@ -215,7 +215,7 @@ private:
 				{
 					for (auto& texture : textureList)
 					{
-						if (texture.first.find("VEL_INTERNAL") != std::string::npos)
+						if (texture.first.find("VEL_INTERNAL") == std::string::npos)
 						{
 							ImGui::PushID(texture.first.c_str());
 							if (ImGui::Selectable(texture.first.c_str()))
