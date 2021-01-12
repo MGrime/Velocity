@@ -29,7 +29,8 @@ namespace Velocity {
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
 	{
-		friend class Scene;	// Scene needs to update some data when components are added/removed
+		friend class Scene;			// Scene needs to update some data when components are added/removed
+		friend class ImGuiLayer;	// Gui needs to call a viewport function
 	public:
 		Renderer();
 
@@ -260,6 +261,9 @@ namespace Velocity {
 		// Chonky function that creates a full pipeline
 		void CreateGraphicsPipelines();
 
+		// Create intermediate buffers
+		void CreateFramebufferResources();
+		
 		// Creates framebuffers using the pipeline render pass details and the swapchain
 		void CreateFramebuffers();
 
@@ -308,6 +312,9 @@ namespace Velocity {
 
 		// Updates uniform buffers with scene data
 		void UpdateUniformBuffers();
+
+		// Draws viewport image into an imgui window
+		void DrawViewport();
 		
 		#pragma endregion 
 		
@@ -491,6 +498,14 @@ namespace Velocity {
 		vk::UniqueDeviceMemory					m_ColorMemory;
 		vk::UniqueImageView						m_ColorImageView;
 
+		// Render target for the end of first render pass
+		std::vector<vk::UniqueImage>			m_FramebufferImages;
+		std::vector<vk::UniqueDeviceMemory>		m_FramebufferMemories;
+		std::vector<vk::UniqueImageView>		m_FramebufferImageViews;
+
+		// Image for copy to imgui
+		std::vector<ImTextureID>				m_FramebufferGUIIDs;
+		
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, MeshComponent> m_Renderables;
 

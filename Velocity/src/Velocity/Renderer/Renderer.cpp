@@ -44,8 +44,9 @@ namespace Velocity
 		CreateCommandPool();
 		CreateColorResources();
 		CreateDepthResources();
-		CreateFramebuffers();
 		CreateTextureSamplers();
+		CreateFramebufferResources();
+		CreateFramebuffers();
 		CreateBufferManager();
 		CreateUniformBuffers();
 		CreateDescriptorPool();
@@ -223,6 +224,21 @@ namespace Velocity
 		m_DepthImage.reset();
 		m_DepthMemory.reset();
 
+		for (auto& view : m_FramebufferImageViews)
+		{
+			view.reset();
+		}
+		
+		for (auto& image : m_FramebufferImages)
+		{
+			image.reset();
+		}
+
+		for (auto& memory : m_FramebufferMemories)
+		{
+			memory.reset();
+		}
+
 		for (auto& buffer : m_Framebuffers)
 		{
 			buffer.reset();
@@ -270,6 +286,7 @@ namespace Velocity
 		CreateGraphicsPipelines();
 		CreateColorResources();
 		CreateDepthResources();
+		CreateFramebufferResources();
 		CreateFramebuffers();
 		CreateUniformBuffers();
 		CreateDescriptorPool();
@@ -908,7 +925,7 @@ namespace Velocity
 			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eDontCare,
 			vk::ImageLayout::eUndefined,
-			vk::ImageLayout::eColorAttachmentOptimal
+			vk::ImageLayout::eShaderReadOnlyOptimal
 		};
 
 		// Single subpass for now
@@ -949,11 +966,24 @@ namespace Velocity
 		vk::SubpassDependency implicitDependency = {
 			VK_SUBPASS_EXTERNAL,
 			0,
+			vk::PipelineStageFlagBits::eFragmentShader | vk::PipelineStageFlagBits::eEarlyFragmentTests,
 			vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
-			vk::PipelineStageFlagBits::eColorAttachmentOutput | vk::PipelineStageFlagBits::eEarlyFragmentTests,
-			vk::AccessFlags{},
-			vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite
+			vk::AccessFlagBits::eShaderRead,
+			vk::AccessFlagBits::eColorAttachmentWrite | vk::AccessFlagBits::eDepthStencilAttachmentWrite,
+			vk::DependencyFlagBits::eByRegion
 		};
+
+		vk::SubpassDependency attachToShaderDependency = {
+			0,
+			VK_SUBPASS_EXTERNAL,
+			vk::PipelineStageFlagBits::eColorAttachmentOutput,
+			vk::PipelineStageFlagBits::eFragmentShader,
+			vk::AccessFlagBits::eColorAttachmentWrite,
+			vk::AccessFlagBits::eShaderRead,
+			vk::DependencyFlagBits::eByRegion
+		};
+
+		std::array<vk::SubpassDependency, 2> dependencies = { implicitDependency,attachToShaderDependency };
 
 		std::array<vk::AttachmentDescription, 3> attachments = { colorAttachment,depthAttachment, colorResolveAttachment };
 
@@ -963,8 +993,8 @@ namespace Velocity
 			attachments.data(),
 			1,
 			&subpass,
-			1,
-			&implicitDependency
+			static_cast<uint32_t>(dependencies.size()),
+			dependencies.data()
 		};
 
 		#pragma region IMGUI
@@ -973,11 +1003,11 @@ namespace Velocity
 			vk::AttachmentDescriptionFlags{},
 			m_Swapchain->GetFormat(),
 			vk::SampleCountFlagBits::e1,
-			vk::AttachmentLoadOp::eLoad,
+			vk::AttachmentLoadOp::eClear,
 			vk::AttachmentStoreOp::eStore,
 			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eDontCare,
-			vk::ImageLayout::eColorAttachmentOptimal,
+			vk::ImageLayout::eUndefined,
 			vk::ImageLayout::ePresentSrcKHR
 		};
 
@@ -1167,6 +1197,99 @@ namespace Velocity
 
 	}
 
+	// Create intermediate buffers
+	void Renderer::CreateFramebufferResources()
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		// Create images
+		m_FramebufferImages.resize(m_Swapchain->GetImages().size());
+		m_FramebufferMemories.resize(m_Swapchain->GetImages().size());
+		m_FramebufferImageViews.resize(m_Swapchain->GetImages().size());
+
+		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
+		{
+			vk::ImageCreateInfo createInfo = {
+				vk::ImageCreateFlags{},
+				vk::ImageType::e2D,
+				m_Swapchain->GetFormat(),
+				vk::Extent3D {
+					m_Swapchain->GetWidth(),
+					m_Swapchain->GetHeight(),
+					1
+				},
+				1,
+				1,
+				vk::SampleCountFlagBits::e1,
+				vk::ImageTiling::eOptimal,
+				vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+				vk::SharingMode::eExclusive,
+				1,
+				&indices.GraphicsFamily.value(),
+				vk::ImageLayout::eUndefined
+			};
+
+			try
+			{
+				m_FramebufferImages.at(i) = m_LogicalDevice->createImageUnique(createInfo);
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ERROR("An error occurred in creating the framebuffer images: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create framebuffer images! Error {0}", e.what());
+			}
+
+			// Create memory
+			vk::MemoryRequirements memRequirements = m_LogicalDevice->getImageMemoryRequirements(m_FramebufferImages.at(i).get());
+
+			vk::MemoryAllocateInfo allocInfo = {
+				memRequirements.size,
+				BaseBuffer::FindMemoryType(m_PhysicalDevice,memRequirements.memoryTypeBits,vk::MemoryPropertyFlagBits::eDeviceLocal)
+			};
+
+			try
+			{
+				m_FramebufferMemories.at(i) = m_LogicalDevice->allocateMemoryUnique(allocInfo);
+
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ERROR("An error occurred in creating the framebuffer images memory: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create framebuffer images memory! Error {0}", e.what());
+				return;
+			}
+
+			m_LogicalDevice->bindImageMemory(m_FramebufferImages.at(i).get(), m_FramebufferMemories.at(i).get(),0);
+
+			// Create views
+			vk::ImageViewCreateInfo viewInfo = {
+				vk::ImageViewCreateFlags{},
+				m_FramebufferImages.at(i).get(),
+				vk::ImageViewType::e2D,
+				m_Swapchain->GetFormat(),
+				{
+				},
+			{
+					vk::ImageAspectFlagBits::eColor,
+					0,
+					1,
+					0,
+					1
+				}
+			};
+			try
+			{
+				m_FramebufferImageViews.at(i) = m_LogicalDevice->createImageViewUnique(viewInfo);
+
+			}
+			catch (vk::SystemError& e)
+			{
+				VEL_CORE_ERROR("An error occurred in creating the framebuffer image views: {0}", e.what());
+				VEL_CORE_ASSERT(false, "Failed to create framebuffer image views! Error {0}", e.what());
+				return;
+			}
+		}
+	}
+
 	// Creates framebuffers using the pipeline render pass details and the swapchain
 	void Renderer::CreateFramebuffers()
 	{
@@ -1179,7 +1302,7 @@ namespace Velocity
 			std::array<vk::ImageView, 3> attachments = {
 			m_ColorImageView.get(),
 				m_DepthImageView.get(),
-				m_Swapchain->GetImageViews().at(i)
+				m_FramebufferImageViews.at(i).get()
 			};
 			
 			vk::FramebufferCreateInfo framebufferInfo = {
@@ -1817,6 +1940,13 @@ namespace Velocity
 		{
 			m_TextureGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), texture.second->m_ImageView.get(), (VkImageLayout)texture.second->m_CurrentLayout));
 		}
+
+		m_FramebufferGUIIDs.clear();
+
+		for (auto& view : m_FramebufferImageViews)
+		{
+			m_FramebufferGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), view.get(), static_cast<VkImageLayout>(vk::ImageLayout::eShaderReadOnlyOptimal)));
+		}
 		
 	}
 	#pragma endregion 
@@ -2068,6 +2198,54 @@ namespace Velocity
 		m_ImGuiCommandBuffers.at(m_CurrentImage).endRenderPass();
 		
 		m_ImGuiCommandBuffers.at(m_CurrentImage).end();
+	}
+
+	// Draws viewport image into an imgui window
+	void Renderer::DrawViewport()
+	{
+		// Get a reference to the imgui IO
+		auto& io = ImGui::GetIO();
+		
+		// Setup style vars for this window
+		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));   // Reduced padding for nicer fill on viewport
+
+		ImGui::Begin("Viewport");
+		
+		// Set callback bool for event handler
+		if (ImGui::IsWindowHovered())
+		{
+			io.ViewportWindowHovered = true;
+		}
+		else
+		{
+			io.ViewportWindowHovered = false;
+		}
+		
+		// Get the size of the image
+		auto sourceSize = ImVec2(m_Swapchain->GetWidthF(), m_Swapchain->GetHeightF());
+		// Get the size of the window
+		auto dstSize = ImGui::GetWindowContentRegionMax();
+
+		// Work out the scale between the two
+		float scale = glm::min(dstSize.x / sourceSize.y, dstSize.y / sourceSize.y);
+		
+		// Scale the source size
+		ImVec2 finalSize = { sourceSize.x * scale, sourceSize.y * scale };
+
+		// Calculate and set central pos in window
+		ImVec2 halfCursorPos = { (ImGui::GetWindowContentRegionMax().x - finalSize.x) * 0.5f,(ImGui::GetWindowContentRegionMax().y - finalSize.y) * 0.5f };
+		ImGui::SetCursorPos(halfCursorPos);
+
+		// Draw image at this point and size
+		ImGui::Image(m_FramebufferGUIIDs.at(m_CurrentImage), finalSize);
+
+		// Set the size of this window in the IO struct for camera to pickup on
+		io.ViewportImageSize = finalSize;
+		
+		// End the window
+		ImGui::End();
+		
+		ImGui::PopStyleVar();
 	}
 
 	#pragma endregion 

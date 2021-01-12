@@ -86,7 +86,7 @@ namespace Velocity
 
 		uint32_t GetSize()
 		{
-			return sizeof(uint32_t) * TextureIDs.size();
+			return sizeof(uint32_t) * static_cast<uint32_t>(TextureIDs.size());
 		}
 
 		// This works for a single component as structs are contiguous

@@ -11,6 +11,8 @@
 
 #include <Velocity/Utility/KeyCodes.hpp>
 
+#include "Velocity/Renderer/Renderer.hpp"
+
 namespace Velocity
 {
 	void ImGuiLayer::OnEvent(Event& event)
@@ -32,10 +34,17 @@ namespace Velocity
 		ImGui::NewFrame();
 
 		ImGui::GetIO().ViewportDrawCalled = false;
-		
+
+		if (ImGui::GetIO().ConfigFlags & ImGuiConfigFlags_DockingEnable)
+		{
+			ImGui::DockSpaceOverViewport(ImGui::GetMainViewport());
+		}	
 	}
 	void ImGuiLayer::End()
 	{
+		Renderer::GetRenderer()->DrawViewport();
+
+		
 		// Finalise render data
 		ImGui::EndFrame();
 		ImGui::Render();

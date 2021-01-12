@@ -5,6 +5,8 @@
 #include <Velocity/Utility/Input.hpp>
 
 
+
+#include "imgui.h"
 #include "Velocity/Core/Application.hpp"
 
 namespace Velocity
@@ -86,6 +88,16 @@ namespace Velocity
 			rot.y += rotationSpeed;
 		}
 		m_Camera->SetRotation(rot);
+
+		// When in editor and unpaused, check imgui io viewport size and adjust aspect accordingly
+		if (Application::GetWindow()->IsPaused())
+		{
+			return;
+		}
+		
+		auto& io = ImGui::GetIO();
+		auto size = io.ViewportImageSize;
+		m_Camera->SetAspectRatio(size.x / size.y);
 		
 	}
 
