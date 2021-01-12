@@ -1,24 +1,15 @@
 #include "EditorLayer.hpp"
 
+
+#include "../Panels/CameraStatePanel.hpp"
 #include "../Panels/SceneViewPanel.hpp"
+#include "Velocity/Utility/Input.hpp"
 
 void EditorLayer::OnGuiRender()
 {
 	SceneViewPanel::Draw(m_Scene.get());
 
-	ImGui::Begin("Camera State");
-
-	auto pos = m_CameraController->GetCamera()->GetPosition();
-	
-	ImGui::Text("X: %f Y: %f Z: %f", pos.x, pos.y, pos.z);
-
-	if (ImGui::Button("Reset camera"))
-	{
-		m_CameraController->GetCamera()->SetPosition({});
-		m_CameraController->GetCamera()->SetRotation({});
-	}
-	
-	ImGui::End();
+	CameraStatePanel::Draw(*m_CameraController.get());
 }
 
 void EditorLayer::OnAttach()
@@ -38,7 +29,7 @@ void EditorLayer::OnAttach()
 	// Load texture
 	renderer->CreateTexture("assets/materials/gold_albedo.png", "Gold");
 
-	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/stairs", ".jpg"));
+	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/trance", ".jpg"));
 
 	auto room = m_Scene->CreateEntity("Sphere");
 	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);

@@ -27,6 +27,8 @@
 #include <backends/imgui_impl_vulkan.h>
 #include <backends/imgui_impl_glfw.h>
 
+#include "Velocity/Utility/Input.hpp"
+
 namespace Velocity
 {
 	std::shared_ptr<Renderer> Renderer::s_Renderer = nullptr;
@@ -150,10 +152,15 @@ namespace Velocity
 		// Submit command buffer
 
 		// Records everything submitted
+		// If enablegui = false it will also copy to the swapchain image
 		RecordCommandBuffers();
 
-		// Records submitted gui
-		RecordImGuiCommandBuffers();
+		if (m_EnableGUI)
+		{
+			// Records submitted gui
+			RecordImGuiCommandBuffers();
+		}
+
 
 		// Which semaphores to wait on before starting submission
 		std::array<vk::Semaphore,1> waitSemaphores = { m_Syncronizer.ImageAvailable.at(m_CurrentFrame).get() };
@@ -168,11 +175,15 @@ namespace Velocity
 		UpdateUniformBuffers();
 		
 		// Combine all above data
+		std::vector<vk::CommandBuffer> submitBuffer;
+		submitBuffer.reserve(2);
 
-		std::array<vk::CommandBuffer, 2> submitBuffer = {
-			m_CommandBuffers.at(m_CurrentImage).get(),
-			m_ImGuiCommandBuffers.at(m_CurrentImage)
-		};
+		submitBuffer.push_back(m_CommandBuffers.at(m_CurrentImage).get());
+		
+		if (m_EnableGUI)
+		{
+			submitBuffer.push_back(m_ImGuiCommandBuffers.at(m_CurrentImage));
+		}
 		
 		vk::SubmitInfo submitInfo = {
 			static_cast<uint32_t>(waitSemaphores.size()),
@@ -207,6 +218,9 @@ namespace Velocity
 		result = m_PresentQueue.presentKHR(&presentInfo);
 
 		m_CurrentFrame = (m_CurrentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+
+		// Flush key events
+		Input::OnFrameFinished();
 	}
 
 	// Called by app when resize occurs
@@ -574,7 +588,7 @@ namespace Velocity
 		createInfo.imageColorSpace = surfaceFormat.colorSpace;
 		createInfo.imageExtent = extent;
 		createInfo.imageArrayLayers = 1;
-		createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment;
+		createInfo.imageUsage = vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eTransferDst;	// We might need to copy into the swapchain if GUI is disabled
 		createInfo.imageSharingMode = sharingMode;
 		createInfo.queueFamilyIndexCount = indexCount;
 		createInfo.pQueueFamilyIndices = indicesPtr;
@@ -1221,7 +1235,7 @@ namespace Velocity
 				1,
 				vk::SampleCountFlagBits::e1,
 				vk::ImageTiling::eOptimal,
-				vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled,
+				vk::ImageUsageFlagBits::eColorAttachment | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc,
 				vk::SharingMode::eExclusive,
 				1,
 				&indices.GraphicsFamily.value(),
@@ -1947,6 +1961,61 @@ namespace Velocity
 		{
 			m_FramebufferGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), view.get(), static_cast<VkImageLayout>(vk::ImageLayout::eShaderReadOnlyOptimal)));
 		}
+
+		// Setup style
+		#pragma region ugly style code
+		auto& colors = style.Colors;
+		colors[ImGuiCol_Text] = ImVec4(1.00f, 1.00f, 1.00f, 1.00f);
+		colors[ImGuiCol_TextDisabled] = ImVec4(0.821f, 0.821f, 0.821f, 1.00f);
+		colors[ImGuiCol_WindowBg] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		colors[ImGuiCol_ChildBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		colors[ImGuiCol_PopupBg] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		colors[ImGuiCol_Border] = ImVec4(0.358f, 0.358f, 0.358f, 0.88f);
+		colors[ImGuiCol_BorderShadow] = ImVec4(0.92f, 0.91f, 0.88f, 0.00f);
+		colors[ImGuiCol_FrameBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_FrameBgHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		colors[ImGuiCol_FrameBgActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		colors[ImGuiCol_TitleBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_TitleBgActive] = ImVec4(0.07f, 0.07f, 0.09f, 1.00f);
+		colors[ImGuiCol_TitleBgCollapsed] = ImVec4(1.00f, 0.98f, 0.95f, 0.75f);
+		colors[ImGuiCol_MenuBarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_ScrollbarBg] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_ScrollbarGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		colors[ImGuiCol_ScrollbarGrabHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		colors[ImGuiCol_ScrollbarGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		colors[ImGuiCol_CheckMark] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		colors[ImGuiCol_SliderGrab] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		colors[ImGuiCol_SliderGrabActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		colors[ImGuiCol_Button] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_ButtonHovered] = ImVec4(0.24f, 0.23f, 0.29f, 1.00f);
+		colors[ImGuiCol_ButtonActive] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		colors[ImGuiCol_Header] = ImVec4(0.10f, 0.09f, 0.12f, 1.00f);
+		colors[ImGuiCol_HeaderHovered] = ImVec4(0.12f, 0.11f, 0.12f, 1.00f);
+		colors[ImGuiCol_HeaderActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		colors[ImGuiCol_Separator] = ImVec4(0.43f, 0.43f, 0.50f, 0.50f);
+		colors[ImGuiCol_SeparatorHovered] = ImVec4(0.10f, 0.40f, 0.75f, 0.78f);
+		colors[ImGuiCol_SeparatorActive] = ImVec4(0.10f, 0.40f, 0.75f, 1.00f);
+		colors[ImGuiCol_ResizeGrip] = ImVec4(0.00f, 0.00f, 0.00f, 0.00f);
+		colors[ImGuiCol_ResizeGripHovered] = ImVec4(0.56f, 0.56f, 0.58f, 1.00f);
+		colors[ImGuiCol_ResizeGripActive] = ImVec4(0.06f, 0.05f, 0.07f, 1.00f);
+		colors[ImGuiCol_Tab] = ImVec4(0.10f, 0.09f, 0.08f, 0.86f);
+		colors[ImGuiCol_TabHovered] = ImVec4(0.24f, 0.23f, 0.29f, 0.80f);
+		colors[ImGuiCol_TabActive] = ImVec4(0.56f, 0.56f, 0.58f, 0.22f);
+		colors[ImGuiCol_TabUnfocused] = ImVec4(0.10f, 0.09f, 0.08f, 0.86f);
+		colors[ImGuiCol_TabUnfocusedActive] = ImVec4(0.56f, 0.56f, 0.58f, 0.22f);
+		colors[ImGuiCol_DockingPreview] = ImVec4(0.80f, 0.80f, 0.83f, 0.31f);
+		colors[ImGuiCol_DockingEmptyBg] = ImVec4(0.20f, 0.20f, 0.20f, 1.00f);
+		colors[ImGuiCol_PlotLines] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		colors[ImGuiCol_PlotLinesHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		colors[ImGuiCol_PlotHistogram] = ImVec4(0.40f, 0.39f, 0.38f, 0.63f);
+		colors[ImGuiCol_PlotHistogramHovered] = ImVec4(0.25f, 1.00f, 0.00f, 1.00f);
+		colors[ImGuiCol_TextSelectedBg] = ImVec4(0.25f, 1.00f, 0.00f, 0.43f);
+		colors[ImGuiCol_DragDropTarget] = ImVec4(1.00f, 1.00f, 0.00f, 0.90f);
+		colors[ImGuiCol_NavHighlight] = ImVec4(0.26f, 0.59f, 0.98f, 1.00f);
+		colors[ImGuiCol_NavWindowingHighlight] = ImVec4(1.00f, 1.00f, 1.00f, 0.70f);
+		colors[ImGuiCol_NavWindowingDimBg] = ImVec4(0.80f, 0.80f, 0.80f, 0.20f);
+		colors[ImGuiCol_ModalWindowDimBg] = ImVec4(1.00f, 0.98f, 0.95f, 0.73f);
+		#pragma endregion
 		
 	}
 	#pragma endregion 
@@ -2093,6 +2162,11 @@ namespace Velocity
 		// 3. End
 		cmdBuffer->endRenderPass();
 
+		if (!m_EnableGUI)
+		{
+			DirectCopyToSwapchain(cmdBuffer.get());
+		}
+
 		// 4. Check
 		try
 		{
@@ -2198,6 +2272,77 @@ namespace Velocity
 		m_ImGuiCommandBuffers.at(m_CurrentImage).endRenderPass();
 		
 		m_ImGuiCommandBuffers.at(m_CurrentImage).end();
+	}
+
+	// Copies the final result of the first render pass and copies it into the swapchain directly if GUI is disabled
+	void Renderer::DirectCopyToSwapchain(vk::CommandBuffer& cmdBuffer)
+	{
+		// Transition framebuffer from shader read to transfer src
+		Texture::TransitionImageLayout(
+			cmdBuffer,
+			m_FramebufferImages.at(m_CurrentImage).get(),
+			m_Swapchain->GetFormat(),
+			vk::ImageLayout::eShaderReadOnlyOptimal,
+			vk::ImageLayout::eTransferSrcOptimal,
+			1,
+			1
+		);
+
+		// Transition swapchain from undefined to transfer dst
+		Texture::TransitionImageLayout(
+			cmdBuffer,
+			m_Swapchain->GetImages().at(m_CurrentImage),
+			m_Swapchain->GetFormat(),
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eTransferDstOptimal,
+			1,
+			1
+		);
+		
+		vk::ImageCopy copyRegion = {
+			vk::ImageSubresourceLayers {
+				vk::ImageAspectFlagBits::eColor,
+				0,
+				0,
+				1
+			},
+			vk::Offset3D {},
+			vk::ImageSubresourceLayers {
+				vk::ImageAspectFlagBits::eColor,
+				0,
+				0,
+				1,
+			},
+			vk::Offset3D{},
+			vk::Extent3D {
+				m_Swapchain->GetWidth(),
+				m_Swapchain->GetHeight(),
+				1
+			}
+		};
+		
+		cmdBuffer.copyImage(
+			m_FramebufferImages.at(m_CurrentImage).get(),
+			vk::ImageLayout::eTransferSrcOptimal,
+			m_Swapchain->GetImages().at(m_CurrentImage),
+			vk::ImageLayout::eTransferDstOptimal,
+			1,
+			&copyRegion
+		);
+
+		// Transition swapchain back to present
+		
+		Texture::TransitionImageLayout(
+			cmdBuffer,
+			m_Swapchain->GetImages().at(m_CurrentImage),
+			m_Swapchain->GetFormat(),
+			vk::ImageLayout::eTransferDstOptimal,
+			vk::ImageLayout::ePresentSrcKHR,
+			1,
+			1
+		);
+		
+		
 	}
 
 	// Draws viewport image into an imgui window

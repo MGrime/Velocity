@@ -8,6 +8,7 @@
 
 #include "imgui.h"
 #include "Velocity/Core/Application.hpp"
+#include "Velocity/Renderer/Renderer.hpp"
 
 namespace Velocity
 {
@@ -23,44 +24,44 @@ namespace Velocity
 		// Speed up check
 		float moveSpeed = m_MoveSpeed * deltaTime;
 		float rotationSpeed = m_RotationSpeed * deltaTime;
-		if (Input::IsKeyPressed(m_Bindings.speedUp))
+		if (Input::IsKeyHeld(m_Bindings.speedUp))
 		{
 			moveSpeed *= 3.0f;
 		}
 		auto pos = m_Camera->GetPosition();
 		auto worldMat = m_Camera->GetWorldMatrix();
 		
-		if (Input::IsKeyPressed(m_Bindings.forward))
+		if (Input::IsKeyHeld(m_Bindings.forward))
 		{
 			pos.x += moveSpeed * worldMat[2].x;
 			pos.y += moveSpeed * worldMat[2].y;
 			pos.z += moveSpeed * worldMat[2].z;
 		}
-		if (Input::IsKeyPressed(m_Bindings.backward))
+		if (Input::IsKeyHeld(m_Bindings.backward))
 		{
 			pos.x -= moveSpeed * worldMat[2].x;
 			pos.y -= moveSpeed * worldMat[2].y;
 			pos.z -= moveSpeed * worldMat[2].z;
 		}
-		if (Input::IsKeyPressed(m_Bindings.left))
+		if (Input::IsKeyHeld(m_Bindings.left))
 		{
 			pos.x -= moveSpeed * worldMat[0].x;
 			pos.y -= moveSpeed * worldMat[0].y;
 			pos.z -= moveSpeed * worldMat[0].z;
 		}
-		if (Input::IsKeyPressed(m_Bindings.right))
+		if (Input::IsKeyHeld(m_Bindings.right))
 		{
 			pos.x += moveSpeed * worldMat[0].x;
 			pos.y += moveSpeed * worldMat[0].y;
 			pos.z += moveSpeed * worldMat[0].z;
 		}
-		if (Input::IsKeyPressed(m_Bindings.up))
+		if (Input::IsKeyHeld(m_Bindings.up))
 		{
 			pos.x += moveSpeed * worldMat[1].x;
 			pos.y += moveSpeed * worldMat[1].y;
 			pos.z += moveSpeed * worldMat[1].z;
 		}
-		if (Input::IsKeyPressed(m_Bindings.down))
+		if (Input::IsKeyHeld(m_Bindings.down))
 		{
 			pos.x -= moveSpeed * worldMat[1].x;
 			pos.y -= moveSpeed * worldMat[1].y;
@@ -71,26 +72,26 @@ namespace Velocity
 
 		// Rotation
 		auto rot = m_Camera->GetRotation();
-		if (Input::IsKeyPressed(m_Bindings.rotDown))
+		if (Input::IsKeyHeld(m_Bindings.rotDown))
 		{
 			rot.x += rotationSpeed;
 		}
-		if (Input::IsKeyPressed(m_Bindings.rotUp))
+		if (Input::IsKeyHeld(m_Bindings.rotUp))
 		{
 			rot.x -= rotationSpeed;
 		}
-		if (Input::IsKeyPressed(m_Bindings.rotLeft))
+		if (Input::IsKeyHeld(m_Bindings.rotLeft))
 		{
 			rot.y -= rotationSpeed;
 		}
-		if (Input::IsKeyPressed(m_Bindings.rotRight))
+		if (Input::IsKeyHeld(m_Bindings.rotRight))
 		{
 			rot.y += rotationSpeed;
 		}
 		m_Camera->SetRotation(rot);
 
-		// When in editor and unpaused, check imgui io viewport size and adjust aspect accordingly
-		if (Application::GetWindow()->IsPaused())
+		// When unpaused or in editor, check imgui io viewport size and adjust aspect accordingly
+		if (Application::GetWindow()->IsPaused() || !Renderer::GetRenderer()->m_EnableGUI)
 		{
 			return;
 		}

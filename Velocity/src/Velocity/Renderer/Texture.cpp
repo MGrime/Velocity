@@ -220,6 +220,24 @@ namespace Velocity
 			sourceStage = vk::PipelineStageFlagBits::eTransfer;
 			destStage = vk::PipelineStageFlagBits::eFragmentShader;
 		}
+		else if (oldLayout == vk::ImageLayout::eShaderReadOnlyOptimal && newLayout == vk::ImageLayout::eTransferSrcOptimal)
+		{
+			barrier.srcAccessMask = vk::AccessFlagBits::eShaderRead;
+			barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+
+			sourceStage = vk::PipelineStageFlagBits::eFragmentShader;
+			destStage = vk::PipelineStageFlagBits::eTransfer;
+			
+		}
+		else if (oldLayout == vk::ImageLayout::eTransferDstOptimal && newLayout == vk::ImageLayout::ePresentSrcKHR)
+		{
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+			barrier.dstAccessMask = vk::AccessFlags{};
+
+			sourceStage = vk::PipelineStageFlagBits::eTransfer;
+			destStage = vk::PipelineStageFlagBits::eBottomOfPipe;
+			
+		}
 		else
 		{
 			VEL_CORE_ERROR("Unsupported layout transition!");

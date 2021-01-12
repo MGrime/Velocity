@@ -9,6 +9,7 @@
 #include "Velocity/Core/Log.hpp"
 
 #include "Velocity/Renderer/Renderer.hpp"
+#include "Velocity/Utility/Input.hpp"
 
 namespace Velocity
 {
@@ -40,15 +41,22 @@ namespace Velocity
 				layer->OnUpdate(time);
 			}
 
-			// TODO: GUI HERE
+			// TODO: safely disable this code when gui rendering disabled
+
 			// begin gui
 			m_ImGuiLayer->Begin();
 
-			// Render each layer
-			for (Layer* layer : m_LayerStack)
+			// Disable the bulk of the renderering logic
+			// Disabling the full imgui stack would require some difficult engineering on the vulkan side for little gain
+			if (Renderer::GetRenderer()->m_EnableGUI)
 			{
-				layer->OnGuiRender();
+				// Render each layer
+				for (Layer* layer : m_LayerStack)
+				{
+					layer->OnGuiRender();
+				}
 			}
+
 			// end gui
 			m_ImGuiLayer->End();
 
@@ -72,6 +80,9 @@ namespace Velocity
 		EventDispatcher dispatcher(e);
 		dispatcher.Dispatch<WindowCloseEvent>(BIND_EVENT_FN(Application::OnWindowClose));
 		dispatcher.Dispatch<WindowResizeEvent>(BIND_EVENT_FN(Application::OnWindowResize));
+		dispatcher.Dispatch<KeyPressedEvent>(BIND_EVENT_FN(Application::OnKeyPressedEvent));
+		dispatcher.Dispatch<KeyReleasedEvent>(BIND_EVENT_FN(Application::OnKeyReleasedEvent));
+		
 
 		// Dispatch to imgui layer first
 		m_ImGuiLayer->OnEvent(e);
@@ -114,6 +125,19 @@ namespace Velocity
 		VEL_CORE_INFO("Resizing {0}", resizeCount);
 
 		++resizeCount;
+		return false;
+	}
+
+
+	bool Application::OnKeyPressedEvent(KeyPressedEvent& e)
+	{
+		Input::OnKeyPressedEvent(e);
+
+		return false;
+	}
+	bool Application::OnKeyReleasedEvent(KeyReleasedEvent& e)
+	{
+		Input::OnKeyReleasedEvent(e);
 		return false;
 	}
 

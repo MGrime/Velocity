@@ -31,9 +31,10 @@ namespace Velocity
 		
 		// Events
 		bool OnWindowClose(WindowCloseEvent& e);
-
 		bool OnWindowResize(WindowResizeEvent& e);
-		
+		bool OnKeyPressedEvent(KeyPressedEvent& e);
+		bool OnKeyReleasedEvent(KeyReleasedEvent& e);
+
 		static std::shared_ptr<Window>& GetWindow()
 		{
 			return s_Window;
@@ -56,6 +57,7 @@ namespace Velocity
 		ImGuiLayer* m_ImGuiLayer;
 
 		FrameTimer m_Timer;
+
 
 	};
 

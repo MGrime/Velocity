@@ -29,8 +29,10 @@ namespace Velocity {
 	// This is the BIG class. Contains all vulkan related code
 	class Renderer
 	{
-		friend class Scene;			// Scene needs to update some data when components are added/removed
-		friend class ImGuiLayer;	// Gui needs to call a viewport function
+		friend class Scene;						// Scene needs to update some data when components are added/removed
+		friend class ImGuiLayer;				// Gui needs to call a viewport function
+		friend class DefaultCameraController;	// Needs to check gui state
+		friend class Application;				// Same as camera controller
 	public:
 		Renderer();
 
@@ -159,6 +161,12 @@ namespace Velocity {
 			return m_Textures;
 		}
 
+		// Switch the whole imgui pipeline on or off
+		void ToggleGUI()
+		{
+			m_EnableGUI = !m_EnableGUI;
+		}
+		
 		#pragma endregion 
 		
 		static std::shared_ptr<Renderer>& GetRenderer()
@@ -309,6 +317,9 @@ namespace Velocity {
 
 		// Takes all ImGui commands sent and records the buffers for them
 		void RecordImGuiCommandBuffers();
+
+		// Copies the final result of the first render pass and copies it into the swapchain directly if GUI is disabled
+		void DirectCopyToSwapchain(vk::CommandBuffer& cmdBuffer);
 
 		// Updates uniform buffers with scene data
 		void UpdateUniformBuffers();
@@ -505,6 +516,8 @@ namespace Velocity {
 
 		// Image for copy to imgui
 		std::vector<ImTextureID>				m_FramebufferGUIIDs;
+
+		bool m_EnableGUI = true;
 		
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, MeshComponent> m_Renderables;

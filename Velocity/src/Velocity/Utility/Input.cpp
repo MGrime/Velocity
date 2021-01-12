@@ -6,12 +6,17 @@
 
 namespace Velocity
 {
+	// Create key map
+	std::unordered_map<int, int> Input::s_KeyMap = std::unordered_map<int, int>();
+	
+	bool Input::IsKeyHeld(int keyCode)
+	{
+		return s_KeyMap[keyCode] == GLFW_PRESS || s_KeyMap[keyCode] == GLFW_REPEAT;
+	}
+
 	bool Input::IsKeyPressed(int keyCode)
 	{
-		auto window = Application::GetWindow()->GetNative();
-		auto state = glfwGetKey(window, keyCode);
-
-		return state == GLFW_PRESS || state == GLFW_REPEAT;	
+		return s_KeyMap[keyCode] == GLFW_PRESS;
 	}
 
 	bool Input::IsMouseButtonPressed(int keyCode)
@@ -32,6 +37,7 @@ namespace Velocity
 		return std::pair<float, float>(static_cast<float>(xpos), static_cast<float>(ypos));
 		
 	}
+	
 
 	float Input::GetMouseX()
 	{
@@ -43,5 +49,24 @@ namespace Velocity
 	{
 		auto [x, y] = GetMousePosition();
 		return y;
+	}
+
+	void Input::OnKeyPressedEvent(KeyPressedEvent& e)
+	{		
+		if (s_KeyMap[e.GetKeyCode()] == GLFW_PRESS || s_KeyMap[e.GetKeyCode()] == GLFW_REPEAT)
+		{
+			s_KeyMap[e.GetKeyCode()] = GLFW_REPEAT;
+		}
+		else
+		{
+			s_KeyMap[e.GetKeyCode()] = GLFW_PRESS;
+		}
+	}
+	void Input::OnKeyReleasedEvent(KeyReleasedEvent& e)
+	{
+		s_KeyMap[e.GetKeyCode()] = GLFW_RELEASE;
+	}
+	void Input::OnFrameFinished()
+	{
 	}
 }

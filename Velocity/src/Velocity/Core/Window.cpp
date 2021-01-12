@@ -10,6 +10,9 @@
 #include <Velocity/Core/Events/MouseEvent.hpp>
 #include <Velocity/Core/Events/KeyEvent.hpp>
 
+#include "Velocity/Renderer/Renderer.hpp"
+#include "Velocity/Utility/KeyCodes.hpp"
+
 namespace Velocity
 {
 	static bool s_GLFWInit = false;
@@ -69,6 +72,11 @@ namespace Velocity
 				{
 				case GLFW_PRESS:
 				{
+					// This has to go here otherwise it glitches, BAD
+					if (key == VEL_KEY_F8)
+					{
+						Renderer::GetRenderer()->ToggleGUI();
+					}
 					KeyPressedEvent event(key, 0);
 					data.EventCallback(event);
 					break;

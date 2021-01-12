@@ -42,8 +42,11 @@ namespace Velocity
 	}
 	void ImGuiLayer::End()
 	{
-		Renderer::GetRenderer()->DrawViewport();
-
+		// If enable gui is false then we will be coping directly to the swapchain
+		if (Renderer::GetRenderer()->m_EnableGUI)
+		{
+			Renderer::GetRenderer()->DrawViewport();
+		}
 		
 		// Finalise render data
 		ImGui::EndFrame();
