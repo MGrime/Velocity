@@ -14,3 +14,5 @@
 [submodule "Velocity/vendor/entt"]
 	path = Velocity/vendor/entt
 	url = https://github.com/skypjack/entt
+[submodule "Velocity/Vendor/imgui"]
+	branch = docking
