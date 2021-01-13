@@ -58,49 +58,20 @@ namespace Velocity {
 		void EndScene();
 
 		// Loads the given raw mesh into a renderable object
-		// Pass this to Renderer::Submit
-		MeshComponent LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
+		void LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
 		{
 			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(verts, indices) });
-			return m_Renderables.at(referenceName);
 		}
 
 		// Loads the given mesh file into a renderable object
 		// Pass this to Renderer::Submit
-		MeshComponent LoadMesh(const std::string& filepath, const std::string& referenceName)
+		void LoadMesh(const std::string& filepath, const std::string& referenceName)
 		{
 			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(filepath) });
-			return m_Renderables.at(referenceName);
-		}
-
-		// Gets a mesh by name
-		MeshComponent GetMesh(const std::string& referenceName)
-		{
-			if (m_Renderables.find(referenceName) != m_Renderables.end())
-			{
-				return m_Renderables.at(referenceName);
-			}
-			VEL_CORE_WARN("Tried to get mesh {0} which has not been loaded yet! The returned renderable will not be what you are expecting and may cause errors!", referenceName);
-			return MeshComponent();
-		}
-
-		// Gets the reference name for a given mesh
-		const std::string& GetMeshName(MeshComponent searchMesh)
-		{
-			for (auto& mesh : m_Renderables)
-			{
-				// If they have indicies starting in the same place they are the same mesh
-				if (mesh.second.IndexStart == searchMesh.IndexStart)
-				{
-					return mesh.first;
-				}
-			}
-			VEL_CORE_WARN("Couldn't find mesh! It must have been created outside of the renderer which should not possible, so however you did that... don't");
-			return "";
 		}
 
 		// Gets the list of meshes
-		const std::unordered_map<std::string,MeshComponent>& GetMeshList()
+		const std::unordered_map<std::string, BufferManager::MeshIndexer>& GetMeshList()
 		{
 			return m_Renderables;
 		}
@@ -520,7 +491,7 @@ namespace Velocity {
 		bool m_EnableGUI = true;
 		
 		// Store all loaded meshes in a map so they can accessed easily
-		std::unordered_map<std::string, MeshComponent> m_Renderables;
+		std::unordered_map<std::string, BufferManager::MeshIndexer> m_Renderables;
 
 		#pragma region ECS CALLBACKS
 

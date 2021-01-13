@@ -2097,9 +2097,11 @@ namespace Velocity
 
 				auto& mesh = m_ActiveScene->m_Skybox->m_SphereMesh;
 
+				auto& renderable = m_Renderables[mesh.MeshReference];
+
 				auto& skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
 				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), value_ptr(skyboxMatrix));
-				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 				
 			}
 		}
@@ -2115,10 +2117,12 @@ namespace Velocity
 
 			for (auto [entity, transform, mesh, texture] : view.each())
 			{
+				auto& renderable = m_Renderables[mesh.MeshReference];
+				
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &texture.TextureID);
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
-				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 			}
 
 			// When we use lights
@@ -2129,11 +2133,13 @@ namespace Velocity
 				glm::mat4 lightMatrix = translate(scale(glm::mat4(1.0f), glm::vec3(0.5f, 0.5f, 0.5f)), light.Position);
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), value_ptr(lightMatrix));
 
+				auto& renderable = m_Renderables[mesh.MeshReference];
+				
 				// This will always point to the white default texture
 				uint32_t blankTexture = 0u;
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &blankTexture);
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
-				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 			}
 		}
 
@@ -2145,6 +2151,8 @@ namespace Velocity
 			auto view = m_ActiveScene->m_Registry.view<TransformComponent, MeshComponent, PBRComponent>();
 			for (auto[entity, transform, mesh, pbr] : view.each())
 			{
+				auto& renderable = m_Renderables[mesh.MeshReference];
+				
 				// Transform pushed in same place
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
 
@@ -2154,7 +2162,7 @@ namespace Velocity
 				// Camera now pushed later in constant range
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
 
-				cmdBuffer->drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset, 0);
+				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 
 			}
 		}

@@ -11,16 +11,25 @@ namespace Velocity
 	class BufferManager
 	{
 	public:
+		struct MeshIndexer
+		{
+			uint32_t	VertexOffset = 0;
+			uint32_t	VertexCount = 0u;
+			uint32_t	IndexStart = 0u;
+			uint32_t	IndexCount = 0u;
+		};
+		
 		// CopyQueue is 99.9% the Graphics Queue
 		BufferManager(vk::PhysicalDevice& pDevice, vk::UniqueDevice& device, vk::CommandPool& pool, vk::Queue& copyQueue);
 
 		// TODO: Update as we change how this works
-		MeshComponent AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
+		MeshIndexer AddMesh(std::vector<Vertex>& verts, std::vector<uint32_t> indices);
 
-		MeshComponent AddMesh(const std::string& filepath);
+		MeshIndexer AddMesh(const std::string& filepath);
 
 		// Binds the buffers
 		void Bind(vk::CommandBuffer& commandBuffer);
+
 	
 	private:
 

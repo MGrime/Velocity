@@ -43,10 +43,7 @@ namespace Velocity
 	// Submit this to the gpu to tell it you want to render this "mesh"
 	struct MeshComponent
 	{
-		uint32_t	VertexOffset = 0;
-		uint32_t	VertexCount = 0u;
-		uint32_t	IndexStart = 0u;
-		uint32_t	IndexCount = 0u;
+		std::string MeshReference = "";
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;

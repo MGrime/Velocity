@@ -91,9 +91,11 @@ private:
 			});
 		ImGui::DrawComponent<MeshComponent>("Mesh", entity, [](MeshComponent& component)
 			{
-				ImGui::Text("Mesh name: %s",Renderer::GetRenderer()->GetMeshName(component).c_str());
-				ImGui::Text("Vertex count: %d", component.VertexCount);
-				ImGui::Text("Index count: %d", component.IndexCount);
+				BufferManager::MeshIndexer mesh = Renderer::GetRenderer()->GetMeshList().at(component.MeshReference);
+			
+				ImGui::Text("Mesh name: %s",component.MeshReference.c_str());
+				ImGui::Text("Vertex count: %d", mesh.VertexCount);
+				ImGui::Text("Index count: %d", mesh.IndexCount);
 			});
 		ImGui::DrawComponent<TextureComponent>("Texture", entity, [](TextureComponent& component)
 			{
@@ -197,7 +199,7 @@ private:
 									ImGui::PopID();// Need to pop the ID here to avoid imgui crash
 									break;
 								}
-								m_SelectedEntity.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh(mesh.first));
+								m_SelectedEntity.AddComponent<MeshComponent>(MeshComponent{ mesh.first });
 							}
 							ImGui::PopID();
 						}	

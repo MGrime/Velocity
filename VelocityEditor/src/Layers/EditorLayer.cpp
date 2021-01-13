@@ -35,7 +35,7 @@ void EditorLayer::OnAttach()
 	auto room = m_Scene->CreateEntity("Sphere");
 	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
 	room.GetComponent<TransformComponent>().Scale = glm::vec3(0.1f, 0.1f, 0.1f);
-	room.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Barrel"));
+	room.AddComponent<MeshComponent>("Barrel");
 
 	room.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference("Gold"));
 	//room.AddComponent<PBRComponent>(Renderer::GetRenderer()->CreatePBRMaterial("assets/materials/gold",".png","Gold"));
@@ -43,7 +43,7 @@ void EditorLayer::OnAttach()
 	m_Light = m_Scene->CreateEntity("Light");
 	m_Light.RemoveComponent<TransformComponent>();
 	m_Light.AddComponent<PointLightComponent>().Position = glm::vec3(4.0f, 4.0f, 4.0f);
-	m_Light.AddComponent<MeshComponent>(Renderer::GetRenderer()->GetMesh("Cube"));
+	m_Light.AddComponent<MeshComponent>("Cube");
 
 	m_Scene->SetSkybox(m_Skybox.get());
 }
