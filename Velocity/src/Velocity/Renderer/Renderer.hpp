@@ -462,6 +462,7 @@ namespace Velocity {
 		Texture*											m_DefaultBindingTexture;
 
 		// List of textures loaded by the user
+		// This cannot be a map as it links by index to a renderer specific thing
 		std::vector<std::pair<std::string,Texture*>>	m_Textures;
 		std::vector<vk::DescriptorImageInfo>			m_TextureInfos;
 		// List of PBR materials created. Each component has 5 indexes that index into m_Textures
