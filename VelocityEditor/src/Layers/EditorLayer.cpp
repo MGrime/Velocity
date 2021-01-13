@@ -3,13 +3,14 @@
 
 #include "../Panels/CameraStatePanel.hpp"
 #include "../Panels/SceneViewPanel.hpp"
+#include "../Panels/MainMenuPanel.hpp"
 #include "Velocity/Utility/Input.hpp"
 
 void EditorLayer::OnGuiRender()
 {
+	MainMenuPanel::Draw();
 	SceneViewPanel::Draw(m_Scene.get());
-
-	CameraStatePanel::Draw(*m_CameraController.get());
+	CameraStatePanel::Draw(*m_CameraController->GetCamera());
 }
 
 void EditorLayer::OnAttach()

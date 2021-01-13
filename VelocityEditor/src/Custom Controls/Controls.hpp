@@ -112,6 +112,97 @@ namespace ImGui
 
 		
 	}
+
+	static void DrawVec2Control(const std::string& label, glm::vec2& vec, float resetValue = 0.0f, float columnWidth = 100.0f)
+	{
+		ImGuiIO& io = GetIO();
+		auto font = io.Fonts->Fonts[0];
+
+		PushID(label.c_str());
+
+		Columns(2);
+		SetColumnWidth(0, columnWidth);
+		Text(label.c_str());
+		NextColumn();
+
+		PushMultiItemsWidths(3, ImGui::CalcItemWidth());
+		PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+
+		float lineHeight = font->FontSize + GetStyle().FramePadding.y * 2.0f;
+		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+		
+		// Push colors for the button
+		PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		// The button resets the value
+		if (Button("X", buttonSize))
+			vec.x = resetValue;
+		PopStyleColor(3);
+
+		SameLine();
+		DragFloat("##X", &vec.x, 0.1f, 0.0f, 0.0f, "%.2f");
+		PopItemWidth();
+		SameLine();
+
+		PushStyleColor(ImGuiCol_Button, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.3f, 0.8f, 0.3f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.2f, 0.7f, 0.2f, 1.0f });
+		if (Button("Y", buttonSize))
+			vec.y = resetValue;
+		PopStyleColor(3);
+
+		SameLine();
+		DragFloat("##Y", &vec.y, 0.1f, 0.0f, 0.0f, "%.2f");
+		PopItemWidth();
+		SameLine();
+
+		PopStyleVar();
+
+		Columns(1);
+
+		PopID();
+		
+	}
+
+	static void DrawFloatControl(const std::string& label,const std::string& buttonText, float& f, float resetValue = 0.0f, float columnWidth = 100.0f)
+	{
+		ImGuiIO& io = GetIO();
+		auto font = io.Fonts->Fonts[0];
+
+		PushID(label.c_str());
+
+		Columns(2);
+		SetColumnWidth(0, columnWidth);
+		Text(label.c_str());
+		NextColumn();
+
+		PushMultiItemsWidths(3, CalcItemWidth());
+		PushStyleVar(ImGuiStyleVar_ItemSpacing, ImVec2{ 0, 0 });
+
+		float lineHeight = font->FontSize + GetStyle().FramePadding.y * 2.0f;
+		ImVec2 buttonSize = { lineHeight + 3.0f, lineHeight };
+
+		// Push colors for the button
+		PushStyleColor(ImGuiCol_Button, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonHovered, ImVec4{ 0.9f, 0.2f, 0.2f, 1.0f });
+		PushStyleColor(ImGuiCol_ButtonActive, ImVec4{ 0.8f, 0.1f, 0.15f, 1.0f });
+		// The button resets the value
+		if (Button(buttonText.c_str(), buttonSize))
+			f = resetValue;
+		PopStyleColor(3);
+
+		SameLine();
+		DragFloat("##X", &f, 0.1f, 0.0f, 0.0f, "%.2f");
+		PopItemWidth();
+		SameLine();
+
+		PopStyleVar();
+
+		Columns(1);
+
+		PopID();
+	}
 	
 	static auto vector_getter = [](void* vec, int idx, const char** out_text)
 	{

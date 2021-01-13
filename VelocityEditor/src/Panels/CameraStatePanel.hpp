@@ -3,27 +3,27 @@
 #include <Velocity/Utility/DefaultCameraController.hpp>
 
 #include "imgui.h"
+#include "../Custom Controls/Controls.hpp"
 
 class CameraStatePanel
 {
 public:
-	static void Draw(Velocity::DefaultCameraController& cameraController)
+	static void Draw(Velocity::Camera& camera)
 	{
 		ImGui::Begin("Camera Controls");
+		
+		auto pos = camera.GetPosition();
+		auto rot = camera.GetRotation();
+		auto fov = glm::degrees(camera.GetFOV());
 
-		auto pos = cameraController.GetCamera()->GetPosition();
-		auto fov = glm::degrees(cameraController.GetCamera()->GetFOV());
+		ImGui::DrawVec3Control("Position: ", pos, 0.0f);
+		ImGui::DrawVec2Control("Rotation: ", rot, 0.0f);
+		ImGui::DrawFloatControl("FOV: ", "X", fov,60.0f);
 
-		ImGui::Text("X: %f Y: %f Z: %f", pos.x, pos.y, pos.z);
+		camera.SetPosition(pos);
+		camera.SetRotation(rot);
+		camera.SetFOV(glm::radians(fov));
 
-		ImGui::SliderFloat("FOV", &fov, 10.0f, 120.0f);
-		cameraController.GetCamera()->SetFOV(glm::radians(fov));
-
-		if (ImGui::Button("Reset"))
-		{
-			cameraController.GetCamera()->SetPosition({});
-			cameraController.GetCamera()->SetRotation({});
-		}
 
 		ImGui::End();
 	}
