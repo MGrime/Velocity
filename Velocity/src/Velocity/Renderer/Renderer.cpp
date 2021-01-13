@@ -2356,15 +2356,6 @@ namespace Velocity
 
 		ImGui::Begin("Viewport");
 		
-		// Set callback bool for event handler
-		if (ImGui::IsWindowHovered())
-		{
-			io.ViewportWindowHovered = true;
-		}
-		else
-		{
-			io.ViewportWindowHovered = false;
-		}
 		
 		// Get the size of the image
 		auto sourceSize = ImVec2(m_Swapchain->GetWidthF(), m_Swapchain->GetHeightF());
