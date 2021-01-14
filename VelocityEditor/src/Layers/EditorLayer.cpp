@@ -39,10 +39,10 @@ void EditorLayer::OnAttach()
 	auto room = m_Scene->CreateEntity("Rocket");
 	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
 	room.GetComponent<TransformComponent>().Rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
-	room.AddComponent<MeshComponent>("Sphere");
+	room.AddComponent<MeshComponent>("Rocket");
 
 	//room.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference("Gold"));
-	room.AddComponent<PBRComponent>(Renderer::GetRenderer()->CreatePBRMaterial("assets/materials/pirate-gold",".png","Rocket",false));
+	room.AddComponent<PBRComponent>(Renderer::GetRenderer()->CreatePBRMaterial("assets/materials/rocket",".png","Rocket",false));
 
 	m_Light = m_Scene->CreateEntity("Light");
 	m_Light.RemoveComponent<TransformComponent>();

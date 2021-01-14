@@ -1,28 +1,28 @@
-[16:30:02] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[16:30:03] [info] VELOCITY: Available extensions:
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_display
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_surface
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[16:30:03] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[16:30:03] [trace] VELOCITY: 	 VK_EXT_debug_report
-[16:30:03] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[16:30:03] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[16:30:03] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[16:30:03] [info] VELOCITY: Created Vulkan Instance!
-[16:30:03] [info] VELOCITY: Created window surface!
-[16:30:03] [info] VELOCITY: Selected GPU: GeForce GT 710
-[16:30:03] [info] VELOCITY: Created Logical device!
-[16:30:03] [info] VELOCITY: Created swapchain with size:(1280,720)
-[16:30:03] [info] VELOCITY: Loaded shaders!
-[16:30:03] [info] VELOCITY: Created graphics pipeline!
-[16:30:03] [info] VELOCITY: Created command pool!
-[16:30:03] [info] VELOCITY: Created framebuffers!
-[16:30:03] [info] VELOCITY: Allocated command buffers!
-[16:30:03] [info] VELOCITY: Created syncronisation primitives!
+[16:37:00] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[16:37:01] [info] VELOCITY: Available extensions:
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_display
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_surface
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[16:37:01] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[16:37:01] [trace] VELOCITY: 	 VK_EXT_debug_report
+[16:37:01] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[16:37:01] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[16:37:01] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[16:37:01] [info] VELOCITY: Created Vulkan Instance!
+[16:37:01] [info] VELOCITY: Created window surface!
+[16:37:01] [info] VELOCITY: Selected GPU: GeForce GT 710
+[16:37:01] [info] VELOCITY: Created Logical device!
+[16:37:01] [info] VELOCITY: Created swapchain with size:(1280,720)
+[16:37:01] [info] VELOCITY: Loaded shaders!
+[16:37:01] [info] VELOCITY: Created graphics pipeline!
+[16:37:01] [info] VELOCITY: Created command pool!
+[16:37:01] [info] VELOCITY: Created framebuffers!
+[16:37:01] [info] VELOCITY: Allocated command buffers!
+[16:37:01] [info] VELOCITY: Created syncronisation primitives!

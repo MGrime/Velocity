@@ -148,7 +148,7 @@ void main() {
 
 		// Covert color into higher space
 		light.Color = light.Color * 255.0f;
-		
+
 		// Calculate radiance for light 
 		vec3 L = normalize(light.Position - fragPosition);
 		vec3 H = normalize(V + L);
