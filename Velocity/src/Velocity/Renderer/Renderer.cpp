@@ -90,18 +90,28 @@ namespace Velocity
 
 	}
 	// Returns a material component
-	PBRComponent Renderer::CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName)
+	PBRComponent Renderer::CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName, bool heightMapped)
 	{
 		PBRComponent newComponent;
 		// Mark them as internal in the texture array so they arent displayed for non PBR texture adding
-		newComponent.AlbedoID() = CreateTexture(basefilepath + "_albedo" + extension, "VEL_INTERNAL_" + referenceName + "_albedo");
-		newComponent.NormalID() = CreateTexture(basefilepath + "_normal" + extension, "VEL_INTERNAL_" + referenceName + "_normal");
-		newComponent.HeightID() = CreateTexture(basefilepath + "_height" + extension, "VEL_INTERNAL_" + referenceName + "_height");
-		newComponent.MetallicID() = CreateTexture(basefilepath + "_metallic" + extension, "VEL_INTERNAL_" + referenceName + "_metallic");
-		newComponent.RoughnessID() = CreateTexture(basefilepath + "_roughness" + extension, "VEL_INTERNAL_" + referenceName + "_roughness");
+		newComponent.AlbedoID() = static_cast<int32_t>(CreateTexture(basefilepath + "_albedo" + extension, "VEL_INTERNAL_" + referenceName + "_albedo"));
+		newComponent.NormalID() = static_cast<int32_t>(CreateTexture(basefilepath + "_normal" + extension, "VEL_INTERNAL_" + referenceName + "_normal"));
+		if (heightMapped)
+		{
+			newComponent.HeightID() = static_cast<int32_t>(CreateTexture(basefilepath + "_height" + extension, "VEL_INTERNAL_" + referenceName + "_height"));
+		}
+		else
+		{
+			newComponent.HeightID() = -1;
+		}
+		newComponent.MetallicID() = static_cast<int32_t>(CreateTexture(basefilepath + "_metallic" + extension, "VEL_INTERNAL_" + referenceName + "_metallic"));
+		newComponent.RoughnessID() = static_cast<int32_t>(CreateTexture(basefilepath + "_roughness" + extension, "VEL_INTERNAL_" + referenceName + "_roughness"));
 
+		newComponent.MaterialName = referenceName;
+		
 		// Store component for user to access later
 		m_PBRMaterials[referenceName] = newComponent;
+		
 
 		return newComponent;
 		
@@ -2627,7 +2637,7 @@ namespace Velocity
 
 					m_Lights.Lights[m_Lights.ActiveLightCount].Position = transform.Translation;
 				}
-				
+
 				m_Lights.Lights[m_Lights.ActiveLightCount] = pointLight;
 				m_Lights.ActiveLightCount += 1u;
 			}

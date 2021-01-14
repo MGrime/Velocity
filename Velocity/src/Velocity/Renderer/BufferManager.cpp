@@ -148,23 +148,11 @@ namespace Velocity
 
 		// Standard import flags
 		unsigned int assimpFlags =
-			aiProcess_GenSmoothNormals |
-			aiProcess_FixInfacingNormals |
-			aiProcess_GenUVCoords |
-			aiProcess_TransformUVCoords |
-			aiProcess_FlipUVs |
-			aiProcess_JoinIdenticalVertices |
-			aiProcess_Triangulate |
-			aiProcess_ImproveCacheLocality |
-			aiProcess_SortByPType |
-			aiProcess_FindInvalidData |
-			aiProcess_OptimizeMeshes |
-			aiProcess_FindInstances |
-			aiProcess_FindDegenerates |
-			aiProcess_RemoveRedundantMaterials |
-			aiProcess_Debone |
-			aiProcess_RemoveComponent |
-			aiProcess_CalcTangentSpace;
+			aiProcess_Triangulate
+			| aiProcess_CalcTangentSpace
+			| aiProcess_FlipUVs
+			| aiProcess_GenNormals
+			| aiProcess_OptimizeMeshes;
 
 		// Load model
 		const auto* pScene = Importer.ReadFile(filepath.c_str(), assimpFlags);

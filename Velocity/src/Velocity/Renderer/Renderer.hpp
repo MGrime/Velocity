@@ -82,7 +82,7 @@ namespace Velocity {
 		uint32_t CreateTexture(const std::string& filepath, const std::string& referenceName);
 
 		// Returns a material component
-		PBRComponent CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName);
+		PBRComponent CreatePBRMaterial(const std::string& basefilepath, const std::string& extension, const std::string& referenceName, bool heightMapped);
 
 		// Returns a skybox
 		Skybox* CreateSkybox(const std::string& baseFilepath, const std::string& extension);

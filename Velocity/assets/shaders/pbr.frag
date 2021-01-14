@@ -15,11 +15,11 @@ layout(location = 0) out vec4 outColor;
 
 layout(push_constant) uniform PushConstants {
     layout(offset = 0) mat4 model;
-	layout(offset = 64) uint albedoIndex;
-	layout(offset = 68) uint normalIndex;
-	layout(offset = 72) uint heightIndex;
-	layout(offset = 76) uint metallicIndex;
-	layout(offset = 80) uint roughnessIndex;
+	layout(offset = 64) int albedoIndex;
+	layout(offset = 68) int normalIndex;
+	layout(offset = 72) int heightIndex;
+	layout(offset = 76) int metallicIndex;
+	layout(offset = 80) int roughnessIndex;
 	layout(offset = 84) float cameraPosX;
 	layout(offset = 88) float cameraPosY;
 	layout(offset = 92) float cameraPosZ;
@@ -44,21 +44,24 @@ vec3 getNormalFromMap(inout vec2 UV)
 	vec3 biTangent = cross(modelNormal, modelTangent);					// Model space
 	mat3 invTangentMatrix = mat3(modelTangent, biTangent, modelNormal);	// Model space
 
-	// Calculate camera direction
-	vec3 cameraPos = vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ);
-	vec3 cameraDir = normalize(cameraPos - fragPosition);
-	// TODO: CHECK
-	mat3 invWorldMatrix = transpose(mat3(pc.model));
-	vec3 cameraModelDir = normalize(cameraDir * invWorldMatrix);
-
-	// Calculate UV offset
-	// TODO: CHECK
-	mat3 tangentMatrix = transpose(invTangentMatrix);
-	vec2 offsetDir = (cameraModelDir * tangentMatrix).xy;
-
-	// offset uvec2
-	float texDepth = 0.06f * (texture(texSampler[pc.heightIndex],UV).r - 0.5f);
-	UV += texDepth * offsetDir;
+	if (pc.heightIndex != -1)
+	{
+		// Calculate camera direction
+		vec3 cameraPos = vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ);
+		vec3 cameraDir = normalize(cameraPos - fragPosition);
+		// TODO: CHECK
+		mat3 invWorldMatrix = mat3(pc.model);
+		vec3 cameraModelDir = normalize(cameraDir * invWorldMatrix);
+	
+		// Calculate UV offset
+		// TODO: CHECK
+		mat3 tangentMatrix = invTangentMatrix;
+		vec2 offsetDir = (cameraModelDir * tangentMatrix).xy;
+	
+		// offset uvec2
+		float texDepth = 0.06f * (texture(texSampler[pc.heightIndex],UV).r - 0.5f);
+		UV += texDepth * offsetDir;
+	}
 
 	// Extract normal from map and shift to -1 to 1 range
 	vec3 textureNormal = 2.0f * texture(texSampler[pc.normalIndex],UV).rgb - 1.0f;
@@ -142,6 +145,9 @@ void main() {
 	for (uint i = 0; i < pointLights.Count; ++i)
 	{
 		PointLight light = pointLights.Lights[i];
+
+		// Covert color into higher space
+		light.Color = light.Color * 255.0f;
 		
 		// Calculate radiance for light 
 		vec3 L = normalize(light.Position - fragPosition);
@@ -155,10 +161,6 @@ void main() {
 		float G = GeometrySmith(N,V,L,roughness);
 		vec3 F = fresnelSchlick(max(dot(H,V),0.0f),F0);
 
-		vec3 nominator = NDF * G * F;
-		float denominator = 4 * max(dot(N,V),0.0f) * max(dot(N,L),0.0f) + 0.001f;
-		vec3 specular = nominator / denominator;
-
 		// kS == fresnel
 		vec3 kS = F;
 		
@@ -166,12 +168,15 @@ void main() {
 		vec3 kD = vec3(1.0f) - kS;
 		kD *= 1.0f - metallic;
 
+		vec3 nominator = NDF * G * F;
+		float denominator = 4 * max(dot(N,V),0.0f) * max(dot(N,L),0.0f);
+		vec3 specular = nominator / max(denominator,0.001);
+
 		// Scale light
 		float NdotL = max(dot(N,L),0.0f);
 
 		// Add to outgoing
 		Lo += (kD * albedo / PI + specular) * radiance * NdotL;
-
 	}
 
 	// Calculate ambient

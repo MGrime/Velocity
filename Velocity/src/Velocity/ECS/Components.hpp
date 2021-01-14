@@ -31,8 +31,8 @@ namespace Velocity
 			output *= scale(glm::mat4(1.0f), Scale);
 
 			output *= rotate(glm::mat4(1.0f), glm::radians(Rotation.y), { 0.0f,1.0f,0.0f })
-				* rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f })
-				* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f });
+					* rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f })
+					* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f });
 
 			output *= translate(glm::mat4(1.0f), Translation);
 
@@ -70,24 +70,25 @@ namespace Velocity
 
 	struct PBRComponent
 	{
-		uint32_t& AlbedoID() { return TextureIDs[0]; }
-		uint32_t& NormalID() { return TextureIDs[1]; }
-		uint32_t& HeightID() { return TextureIDs[2]; }
-		uint32_t& MetallicID() { return TextureIDs[3]; }
-		uint32_t& RoughnessID() { return TextureIDs[4]; }
+		int32_t& AlbedoID() { return TextureIDs[0]; }
+		int32_t& NormalID() { return TextureIDs[1]; }
+		int32_t& HeightID() { return TextureIDs[2]; }
+		int32_t& MetallicID() { return TextureIDs[3]; }
+		int32_t& RoughnessID() { return TextureIDs[4]; }
 
 		PBRComponent() = default;
 		PBRComponent(const PBRComponent&) = default;
 
-		std::array<uint32_t, 5> TextureIDs = { 0u,0u,0u,0u,0u };
+		std::string				MaterialName = "";
+		std::array<int32_t, 5> TextureIDs = { 0,0,0,0,0 };
 
 		uint32_t GetSize()
 		{
-			return sizeof(uint32_t) * static_cast<uint32_t>(TextureIDs.size());
+			return sizeof(int32_t) * static_cast<int32_t>(TextureIDs.size());
 		}
 
 		// This works for a single component as structs are contiguous
-		uint32_t* GetPointer()
+		int32_t* GetPointer()
 		{
 			return TextureIDs.data();
 		}

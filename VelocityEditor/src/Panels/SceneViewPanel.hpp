@@ -111,6 +111,31 @@ private:
 				ImGui::Separator();
 				ImGui::ColorPicker3("Color", &component.Color.x);
 			});
+		ImGui::DrawComponent<PBRComponent>("PBR Material", entity, [](PBRComponent& component)
+			{
+				auto& textures = Renderer::GetRenderer()->GetTexturesList();
+			
+				ImGui::Text("Material name: %s", component.MaterialName.c_str());
+				ImGui::Text("A / N / H / M / R");
+				ImVec2 imageSize = { ImGui::GetContentRegionAvail().y / 5.0f,ImGui::GetContentRegionAvail().y / 5.0f };
+				
+				Renderer::GetRenderer()->DrawTextureToGUI(textures.at(component.AlbedoID()).first, imageSize);
+				ImGui::SameLine();
+				Renderer::GetRenderer()->DrawTextureToGUI(textures.at(component.NormalID()).first, imageSize);
+				ImGui::SameLine();
+				if (component.HeightID() != -1)
+				{
+					Renderer::GetRenderer()->DrawTextureToGUI(textures.at(component.HeightID()).first, imageSize);
+					ImGui::SameLine();
+				}
+				Renderer::GetRenderer()->DrawTextureToGUI(textures.at(component.MetallicID()).first, imageSize);
+				ImGui::SameLine();
+				Renderer::GetRenderer()->DrawTextureToGUI(textures.at(component.RoughnessID()).first, imageSize);
+				ImGui::SameLine();
+
+
+
+			});
 
 		
 	}
