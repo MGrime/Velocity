@@ -16,7 +16,7 @@
 namespace Velocity
 {
 	IBLMap::IBLMap(const std::string& filepath, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice,
-		vk::CommandPool& pool, uint32_t& graphicsQueueIndex)
+		vk::CommandPool& pool, uint32_t& graphicsQueueIndex, BufferManager& modelBuffer)
 	{
 		// Store references
 		r_Device = &device;
@@ -233,7 +233,7 @@ namespace Velocity
 		#pragma endregion
 
 		// Convert the flat map into a cube map
-		EquirectangularToCubemap(equirectangularImageView);
+		EquirectangularToCubemap(equirectangularImageView, modelBuffer);
 
 		// Save data for renderer
 		m_EnviromentMapImageInfo = {
@@ -268,7 +268,7 @@ namespace Velocity
 		r_Device->get().freeMemory(m_EnviromentMapMemory);
 	}
 
-	void IBLMap::EquirectangularToCubemap(vk::UniqueImageView& equirectangularIV)
+	void IBLMap::EquirectangularToCubemap(vk::UniqueImageView& equirectangularIV, BufferManager& modelBuffer)
 	{
 		// This function is MASSIVE. Creates a pipeline to be used one time to perform this operation
 		// Firstly we create the image that will be the end result leaving it in transfer dst mod
@@ -680,13 +680,15 @@ namespace Velocity
 		#pragma endregion
 
 		#pragma region FIXED FUNCTION
-		// Vert input - Hardcoded vert data
+		// Vert input
+		auto bindingDescription = Vertex::GetBindingDescription();
+		auto attribDescription = Vertex::GetAttributeDescriptions();
 		vk::PipelineVertexInputStateCreateInfo vertexInputInfo = {
 			vk::PipelineVertexInputStateCreateFlags{},
-			0,
-			nullptr,
-			0,
-			nullptr
+			1,
+			&bindingDescription,
+			static_cast<uint32_t>(attribDescription.size()),
+			attribDescription.data()
 		};
 		// Input assembly
 		vk::PipelineInputAssemblyStateCreateInfo inputAssembly = {
@@ -818,6 +820,13 @@ namespace Velocity
 			TemporaryCommandBuffer renderBufferWrapper = TemporaryCommandBuffer(*r_Device, *r_CommandPool, queue);
 			auto& renderBuffer = renderBufferWrapper.GetBuffer();
 
+			// Bind vertices
+			modelBuffer.Bind(renderBuffer);
+
+			Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/cube.obj", "VEL_INTERNAL_Cube");
+
+			auto mesh = Renderer::GetRenderer()->GetMeshList().find("VEL_INTERNAL_Cube")->second;
+
 			// For each side
 			for (size_t i = 0; i < 6; ++i)
 			{
@@ -842,7 +851,7 @@ namespace Velocity
 				renderBuffer.pushConstants(pipelineLayout, vk::ShaderStageFlagBits::eVertex, sizeof(glm::mat4), sizeof(glm::mat4), value_ptr(captureViews[i]));
 
 				// Draw cube
-				renderBuffer.draw(36, 1, 0, 0);
+				renderBuffer.drawIndexed(mesh.IndexCount, 1, mesh.IndexStart, mesh.VertexOffset,0);
 
 				// End render pass
 				renderBuffer.endRenderPass();

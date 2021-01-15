@@ -131,7 +131,7 @@ namespace Velocity
 	IBLMap* Renderer::CreateHDRSkybox(const std::string& filepath)
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
-		return new IBLMap(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+		return new IBLMap(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value(),*m_BufferManager.get());
 	}
 	
 	// This is called to end the rendering of a scene

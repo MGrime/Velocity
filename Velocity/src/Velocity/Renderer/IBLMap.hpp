@@ -4,6 +4,8 @@
 #include <glm/ext/matrix_transform.hpp>
 #include <vulkan/vulkan.hpp>
 
+
+#include "BufferManager.hpp"
 #include "Velocity/ECS/Components.hpp"
 
 namespace Velocity
@@ -13,7 +15,7 @@ namespace Velocity
 	{
 		friend class Renderer;
 	public:
-		IBLMap(const std::string& filepath, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
+		IBLMap(const std::string& filepath, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex, BufferManager& modelBuffer);
 
 		~IBLMap();
 	private:
@@ -47,7 +49,7 @@ namespace Velocity
 		// Preprocess methods - These will be run in constructor
 
 		// Turns the flat image into a 6 layer image (like Skybox)
-		void EquirectangularToCubemap(vk::UniqueImageView& equirectangularIV);
+		void EquirectangularToCubemap(vk::UniqueImageView& equirectangularIV, BufferManager& modelBuffer);
 
 		// Convolutes the cubemap to create an irradiance map
 		void CreateIrradianceMap();
