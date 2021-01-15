@@ -8,6 +8,11 @@ layout(binding = 1) uniform samplerCube skybox;
 
 void main()
 {
-	outColor = texture(skybox,TexCoords);
+	vec3 envColor = texture(skybox,TexCoords).rgb;
+
+	envColor = envColor / (envColor + vec3(1.0f));
+	envColor = pow(envColor,vec3(1.0/2.2));
+
+	outColor = vec4(envColor,1.0);
 
 }

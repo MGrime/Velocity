@@ -87,6 +87,9 @@ namespace Velocity {
 		// Returns a skybox
 		Skybox* CreateSkybox(const std::string& baseFilepath, const std::string& extension);
 
+		// Returns a HDR Skybox
+		IBLMap* CreateHDRSkybox(const std::string& filepath);
+
 		// Gets a texture by the reference name you gave when loading it
 		uint32_t GetTextureByReference(const std::string& texture)
 		{

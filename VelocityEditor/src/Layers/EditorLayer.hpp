@@ -19,7 +19,7 @@ private:
 
 	Velocity::Entity m_Light;
 
-	std::unique_ptr<Velocity::Skybox> m_Skybox;
+	std::unique_ptr<Velocity::IBLMap> m_Skybox;
 
 	// Use a default camera
 	std::unique_ptr<Velocity::DefaultCameraController> m_CameraController;

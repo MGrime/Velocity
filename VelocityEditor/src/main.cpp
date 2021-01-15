@@ -10,7 +10,7 @@ public:
 	{
 		// Set the editor icon
 		GetWindow()->SetWindowIcon("assets/textures/logo.png");
-		//PushLayer(new EditorLayer);
+		PushLayer(new EditorLayer);
 	}
 
 	~VelocityEditor() = default;

@@ -2,13 +2,12 @@
 
 #include "IBLMap.hpp"
 
-#include <glm/glm.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
-#include <glm/ext/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
 
 #include "BaseBuffer.hpp"
+#include "Renderer.hpp"
 #include "Shader.hpp"
 #include "stb_image.h"
 #include "Texture.hpp"
@@ -253,6 +252,12 @@ namespace Velocity
 			nullptr,
 			nullptr
 		};
+
+		Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj", "VEL_INTERNAL_Skybox");
+
+		m_SphereMesh = MeshComponent{ "VEL_INTERNAL_Skybox" };
+
+		VEL_CORE_INFO("Created HDR skybox from file {0}", filepath);
 		
 	}
 
@@ -920,6 +925,28 @@ namespace Velocity
 
 		r_Device->get().destroyDescriptorSetLayout(descriptorSetLayout);
 		r_Device->get().destroyDescriptorPool(descriptorPool);
+
+		// Create image view for the cube map
+		vk::ImageViewCreateInfo finalViewInfo = {
+			vk::ImageViewCreateFlags{},
+			m_EnviromentMapImage,
+			vk::ImageViewType::eCube,
+			vk::Format::eR16G16B16A16Sfloat,
+			{},
+			{
+				vk::ImageAspectFlagBits::eColor,
+				0,1,0,6
+			}
+		};
+		try
+		{
+			m_EnviromentMapImageView = r_Device->get().createImageView(finalViewInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_ERROR("Failed to load hdr skybox: {0} (Failed to create image view)");
+			VEL_CORE_ASSERT(false, "Failed to load hdr skybox: {0} (Failed to create image view)");
+		}
 	}
 
 	void IBLMap::CreateIrradianceMap()

@@ -34,7 +34,7 @@ void EditorLayer::OnAttach()
 	// Load texture
 	renderer->CreateTexture("assets/materials/pirate-gold_albedo.png", "Gold");
 
-	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/trance", ".jpg"));
+	m_Skybox = std::unique_ptr<IBLMap>(renderer->CreateHDRSkybox("assets/hdr/kloppenheim_06_4k.hdr"));
 
 	auto room = m_Scene->CreateEntity("Rocket");
 	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);

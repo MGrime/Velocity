@@ -4,6 +4,8 @@
 
 #include <Velocity/Renderer/Skybox.hpp>
 
+#include "Velocity/Renderer/IBLMap.hpp"
+
 namespace Velocity
 {
 	class Entity;
@@ -18,7 +20,7 @@ namespace Velocity
 
 		void SetCamera(Camera* camera) { m_Camera = camera; }
 
-		void SetSkybox(Skybox* skybox) { m_Skybox = skybox; }
+		void SetSkybox(IBLMap* skybox) { m_Skybox = skybox; }
 
 		std::vector<Entity>& GetEntities() { return m_Entities; }
 	
@@ -33,7 +35,7 @@ namespace Velocity
 		Camera* m_Camera = nullptr;
 
 		// Scene skybox
-		Skybox* m_Skybox = nullptr;
+		IBLMap* m_Skybox = nullptr;
 
 		void OnPointLightChanged(entt::registry& reg, entt::entity entity);
 

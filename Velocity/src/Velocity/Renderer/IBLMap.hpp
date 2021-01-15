@@ -1,6 +1,10 @@
 #pragma once
 
+#include<glm/glm.hpp>
+#include <glm/ext/matrix_transform.hpp>
 #include <vulkan/vulkan.hpp>
+
+#include "Velocity/ECS/Components.hpp"
 
 namespace Velocity
 {
@@ -30,6 +34,10 @@ namespace Velocity
 		vk::DescriptorImageInfo m_EnviromentMapImageInfo;
 		vk::WriteDescriptorSet	m_EnviromentMapWriteSet;
 
+		// TEMPORARY
+		const glm::mat4 m_SkyboxMatrix = scale(glm::mat4(1.0f), glm::vec3(1000.0f, 1000.0f, 1000.0f));
+		MeshComponent m_SphereMesh;
+		
 		// IRRADIANCE MAP
 
 		// PREFILTER MAP

@@ -59,12 +59,6 @@ namespace Velocity
 		CreateCommandBuffers();
 		CreateSyncronizer();
 		InitaliseImgui();
-
-		// TODO: REMOVE WHEN DONE TESTING
-		auto indices = FindQueueFamilies(m_PhysicalDevice);
-		auto ibl = new IBLMap("assets/hdr/kloppenheim_06_4k.hdr",m_LogicalDevice,m_PhysicalDevice,m_CommandPool.get(),indices.GraphicsFamily.value());
-
-		delete ibl;
 	}
 
 	#pragma region USER API
@@ -131,6 +125,13 @@ namespace Velocity
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
 		return new Skybox(baseFilepath, extension, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+	}
+
+	// Returns a HDR Skybox
+	IBLMap* Renderer::CreateHDRSkybox(const std::string& filepath)
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		return new IBLMap(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
 	}
 	
 	// This is called to end the rendering of a scene
@@ -2103,7 +2104,7 @@ namespace Velocity
 				// Update
 				descriptorWrites.at(0).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 				
-				descriptorWrites.at(1) = m_ActiveScene->m_Skybox->m_WriteSet;
+				descriptorWrites.at(1) = m_ActiveScene->m_Skybox->m_EnviromentMapWriteSet;
 
 				descriptorWrites.at(1).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 
