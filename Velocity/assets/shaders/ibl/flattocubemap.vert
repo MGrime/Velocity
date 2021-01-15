@@ -1,5 +1,4 @@
 #version 450
-
 // Im putting this here because it saves me making a vertex buffer on the vulkan side
 vec3 cubeVerts[36] = vec3[](
 	vec3(-1.0f,	-1.0f,	-1.0f),

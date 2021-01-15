@@ -139,7 +139,7 @@ namespace Velocity
 			// Set to dest optimal
 			Texture::TransitionImageLayout(
 				processBuffer, equirectangularImage.get(),
-				vk::Format::eR32G32B32Sfloat,
+				vk::Format::eR32G32B32A32Sfloat,
 				vk::ImageLayout::eUndefined,
 				vk::ImageLayout::eTransferDstOptimal,
 				1,
@@ -157,7 +157,7 @@ namespace Velocity
 			// Set to shader sample
 			Texture::TransitionImageLayout(
 				processBuffer, equirectangularImage.get(),
-				vk::Format::eR32G32B32Sfloat,
+				vk::Format::eR32G32B32A32Sfloat,
 				vk::ImageLayout::eTransferDstOptimal,
 				vk::ImageLayout::eShaderReadOnlyOptimal,
 				1,
@@ -717,7 +717,7 @@ namespace Velocity
 			VK_FALSE,
 			VK_FALSE,
 			vk::PolygonMode::eFill,
-			vk::CullModeFlagBits::eBack,
+			vk::CullModeFlagBits::eNone,
 			vk::FrontFace::eCounterClockwise,
 			VK_FALSE,
 			0.0f,0.0f,0.0f,1.0f
@@ -851,6 +851,8 @@ namespace Velocity
 		}		
 		#pragma endregion
 
+		r_Device->get().waitIdle();
+
 		// At this point the 6 frame buffer images should each contain 1 face of the flattened map
 		// So we can copy it over
 		// Scope the buffer
@@ -898,7 +900,7 @@ namespace Velocity
 			Texture::TransitionImageLayout(
 				copyBuffer,
 				m_EnviromentMapImage,
-				vk::Format::eR16G16B16Sfloat,
+				vk::Format::eR16G16B16A16Sfloat,
 				vk::ImageLayout::eTransferDstOptimal,
 				vk::ImageLayout::eShaderReadOnlyOptimal,
 				1,

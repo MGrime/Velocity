@@ -50,6 +50,8 @@ void EditorLayer::OnAttach()
 	m_Light.AddComponent<MeshComponent>("Cube");
 
 	m_Scene->SetSkybox(m_Skybox.get());
+
+	Renderer::GetRenderer()->ToggleGUI();
 }
 
 void EditorLayer::OnDetach()

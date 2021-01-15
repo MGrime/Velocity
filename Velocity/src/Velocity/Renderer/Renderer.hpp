@@ -166,7 +166,7 @@ namespace Velocity {
 
 		#ifdef VEL_DEBUG
 		const bool ENABLE_VALIDATION_LAYERS = true;
-		#else
+		#else 
 		const bool ENABLE_VALIDATION_LAYERS = false;
 		#endif
 
