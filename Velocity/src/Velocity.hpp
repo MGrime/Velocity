@@ -25,6 +25,7 @@
 #include "Velocity/Renderer/Renderer.hpp"
 #include "Velocity/Renderer/Texture.hpp"
 #include "Velocity/Renderer/Skybox.hpp"
+#include "Velocity/Renderer/IBLMap.hpp"
 
 #include "imgui/imgui.h"
 

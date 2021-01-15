@@ -29,6 +29,9 @@
 
 #include "Velocity/Utility/Input.hpp"
 
+// TODO: REMOVE
+#include "IBLMap.hpp"
+
 namespace Velocity
 {
 	std::shared_ptr<Renderer> Renderer::s_Renderer = nullptr;
@@ -56,6 +59,12 @@ namespace Velocity
 		CreateCommandBuffers();
 		CreateSyncronizer();
 		InitaliseImgui();
+
+		// TODO: REMOVE WHEN DONE TESTING
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		auto ibl = new IBLMap("assets/hdr/kloppenheim_06_4k.hdr",m_LogicalDevice,m_PhysicalDevice,m_CommandPool.get(),indices.GraphicsFamily.value());
+
+		delete ibl;
 	}
 
 	#pragma region USER API

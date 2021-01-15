@@ -16,6 +16,9 @@ namespace Velocity
 
 		// Skybox is releated
 		friend class Skybox;
+
+		// As is IBL
+		friend class IBLMap;
 	public:
 		// Class funcs
 		// creates a texture from a file on the pc

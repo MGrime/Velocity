@@ -9,4 +9,7 @@
 %VK_SDK_PATH%/bin32/glslc.exe Velocity/assets/shaders/pbr.vert -o Velocity/assets/shaders/pbrvert.spv
 %VK_SDK_PATH%/bin32/glslc.exe Velocity/assets/shaders/pbr.frag -o Velocity/assets/shaders/pbrfrag.spv
 
+%VK_SDK_PATH%/bin32/glslc.exe Velocity/assets/shaders/ibl/flattocubemap.vert -o Velocity/assets/shaders/ibl/flattocubemapvert.spv
+%VK_SDK_PATH%/bin32/glslc.exe Velocity/assets/shaders/ibl/flattocubemap.frag -o Velocity/assets/shaders/ibl/flattocubemapfrag.spv
+
 pause
