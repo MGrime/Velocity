@@ -49,8 +49,6 @@ void EditorLayer::OnAttach()
 	m_Light.AddComponent<PointLightComponent>().Position = glm::vec3(4.0f, 7.0f, 4.0f);
 	m_Light.AddComponent<MeshComponent>("Cube");
 
-	m_Scene->SetSkybox(m_Skybox.get());
-
 	Renderer::GetRenderer()->ToggleGUI();
 }
 

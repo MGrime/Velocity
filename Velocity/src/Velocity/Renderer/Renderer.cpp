@@ -2119,7 +2119,7 @@ namespace Velocity
 
 				auto& renderable = m_Renderables[mesh.MeshReference];
 
-				auto& skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
+				auto skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
 				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), value_ptr(skyboxMatrix));
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 				
