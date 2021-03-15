@@ -4,6 +4,10 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#include <cereal/archives/binary.hpp>
+#include <cereal/types/array.hpp>
+#include <cereal/types/string.hpp>
+
 namespace Velocity
 {
 	struct TagComponent
@@ -13,6 +17,22 @@ namespace Velocity
 		TagComponent() = default;
 		TagComponent(const TagComponent&) = default;
 		TagComponent(const std::string& tag) : Tag(tag){}
+		// I am using seperate functions even though i could use serialize as you need to use one or the other
+		// for all things used in the same serilisation
+		// And some complex components will need a split
+		
+		template <class Archive>
+		void save (Archive& ar) const
+		{
+			ar(Tag);
+		}
+
+		template <class Archive>
+		void load(Archive& ar)
+		{
+			ar(Tag);
+		}
+		
 	};
 
 	struct TransformComponent
@@ -31,13 +51,30 @@ namespace Velocity
 			output *= scale(glm::mat4(1.0f), Scale);
 
 			output *= rotate(glm::mat4(1.0f), glm::radians(Rotation.y), { 0.0f,1.0f,0.0f })
-					* rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f })
-					* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f });
+					* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f })
+					*rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f });
 
 			output *= translate(glm::mat4(1.0f), Translation);
 
 			return output;
 		}
+
+		template<class Archive>
+		void save(Archive& ar) const
+		{
+			ar(Translation.x,Translation.y,Translation.z, 
+				Rotation.x,Rotation.y,Rotation.z, 
+				Scale.x,Scale.y,Scale.z);
+		}
+
+		template<class Archive>
+		void load(Archive& ar)
+		{
+			ar(Translation.x, Translation.y, Translation.z,
+				Rotation.x, Rotation.y, Rotation.z,
+				Scale.x, Scale.y, Scale.z);
+		}
+		
 	};
 
 	// Submit this to the gpu to tell it you want to render this "mesh"
@@ -47,6 +84,18 @@ namespace Velocity
 
 		MeshComponent() = default;
 		MeshComponent(const MeshComponent&) = default;
+
+		template <class Archive>
+		void save(Archive& ar) const
+		{
+			ar(MeshReference);
+		}
+
+		template <class Archive>
+		void load(Archive& ar)
+		{
+			ar(MeshReference);
+		}
 	};
 
 	struct TextureComponent
@@ -56,6 +105,19 @@ namespace Velocity
 		TextureComponent() = default;
 		TextureComponent(const TextureComponent&) = default;
 		TextureComponent(uint32_t id) { TextureID = id; }
+
+		template <class Archive>
+		void save(Archive& ar) const
+		{
+			ar(TextureID);
+		}
+
+		template <class Archive>
+		void load(Archive& ar)
+		{
+			ar(TextureID);
+		}
+		
 	};
 
 	struct PointLightComponent
@@ -66,6 +128,18 @@ namespace Velocity
 		PointLightComponent() = default;
 		PointLightComponent(const PointLightComponent&) = default;
 		PointLightComponent(const glm::vec3& position, const glm::vec3& color) : Position(position), Color(color) {}
+
+		template <class Archive>
+		void save(Archive& ar) const
+		{
+			ar(Position.x,Position.y,Position.z,Color.x,Color.y,Color.z);
+		}
+
+		template <class Archive>
+		void load(Archive& ar)
+		{
+			ar(Position.x, Position.y, Position.z, Color.x, Color.y, Color.z);
+		}
 	};
 
 	struct PBRComponent
@@ -92,6 +166,22 @@ namespace Velocity
 		{
 			return TextureIDs.data();
 		}
+
+		template <class Archive>
+		void save(Archive& ar) const
+		{
+			ar(MaterialName,TextureIDs);
+		}
+
+		template <class Archive>
+		void load(Archive& ar)
+		{
+			ar(MaterialName, TextureIDs);
+		}
+		
 	};
+
+	// This is really bad but idk
+	#define COMPONENT_LIST TagComponent,TransformComponent,MeshComponent,TextureComponent,PointLightComponent,PBRComponent
 	
 }

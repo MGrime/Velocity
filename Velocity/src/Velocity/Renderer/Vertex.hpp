@@ -54,6 +54,24 @@ namespace Velocity
 				}
 			};
 		}
+
+		template<class Archive>
+		void save(Archive& ar) const
+		{
+			ar(Normal.x, Normal.y, Normal.z,
+				Position.x, Position.y, Position.z,
+				Tangent.x, Tangent.y, Tangent.z,
+				UV.x, UV.y);
+		}
+
+		template<class Archive>
+		void load(Archive& ar)
+		{
+			ar(Normal.x, Normal.y, Normal.z,
+				Position.x, Position.y, Position.z,
+				Tangent.x, Tangent.y, Tangent.z,
+				UV.x, UV.y);
+		}
 		
 	};
 }

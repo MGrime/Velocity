@@ -10,6 +10,7 @@ public:
 	{
 		// Set the editor icon
 		GetWindow()->SetWindowIcon("assets/textures/logo.png");
+		
 		PushLayer(new EditorLayer);
 	}
 

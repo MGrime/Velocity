@@ -28,15 +28,13 @@ namespace Velocity
 	class DefaultCameraController
 	{
 	public:
-		DefaultCameraController(const glm::vec3& position = glm::vec3(0.0f, 0.0f, 0.0f), const glm::vec3& rotation = glm::vec3(0.0f, 0.0f, 0.0f),
-			const float& fov = glm::pi<float>() / 3.0f, const float& aspectRatio = 16.0f / 9.0f,
-			const float& nearClip = 0.1f, const float& farClip = 10000.0f);
+		DefaultCameraController(Camera* camera) : m_Camera(camera) {}
 		
 		void OnUpdate(Timestep deltaTime);
 		void OnEvent(Event& e);
 
-		std::unique_ptr<Camera>& GetCamera()	{ return m_Camera; }
-		const std::unique_ptr<Camera>& GetCamera() const{ return m_Camera; }
+		Camera* GetCamera()	{ return m_Camera; }
+		const Camera* GetCamera() const{ return m_Camera; }
 
 		void SetBindings(KeyBindings& newBindings) { m_Bindings = newBindings; }
 
@@ -47,8 +45,8 @@ namespace Velocity
 		// Corrects aspect ratio
 		bool OnWindowResized(WindowResizeEvent& e);
 		
-		// Reference to our camera
-		std::unique_ptr<Camera> m_Camera;
+		// Reference to the camera being controller
+		Camera* m_Camera;
 
 		// Controls
 		KeyBindings m_Bindings = KeyBindings();

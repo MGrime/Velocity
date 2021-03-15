@@ -12,12 +12,6 @@
 
 namespace Velocity
 {
-	DefaultCameraController::DefaultCameraController(const glm::vec3& position, const glm::vec3& rotation,
-		const float& fov, const float& aspectRatio,
-		const float& nearClip, const float& farClip)
-	{
-		m_Camera = std::make_unique<Camera>(position, rotation, fov, aspectRatio, nearClip, farClip);
-	}
 
 	void DefaultCameraController::OnUpdate(Timestep deltaTime)
 	{

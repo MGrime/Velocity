@@ -26,6 +26,9 @@ IncludeDir["stb"] = "Velocity/vendor/stb"
 IncludeDir["assimp"] = "Velocity/vendor/assimp/include"
 IncludeDir["imgui"] = "Velocity/vendor/imgui"
 IncludeDir["entt"] = "Velocity/vendor/entt/src"
+IncludeDir["ImGuizmo"] = "Velocity/vendor/ImGuizmo"
+IncludeDir["cereal"] = "Velocity/vendor/cereal/include"
+IncludeDir["zstr"] = "Velocity/vendor/zstr/src"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
@@ -51,7 +54,8 @@ project "Velocity"
 		"%{prj.name}/src/**.h",
 		"%{prj.name}/src/**.hpp",
 		"%{prj.name}/src/**.cpp",
-		"%{IncludeDir.stb}/**.cpp"
+		"%{IncludeDir.stb}/**.cpp",
+		"%{IncludeDir.ImGuizmo}/**.cpp"
 	}
 	
 	includedirs
@@ -64,7 +68,10 @@ project "Velocity"
 		"%{IncludeDir.stb}",
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.imgui}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}",
+		"%{IncludeDir.cereal}",
+		"%{IncludeDir.zstr}"
 	}
 	
 	links
@@ -126,10 +133,13 @@ project "VelocityEditor"
 		"Velocity/vendor",
 		"%{IncludeDir.glm}",
 		"%{IncludeDir.vulkan}",
+		"%{IncludeDir.stb}",
 		"%{IncludeDir.GLFW}",
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.assimp}",
-		"%{IncludeDir.entt}"
+		"%{IncludeDir.entt}",
+		"%{IncludeDir.cereal}",
+		"%{IncludeDir.zstr}"
 	}
 	
 	links

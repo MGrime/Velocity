@@ -43,6 +43,25 @@ namespace Velocity
 		void SetNearClip(float newNearClip) { m_NearClip = newNearClip; }
 		void SetFarClip(float newFarClip) { m_FarClip = newFarClip; }
 		void SetAspectRatio(float newAspect) { m_AspectRatio = newAspect; }
+
+		template<class Archive>
+		void save(Archive& ar) const
+		{
+			ar(m_Position.x, m_Position.y, m_Position.z,
+				m_Rotation.x, m_Rotation.y,
+				m_FOVx, m_AspectRatio, m_NearClip, m_FarClip);
+		}
+
+
+		template<class Archive>
+		void load(Archive& ar)
+		{
+			ar(m_Position.x, m_Position.y, m_Position.z,
+				m_Rotation.x, m_Rotation.y,
+				m_FOVx, m_AspectRatio, m_NearClip, m_FarClip);
+
+			UpdateMatrices();
+		}
 	
 	private:
 		// Constants

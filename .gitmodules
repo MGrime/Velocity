@@ -16,3 +16,12 @@
 	url = https://github.com/skypjack/entt
 [submodule "Velocity/Vendor/imgui"]
 	branch = docking
+[submodule "Velocity/vendor/ImGuizmo"]
+	path = Velocity/vendor/ImGuizmo
+	url = https://github.com/CedricGuillemet/ImGuizmo
+[submodule "Velocity/vendor/cereal"]
+	path = Velocity/vendor/cereal
+	url = https://github.com/USCiLab/cereal
+[submodule "Velocity/vendor/zstr"]
+	path = Velocity/vendor/zstr
+	url = https://github.com/mateidavid/zstr

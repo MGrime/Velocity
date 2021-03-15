@@ -18,6 +18,7 @@
 #include <Velocity/Utility/Camera.hpp>
 
 #include "Velocity/ECS/Scene.hpp"
+#include "Velocity/ECS/Entity.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
 
@@ -30,6 +31,8 @@
 #include "Velocity/Utility/Input.hpp"
 
 // TODO: REMOVE
+#include <ImGuizmo.h>
+
 #include "IBLMap.hpp"
 
 namespace Velocity
@@ -59,12 +62,15 @@ namespace Velocity
 		CreateCommandBuffers();
 		CreateSyncronizer();
 		InitaliseImgui();
+
+		// Make sure gizmo is set null
+		m_GizmoEntity = nullptr;
 	}
 
 	#pragma region USER API
 	
 	// This is called when you want to start the rendering of a scene!
-	void Renderer::BeginScene(Scene* scene)
+	void Renderer::SetScene(Scene* scene)
 	{
 		m_ActiveScene = scene;
 	}
@@ -132,12 +138,6 @@ namespace Velocity
 	{
 		auto indices = FindQueueFamilies(m_PhysicalDevice);
 		return new IBLMap(filepath, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value(),*m_BufferManager.get());
-	}
-	
-	// This is called to end the rendering of a scene
-	void Renderer::EndScene()
-	{
-		
 	}
 
 	#pragma endregion 
@@ -2104,7 +2104,7 @@ namespace Velocity
 				// Update
 				descriptorWrites.at(0).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 				
-				descriptorWrites.at(1) = m_ActiveScene->m_Skybox->m_EnviromentMapWriteSet;
+				descriptorWrites.at(1) = m_ActiveScene->m_Skybox->m_WriteSet;
 
 				descriptorWrites.at(1).dstSet = m_SkyboxDescriptorSets.at(m_CurrentImage);
 
@@ -2119,7 +2119,7 @@ namespace Velocity
 
 				auto& renderable = m_Renderables[mesh.MeshReference];
 
-				auto skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_Camera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
+				auto skyboxMatrix = glm::translate(glm::mat4(1.0f), m_ActiveScene->m_SceneCamera->GetPosition()) * m_ActiveScene->m_Skybox->m_SkyboxMatrix;
 				cmdBuffer->pushConstants(m_SkyboxPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex, 0, sizeof(glm::mat4), value_ptr(skyboxMatrix));
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 				
@@ -2141,7 +2141,7 @@ namespace Velocity
 				
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eVertex | vk::ShaderStageFlagBits::eFragment, 0, sizeof(glm::mat4), glm::value_ptr(transform.GetTransform()));
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &texture.TextureID);
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_SceneCamera->GetPosition()));
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 			}
 
@@ -2158,7 +2158,7 @@ namespace Velocity
 				// This will always point to the white default texture
 				uint32_t blankTexture = 0u;
 				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), sizeof(uint32_t), &blankTexture);
-				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+				cmdBuffer->pushConstants(m_TexturedPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + sizeof(uint32_t), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_SceneCamera->GetPosition()));
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 			}
 		}
@@ -2180,7 +2180,7 @@ namespace Velocity
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4), pbr.GetSize(), pbr.GetPointer());
 
 				// Camera now pushed later in constant range
-				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_Camera->GetPosition()));
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_SceneCamera->GetPosition()));
 
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 
@@ -2213,14 +2213,14 @@ namespace Velocity
 		ViewProjection flattenedData;
 		if (m_ActiveScene)
 		{
-			if (!m_ActiveScene->m_Camera)
+			if (!m_ActiveScene->m_SceneCamera)
 			{
 				VEL_CORE_WARN("You didnt set a camera!");
 			}
 
 			flattenedData = {
-				m_ActiveScene->m_Camera->GetViewMatrix(),
-				m_ActiveScene->m_Camera->GetProjectionMatrix()
+				m_ActiveScene->m_SceneCamera->GetViewMatrix(),
+				m_ActiveScene->m_SceneCamera->GetProjectionMatrix()
 			};
 
 			void* data;
@@ -2405,6 +2405,42 @@ namespace Velocity
 
 		// Set the size of this window in the IO struct for camera to pickup on
 		io.ViewportImageSize = finalSize;
+
+		// If they want a gizmo
+		if (m_GizmoEntity)
+		{
+			// Point Lights dont have specific components for transform
+			if (m_GizmoEntity->HasComponent<TransformComponent>())
+			{
+				// Gizmos
+				// Set parameters
+				ImGuizmo::SetOrthographic(false);	// Normal view
+				ImGuizmo::SetDrawlist();			// Marks window for use
+
+				// Set viewport size
+				const auto windowWidth = static_cast<float>(ImGui::GetWindowWidth());
+				const auto windowHeight = static_cast<float>(ImGui::GetWindowHeight());
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+				// Get camera parameters
+				auto camera = m_ActiveScene->GetCamera();
+				glm::mat4 cameraView = camera->GetViewMatrix();
+				glm::mat4 cameraProjection = camera->GetProjectionMatrix();
+				cameraProjection[1][1] *= -1.0f;
+
+				// Entity
+				auto& tc = m_GizmoEntity->GetComponent<TransformComponent>();
+				glm::mat4 transform = tc.GetTransform();
+
+				// Draw a gizmo
+				Manipulate(value_ptr(cameraView), value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,value_ptr(transform));
+
+				if (ImGuizmo::IsUsing())
+				{
+					tc.Translation = transform[3];
+				} 
+			}
+		}
 		
 		// End the window
 		ImGui::End();
@@ -2656,6 +2692,29 @@ namespace Velocity
 
 	#pragma endregion
 
+	void Renderer::CreateTexture(std::unique_ptr<stbi_uc> pixels, int width, int height, const std::string& referenceName)
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		m_Textures.push_back({referenceName,new Texture(std::move(pixels),width,height,m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
+		auto newIndex = static_cast<uint32_t>(m_Textures.size()) - 1u;
+		// Update the texture info
+		m_TextureInfos.at(newIndex).imageView = m_Textures.back().second->m_ImageView.get();
+
+		m_LogicalDevice->waitIdle();
+
+		for (auto writes : m_DescriptorWrites)
+		{
+			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+
+		}
+
+		m_TextureGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), m_Textures.back().second->m_ImageView.get(), (VkImageLayout)m_Textures.back().second->m_CurrentLayout));
+
+
+	}
+
+	
+	
 	// Destroys all vulkan data
 	Renderer::~Renderer()
 	{
@@ -2683,4 +2742,5 @@ namespace Velocity
 		ImGui_ImplGlfw_Shutdown();
 		ImGui::DestroyContext();
 	}
+	
 }

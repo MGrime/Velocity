@@ -8,7 +8,7 @@
 
 void EditorLayer::OnGuiRender()
 {
-	MainMenuPanel::Draw();
+	MainMenuPanel::Draw(m_Scene.get());
 	SceneViewPanel::Draw(m_Scene.get());
 	CameraStatePanel::Draw(*m_CameraController->GetCamera());
 }
@@ -17,39 +17,19 @@ void EditorLayer::OnAttach()
 {
 	auto& renderer = Renderer::GetRenderer();
 
-	m_Scene = std::make_unique<Scene>();
+	// Wrap raw loaded scene into a unique ptr to link to lifespan of my application
+	m_Scene = std::unique_ptr<Scene>(Scene::LoadScene("assets/scenes/default"));
 
 	// Prepare camera
-	m_CameraController = std::make_unique<DefaultCameraController>();
-	m_Scene->SetCamera(m_CameraController->GetCamera().get());
-	m_CameraController->GetCamera()->SetPosition({ 9.16f,5.64f,-4.82 });
-	m_CameraController->GetCamera()->SetRotation({ 21.05,-54.85 });
-	
-	// Load Mesh
-	renderer->LoadMesh("assets/models/cube.obj","Cube");
-	renderer->LoadMesh("assets/models/barrel.fbx", "Barrel");
-	renderer->LoadMesh("assets/models/pbrsphere.obj", "Sphere");
-	renderer->LoadMesh("assets/models/rocket.fbx", "Rocket");
+	m_CameraController = std::make_unique<DefaultCameraController>(m_Scene->GetCamera());
 
-	// Load texture
-	renderer->CreateTexture("assets/materials/pirate-gold_albedo.png", "Gold");
+	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/Buddha",".jpg"));
+	m_Scene->SetSkybox(m_Skybox.get());
 
-	m_Skybox = std::unique_ptr<IBLMap>(renderer->CreateHDRSkybox("assets/hdr/kloppenheim_06_4k.hdr"));
+	// Set our loaded scene
+	Renderer::GetRenderer()->SetScene(m_Scene.get());
 
-	auto room = m_Scene->CreateEntity("Rocket");
-	room.GetComponent<TransformComponent>().Translation = glm::vec3(0.0f, 0.0f, 0.0f);
-	room.GetComponent<TransformComponent>().Rotation = glm::vec3(-90.0f, 0.0f, 0.0f);
-	room.AddComponent<MeshComponent>("Rocket");
-
-	//room.AddComponent<TextureComponent>(Renderer::GetRenderer()->GetTextureByReference("Gold"));
-	room.AddComponent<PBRComponent>(Renderer::GetRenderer()->CreatePBRMaterial("assets/materials/rocket",".png","Rocket",false));
-
-	m_Light = m_Scene->CreateEntity("Light");
-	m_Light.RemoveComponent<TransformComponent>();
-	m_Light.AddComponent<PointLightComponent>().Position = glm::vec3(4.0f, 7.0f, 4.0f);
-	m_Light.AddComponent<MeshComponent>("Cube");
-
-	Renderer::GetRenderer()->ToggleGUI();
+	//Renderer::GetRenderer()->ToggleGUI();
 }
 
 void EditorLayer::OnDetach()
@@ -66,10 +46,6 @@ void EditorLayer::OnUpdate(Timestep deltaTime)
 	orbitTime += deltaTime * 0.8f;
 	
 	//m_Light.GetComponent<PointLightComponent>().Position = glm::vec3{} + glm::vec3(cos(orbitTime) * 8.0f, 0.0f, sin(orbitTime) * 8.0f);
-
-	Renderer::GetRenderer()->BeginScene(m_Scene.get());
-
-	Renderer::GetRenderer()->EndScene();
 }
 
 void EditorLayer::OnEvent(Event& event)

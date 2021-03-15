@@ -84,7 +84,7 @@
 //
 //	m_CameraController->OnUpdate(deltaTime);
 //
-//	Velocity::Renderer::GetRenderer()->BeginScene(
+//	Velocity::Renderer::GetRenderer()->SetScene(
 //		m_Scene.get()
 //	);
 //

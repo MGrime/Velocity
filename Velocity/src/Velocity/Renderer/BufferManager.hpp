@@ -11,12 +11,27 @@ namespace Velocity
 	class BufferManager
 	{
 	public:
+		friend class Scene;	// Scene needs to access the arrays
+		
 		struct MeshIndexer
 		{
 			uint32_t	VertexOffset = 0;
 			uint32_t	VertexCount = 0u;
 			uint32_t	IndexStart = 0u;
 			uint32_t	IndexCount = 0u;
+
+			template<class Archive>
+			void save(Archive& ar) const
+			{
+				ar(VertexOffset, VertexCount, IndexStart, IndexCount);
+			}
+
+			template<class Archive>
+			void load(Archive& ar)
+			{
+				ar(VertexOffset, VertexCount, IndexStart, IndexCount);
+			}
+		
 		};
 		
 		// CopyQueue is 99.9% the Graphics Queue
@@ -30,6 +45,11 @@ namespace Velocity
 		// Binds the buffers
 		void Bind(vk::CommandBuffer& commandBuffer);
 
+		// Clear the buffer
+		void Clear() { m_Vertices.clear(); m_Indices.clear(); }
+
+		// Syncronises the buffer after a serialisation
+		void Sync();
 	
 	private:
 
@@ -52,4 +72,5 @@ namespace Velocity
 		vk::CommandPool r_Pool;
 		vk::Queue r_CopyQueue;
 	};
+
 };

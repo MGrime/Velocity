@@ -14,15 +14,26 @@ namespace Velocity
 	{
 	public:
 		Scene();
+
+		Scene(const std::string& sceneFilepath);
+		
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string & name = "New Entity");
 
-		void SetCamera(Camera* camera) { m_Camera = camera; }
-
-		void SetSkybox(IBLMap* skybox) { m_Skybox = skybox; }
+		void SetSkybox(Skybox* skybox) { m_Skybox = skybox; }
 
 		std::vector<Entity>& GetEntities() { return m_Entities; }
+
+		Camera* GetCamera() const { return m_SceneCamera.get(); }
+
+		// Static function to load a default scene from a file
+		// Filepath should be relative path with no file extension
+		// Blank string to create new
+		static Scene* LoadScene(const std::string& sceneFilepath);
+
+		// Saves out data from given scene
+		void SaveScene(const std::string& saveFilepath);
 	
 	private:
 		// Collection of entities we have made
@@ -32,14 +43,12 @@ namespace Velocity
 		entt::registry m_Registry;
 
 		// Scene camera
-		Camera* m_Camera = nullptr;
+		std::unique_ptr<Camera> m_SceneCamera = nullptr;
 
 		// Scene skybox
-		IBLMap* m_Skybox = nullptr;
+		Skybox* m_Skybox = nullptr;
 
 		void OnPointLightChanged(entt::registry& reg, entt::entity entity);
-
-		
 		
 		// Both need access to registry but the end user doesnt
 		friend class Renderer;

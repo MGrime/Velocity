@@ -14,6 +14,7 @@
 
 
 namespace Velocity {
+	class Entity;
 
 	// Forward declaration
 	// Safer in a class as big as this
@@ -51,17 +52,13 @@ namespace Velocity {
 
 		#pragma region USER API
 
-		// This is called when you want to start the rendering of a scene!
-		void BeginScene(Scene* scene);
-
-		// This is called to end the rendering of a scene
-		void EndScene();
-
-		// Loads the given raw mesh into a renderable object
-		void LoadMesh(std::vector<Vertex>& verts,std::vector<uint32_t>& indices, const std::string& referenceName)
-		{
-			m_Renderables.insert({ referenceName,m_BufferManager->AddMesh(verts, indices) });
-		}
+		// Scenes are returned as a raw pointer as they arent owned by the renderer directly
+		// You are responsible as the user for the memory management.
+		// Please note however, this function will modify the contents of the buffer manager and texture arrays.
+		Scene* LoadScene(const std::string& sceneFilepath);
+		
+		// This is called when you want to set the active scene
+		void SetScene(Scene* scene);
 
 		// Loads the given mesh file into a renderable object
 		// Pass this to Renderer::Submit
@@ -140,6 +137,9 @@ namespace Velocity {
 		{
 			m_EnableGUI = !m_EnableGUI;
 		}
+
+		// Sets the entity to have a transform gizmo drawn on it
+		void SetGizmoEntity(Entity* entity) { m_GizmoEntity = entity; }
 		
 		#pragma endregion 
 		
@@ -366,6 +366,23 @@ namespace Velocity {
 
 			return vk::SampleCountFlagBits::e1;
 		}
+
+		// Clears parts that need to change when opening a scene
+		void ClearState()
+		{
+			m_BufferManager->Clear();
+			m_Renderables.clear();
+
+			// Leave the first texture
+			for (size_t i = 1; i < m_Textures.size(); ++i)
+			{
+				delete m_Textures[i].second;
+			}
+		}
+
+		// Creates texture inplace from raw data
+		// Only for interal use
+		void CreateTexture(std::unique_ptr<stbi_uc> pixels, int width, int height,const std::string& referenceName);
 		
 		#pragma endregion
 
@@ -491,6 +508,7 @@ namespace Velocity {
 
 		// Image for copy to imgui
 		std::vector<ImTextureID>				m_FramebufferGUIIDs;
+		Entity*									m_GizmoEntity;
 
 		bool m_EnableGUI = true;
 		

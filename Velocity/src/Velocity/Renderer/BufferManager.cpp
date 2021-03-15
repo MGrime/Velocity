@@ -215,4 +215,90 @@ namespace Velocity
 		commandBuffer.bindVertexBuffers(0, 1, &m_VertexBuffer->Buffer.get(), offsets);
 		commandBuffer.bindIndexBuffer(m_IndexBuffer->Buffer.get(), 0, vk::IndexType::eUint32);
 	}
+	
+	// Syncronises the buffer after a serialisation
+	void BufferManager::Sync()
+	{
+		// Update vertex buffer
+		{
+			// Calculate size of area
+			VkDeviceSize stagingSize = m_Vertices.size() * sizeof(Vertex);
+
+			// Create a CPU staging buffer
+			std::unique_ptr<BaseBuffer> stagingBuffer = std::make_unique<BaseBuffer>(
+				r_PhysicalDevice,
+				*r_LogicalDevice,
+				stagingSize,
+				vk::BufferUsageFlagBits::eTransferSrc,
+				vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+				);
+
+			// Copy to staging vbuffer
+			void* data;
+			vk::Result result = r_LogicalDevice->get().mapMemory(stagingBuffer->Memory.get(), 0, stagingSize, vk::MemoryMapFlags{}, &data);
+			if (result != vk::Result::eSuccess)
+			{
+				VEL_CORE_ASSERT(false, "Failed to map memory!");
+				VEL_CORE_ERROR("Failed to map memory!");
+				return;
+			}
+			memcpy(data, m_Vertices.data(), stagingSize);
+			r_LogicalDevice->get().unmapMemory(stagingBuffer->Memory.get());
+
+			// Copy to fast buffer
+			{
+				TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(*r_LogicalDevice, r_Pool, r_CopyQueue);
+				auto& commandBuffer = bufferWrapper.GetBuffer();
+				
+				vk::BufferCopy copyRegion = {
+					0,
+					0,
+					stagingSize
+				};
+				
+				commandBuffer.copyBuffer(stagingBuffer->Buffer.get(), m_VertexBuffer->Buffer.get(), 1, &copyRegion);
+			}
+			
+		}
+
+		// Update index buffer
+		{
+			// Calculate the size of the new area
+			VkDeviceSize stagingSize = m_Indices.size() * sizeof(uint32_t);
+
+			// Create CPU buffer
+			std::unique_ptr<BaseBuffer> stagingBuffer = std::make_unique<BaseBuffer>(
+				r_PhysicalDevice,
+				*r_LogicalDevice,
+				stagingSize,
+				vk::BufferUsageFlagBits::eTransferSrc,
+				vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
+				);
+			void* data;
+			vk::Result result = r_LogicalDevice->get().mapMemory(stagingBuffer->Memory.get(), 0, stagingSize, vk::MemoryMapFlags{}, &data);
+			if (result != vk::Result::eSuccess)
+			{
+				VEL_CORE_ERROR("Failed to map memory!");
+				VEL_CORE_ASSERT(false, "Failed to map memory!");
+				return;
+			}
+			memcpy(data, m_Indices.data(), stagingSize);
+			r_LogicalDevice->get().unmapMemory(stagingBuffer->Memory.get());
+
+			// Copy to FAST buffer
+			{
+				TemporaryCommandBuffer bufferWrapper = TemporaryCommandBuffer(*r_LogicalDevice, r_Pool, r_CopyQueue);
+				auto& commandBuffer = bufferWrapper.GetBuffer();
+
+				vk::BufferCopy copyRegion = {
+					0,
+					0,
+					stagingSize
+				};
+
+				commandBuffer.copyBuffer(stagingBuffer->Buffer.get(), m_IndexBuffer->Buffer.get(), 1, &copyRegion);
+			}
+		}
+	}
+
 }

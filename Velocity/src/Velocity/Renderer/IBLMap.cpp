@@ -375,7 +375,7 @@ namespace Velocity
 			vk::AttachmentDescriptionFlags{},
 			vk::Format::eR16G16B16A16Sfloat,
 			vk::SampleCountFlagBits::e1,
-			vk::AttachmentLoadOp::eLoad,
+			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eStore,
 			vk::AttachmentLoadOp::eDontCare,
 			vk::AttachmentStoreOp::eDontCare,
@@ -417,7 +417,7 @@ namespace Velocity
 			vk::PipelineStageFlagBits::eColorAttachmentOutput,
 			vk::PipelineStageFlagBits::eTransfer,
 			vk::AccessFlagBits::eColorAttachmentRead | vk::AccessFlagBits::eColorAttachmentWrite,
-			vk::AccessFlagBits::eMemoryRead,
+			vk::AccessFlags{},
 			vk::DependencyFlagBits::eByRegion
 		};
 
@@ -485,9 +485,9 @@ namespace Velocity
 			}
 			
 			// Memory
-			vk::MemoryRequirements memRequirements = r_Device->get().getImageMemoryRequirements(framebufferImages.at(i));
+			memRequirements = r_Device->get().getImageMemoryRequirements(framebufferImages.at(i));
 
-			vk::MemoryAllocateInfo allocInfo = {
+			allocInfo = {
 				memRequirements.size,
 				BaseBuffer::FindMemoryType(r_PhysicalDevice,memRequirements.memoryTypeBits,vk::MemoryPropertyFlagBits::eDeviceLocal)
 			};
@@ -804,22 +804,30 @@ namespace Velocity
 		// Create array of capture matricies
 		// Each pass uses the projection and one of the views
 		glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 512.0f);
-		//captureProjection[1][1] *= -1.0f;
+		captureProjection[1][1] *= -1.0f;
 		std::vector<glm::mat4> captureViews = {
-			// POSITIVE_X
-			glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
-			// NEGATIVE_X
-			glm::rotate(glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			// POSITIVE_Y
-			glm::rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+			rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			// NEGATIVE_Y
-			glm::rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+			rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			// POSITIVE_Z
-			glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+			rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
 			// NEGATIVE_Z
-			glm::rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+			rotate(glm::mat4(1.0f), glm::radians(180.0f), glm::vec3(0.0f, 0.0f, 1.0f)),
+			// POSITIVE_X
+			rotate(rotate(glm::mat4(1.0f), glm::radians(90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f)),
+			// NEGATIVE_X
+			rotate(rotate(glm::mat4(1.0f), glm::radians(-90.0f), glm::vec3(0.0f, 1.0f, 0.0f)), glm::radians(180.0f), glm::vec3(1.0f, 0.0f, 0.0f))
 		};
 
+		for (auto& v : captureViews)
+		{
+			v[0][2] *= -1.0f;
+			v[1][2] *= -1.0f;
+			v[2][2] *= -1.0f;
+			v[3][2] *= -1.0f;
+		}
+		
 		// Scope the commandbuffer RAII object
 		{
 			vk::Queue queue = r_Device->get().getQueue(r_GraphicsQueueIndex, 0);

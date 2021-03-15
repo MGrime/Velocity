@@ -1,8 +1,11 @@
 #pragma once
 
 #include <Velocity.hpp>
+#include <glm/gtc/type_ptr.hpp>
+
 
 #include "../Custom Controls/Controls.hpp"
+#include "ImGuizmo/ImGuizmo.h"
 
 using namespace Velocity;
 
@@ -23,6 +26,7 @@ public:
 		if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
 		{
 			m_SelectedEntity = {};
+			Renderer::GetRenderer()->SetGizmoEntity(nullptr);
 		}
 
 		if (ImGui::BeginPopupContextWindow(0, 1, false))
@@ -42,10 +46,14 @@ public:
 		{
 			DrawEntityProps(m_SelectedEntity);
 			DrawEntityAddComponent();
+			
 		}
 		
 		ImGui::End();
 	}
+
+	static Entity& GetSelectedEntity() { return m_SelectedEntity; }
+
 private:
 	static Entity m_SelectedEntity;
 
@@ -60,6 +68,7 @@ private:
 		if (ImGui::IsItemClicked())
 		{
 			m_SelectedEntity = entity;
+			Renderer::GetRenderer()->SetGizmoEntity(&m_SelectedEntity);
 		}
 
 		if (opened)

@@ -1,8 +1,6 @@
 #include "velpch.h"
 #include "Texture.hpp"
 
-#include <stb_image.h>
-
 #include <Velocity/Core/Log.hpp>
 
 #include <Velocity/Renderer/BaseBuffer.hpp>
@@ -15,27 +13,59 @@ namespace Velocity
 		r_Device = &device;
 		r_PhysicalDevice = pDevice;
 		r_GraphicsQueueIndex = graphicsQueueIndex;
-
-		#pragma region LOAD IMAGE
-
+		r_Pool = pool;
+		
 		int width, height, channels;
-		stbi_uc* pixels = stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha);
+		m_RawPixels = std::unique_ptr<stbi_uc>(
+			stbi_load(filepath.c_str(), &width, &height, &channels, STBI_rgb_alpha)
+		);
+
+		m_IsLoadedByStbi = true;
 
 		m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max<int>(width, height)))) + 1;
+
+		m_FilePath = filepath;
+		m_Width = static_cast<uint32_t>(width);
+		m_Height = static_cast<uint32_t>(height);
+
+		Init();
 		
+	}
+
+	// Private constructor
+	Texture::Texture(std::unique_ptr<stbi_uc> pixels, int width, int height, vk::UniqueDevice& device,
+		vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex)
+	{
+		r_Device = &device;
+		r_PhysicalDevice = pDevice;
+		r_GraphicsQueueIndex = graphicsQueueIndex;
+		r_Pool = pool;
+
+		m_RawPixels = std::move(pixels);
+
+		m_IsLoadedByStbi = false;
+
+		m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max<int>(width, height)))) + 1;
+
+		// TODO: Check this 
+		m_FilePath = "Raw from serialisation";
+		m_Width = static_cast<uint32_t>(width);
+		m_Height = static_cast<uint32_t>(height);
+
+		Init();
+	}
+
+	void Texture::Init()
+	{
 		// 4 bytes per pixel for 32 bit images
-		VkDeviceSize imageSize = width * height * 4;	
-		
-		if (!pixels)
+		VkDeviceSize imageSize = m_Width * m_Height * 4;
+
+		if (!m_RawPixels)
 		{
 			VEL_CORE_ERROR("Failed to load texture image!");
 			VEL_CORE_ASSERT(false, "Failed to load texture image!");
 			return;
 		}
-
-		m_DebugPath = filepath;
-		m_Width = static_cast<uint32_t>(width);
-		m_Height = static_cast<uint32_t>(height);
 
 		// Create staging buffer
 		std::unique_ptr<BaseBuffer> stagingBuffer = std::make_unique<BaseBuffer>(
@@ -44,27 +74,24 @@ namespace Velocity
 			imageSize,
 			vk::BufferUsageFlagBits::eTransferSrc,
 			vk::MemoryPropertyFlagBits::eHostVisible | vk::MemoryPropertyFlagBits::eHostCoherent
-		);
+			);
 
 		void* data;
 		auto result = r_Device->get().mapMemory(stagingBuffer->Memory.get(), 0, imageSize, vk::MemoryMapFlags{}, &data);
 		if (result != vk::Result::eSuccess)
 		{
-			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to map memory)",filepath);
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to map memory)", filepath);
+			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to map memory)", filepath);
+			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to map memory)", m_FilePath);
 			return;
 		}
 
-		memcpy(data, pixels, static_cast<size_t>(imageSize));
+		memcpy(data, m_RawPixels.get(), static_cast<size_t>(imageSize));
 
 		r_Device->get().unmapMemory(stagingBuffer->Memory.get());
 
-		// Free stbi data
-		stbi_image_free(pixels);
-		
-		#pragma endregion
+#pragma endregion
 
-		#pragma region CREATE VULKAN IMAGE
+#pragma region CREATE VULKAN IMAGE
 
 		m_CurrentFormat = vk::Format::eR8G8B8A8Srgb;
 		m_CurrentLayout = vk::ImageLayout::eUndefined;
@@ -91,16 +118,16 @@ namespace Velocity
 		{
 			m_Image = r_Device->get().createImageUnique(imageInfo);
 		}
-		catch(vk::SystemError& e)
+		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image) Error: {1}", filepath,e.what());
+			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image) Error: {1}", m_FilePath, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image) Error: {1}", filepath, e.what());
 			return;
 		}
-		
-		#pragma endregion
-		
-		#pragma region ALLOCATE MEMORY
+
+#pragma endregion
+
+#pragma region ALLOCATE MEMORY
 
 		vk::MemoryRequirements memRequirements = r_Device->get().getImageMemoryRequirements(m_Image.get());
 
@@ -116,41 +143,41 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", filepath, e.what());
+			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", m_FilePath, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image memory) Error: {1}", filepath, e.what());
 			return;
 		}
 
-		#pragma endregion
+#pragma endregion
 
 		// Bind the image memory
-		r_Device->get().bindImageMemory(m_Image.get(), m_ImageMemory.get(),0);
+		r_Device->get().bindImageMemory(m_Image.get(), m_ImageMemory.get(), 0);
 
-		#pragma region PROCESS RAW TO VULKAN
+#pragma region PROCESS RAW TO VULKAN
 
 		{
-			vk::Queue queue = r_Device->get().getQueue(graphicsQueueIndex, 0);
-			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, pool, queue);
+			vk::Queue queue = r_Device->get().getQueue(r_GraphicsQueueIndex, 0);
+			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, r_Pool, queue);
 			auto& processBuffer = processBufferWrapper.GetBuffer();
 
 			// Set this image to destination optimal
 			TransitionImageLayout(processBuffer, vk::ImageLayout::eTransferDstOptimal);
 
 			// Copy buffer
-			CopyBufferToImage(processBuffer, stagingBuffer->Buffer.get(), width, height);
+			CopyBufferToImage(processBuffer, stagingBuffer->Buffer.get(), m_Width, m_Height);
 		}
 
 		{
-			vk::Queue queue = r_Device->get().getQueue(graphicsQueueIndex, 0);
-			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, pool, queue);
+			vk::Queue queue = r_Device->get().getQueue(r_GraphicsQueueIndex, 0);
+			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, r_Pool, queue);
 			auto& processBuffer = processBufferWrapper.GetBuffer();
 			// Mipmap (also transfers to shader layout)
 			GenerateMipmaps(processBuffer);
 		}
-		
-		#pragma endregion
 
-		#pragma region CREATE IMAGE VIEW
+#pragma endregion
+
+#pragma region CREATE IMAGE VIEW
 
 		vk::ImageViewCreateInfo viewInfo = {
 			vk::ImageViewCreateFlags{},
@@ -173,12 +200,12 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image view) Error: {1}", filepath, e.what());
+			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create image view) Error: {1}", m_FilePath, e.what());
 			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image view) Error: {1}", filepath, e.what());
 			return;
 		}
-		
-		#pragma endregion
+
+#pragma endregion
 	}
 
 	void Texture::TransitionImageLayout(vk::CommandBuffer& buffer, vk::Image image, vk::Format format, vk::ImageLayout oldLayout, vk::ImageLayout newLayout, uint32_t miplevels, uint32_t layerCount)
