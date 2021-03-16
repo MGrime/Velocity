@@ -8,28 +8,41 @@
 
 void EditorLayer::OnGuiRender()
 {
-	MainMenuPanel::Draw(m_Scene.get());
+	bool newSceneLoaded = false;
+	std::string newScenePath = "";
+	
+	MainMenuPanel::Draw(m_Scene.get(), &newSceneLoaded, &newScenePath);
+	// They have opened a new scene
+	if (newSceneLoaded)
+	{		
+		Scene* newScene = Scene::LoadScene(newScenePath);
+		
+		// Release old scene and attach new scene
+		m_Scene.reset(newScene);
+		
+		// Shift the camera controller to the new scene camera
+		m_CameraController->SetCamera(newScene->GetCamera());
+
+		// Set skybox
+		m_Scene->SetSkybox(m_Skybox.get());
+
+		// Set to render
+		// TODO: Check if this could be moved to load logic itself
+		Renderer::GetRenderer()->SetScene(m_Scene.get());
+		
+	}
 	SceneViewPanel::Draw(m_Scene.get());
-	CameraStatePanel::Draw(*m_CameraController->GetCamera());
+	CameraStatePanel::Draw(m_CameraController->GetCamera());
 }
 
 void EditorLayer::OnAttach()
 {
 	auto& renderer = Renderer::GetRenderer();
 
-	// Wrap raw loaded scene into a unique ptr to link to lifespan of my application
-	m_Scene = std::unique_ptr<Scene>(Scene::LoadScene("assets/scenes/default"));
-
-	// Prepare camera
-	m_CameraController = std::make_unique<DefaultCameraController>(m_Scene->GetCamera());
-
 	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/Buddha",".jpg"));
-	m_Scene->SetSkybox(m_Skybox.get());
 
-	// Set our loaded scene
-	Renderer::GetRenderer()->SetScene(m_Scene.get());
+	m_CameraController = std::make_unique<DefaultCameraController>(nullptr);
 
-	//Renderer::GetRenderer()->ToggleGUI();
 }
 
 void EditorLayer::OnDetach()

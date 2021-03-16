@@ -40,6 +40,8 @@ namespace Velocity
 
 	Scene* Scene::LoadScene(const std::string& sceneFilepath)
 	{
+		Renderer::GetRenderer()->m_LogicalDevice->waitIdle();
+		
 		// Allocate memory
 		auto* newScene = new Scene();
 
@@ -48,7 +50,7 @@ namespace Velocity
 		{
 			// Load registry from the file. Open in binary
 			std::ifstream is;
-			is.open(sceneFilepath + ".velreg", std::ios::binary | std::fstream::in);
+			is.open(sceneFilepath, std::ios::binary | std::fstream::in);
 			cereal::BinaryInputArchive archive(is);
 
 			// Loads entity data from registry
@@ -82,8 +84,7 @@ namespace Velocity
 			archive(newScene->m_SceneCamera);
 
 			std::vector<std::string> flattenedTextureMapping;
-			std::vector<stbi_uc> flattenedTextureRaw;
-			
+			std::vector<stbi_uc> flattenedTextureRaw;			
 			std::vector<int> flattenedTextureSizes;
 			
 			// Read in flattened mappings
@@ -99,7 +100,7 @@ namespace Velocity
 				// Recalculate how much to go into the raw array with saved data
 				VkDeviceSize texRawSize = flattenedTextureSizes[sizeIndex] * flattenedTextureSizes[sizeIndex + 1] * 4;
 
-				// Create a unique pointer and back with memory
+				// Create a pointer and back with memory
 				void* backedPixels = new stbi_uc[texRawSize];
 				// Copy into the pointer
 				memcpy(backedPixels, &flattenedTextureRaw[rawOffset], texRawSize);
@@ -127,7 +128,7 @@ namespace Velocity
 	{
 		// Open registry file
 		std::ofstream os;
-		os.open(saveFilepath + ".velreg",std::fstream::out | std::ios::binary);
+		os.open(saveFilepath,std::fstream::out | std::ios::binary);
 		if (os.is_open())
 		{
 			cereal::BinaryOutputArchive archive(os);

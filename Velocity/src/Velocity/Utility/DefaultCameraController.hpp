@@ -8,6 +8,8 @@
 
 #include <Velocity/Utility/Timer.hpp>
 
+#include <Velocity/Core/Log.hpp>
+
 namespace Velocity
 {
 	struct KeyBindings
@@ -33,6 +35,13 @@ namespace Velocity
 		void OnUpdate(Timestep deltaTime);
 		void OnEvent(Event& e);
 
+		void SetCamera(Camera* newCamera)
+		{
+			// Assert camera in debug
+			VEL_CORE_ASSERT((void*)newCamera, "Camera cannot be null");
+			
+			m_Camera = newCamera;
+		}
 		Camera* GetCamera()	{ return m_Camera; }
 		const Camera* GetCamera() const{ return m_Camera; }
 

@@ -16,38 +16,42 @@ public:
 	{
 		ImGui::Begin("Scene Hierarchy");
 
-		// Loop all entities
-		for(auto& entity : scene->GetEntities())
+		if (scene)
 		{
-			DrawNode(entity);
-		}
-
-		// Check for if we unselect
-		if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
-		{
-			m_SelectedEntity = {};
-			Renderer::GetRenderer()->SetGizmoEntity(nullptr);
-		}
-
-		if (ImGui::BeginPopupContextWindow(0, 1, false))
-		{
-			if (ImGui::MenuItem("Create New Entity"))
+			// Loop all entities
+			for (auto& entity : scene->GetEntities())
 			{
-				scene->CreateEntity("Empty Entity");
+				DrawNode(entity);
 			}
-			ImGui::EndPopup();
+
+			// Check for if we unselect
+			if (ImGui::IsMouseDown(ImGuiMouseButton_Left) && ImGui::IsWindowHovered())
+			{
+				m_SelectedEntity = {};
+				Renderer::GetRenderer()->SetGizmoEntity(nullptr);
+			}
+
+			if (ImGui::BeginPopupContextWindow(0, 1, false))
+			{
+				if (ImGui::MenuItem("Create New Entity"))
+				{
+					scene->CreateEntity("Empty Entity");
+				}
+				ImGui::EndPopup();
+			}
+
+			ImGui::End();
+
+			ImGui::Begin("Entity Properties");
+
+			if (m_SelectedEntity)
+			{
+				DrawEntityProps(m_SelectedEntity);
+				DrawEntityAddComponent();
+
+			}
 		}
 		
-		ImGui::End();
-
-		ImGui::Begin("Entity Properties");
-
-		if (m_SelectedEntity)
-		{
-			DrawEntityProps(m_SelectedEntity);
-			DrawEntityAddComponent();
-			
-		}
 		
 		ImGui::End();
 	}

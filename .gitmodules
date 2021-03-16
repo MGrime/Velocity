@@ -25,3 +25,6 @@
 [submodule "Velocity/vendor/zstr"]
 	path = Velocity/vendor/zstr
 	url = https://github.com/mateidavid/zstr
+[submodule "Velocity/vendor/nfd"]
+	path = Velocity/vendor/nfd
+	url = https://github.com/MGrime/nativefiledialog

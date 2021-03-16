@@ -1,34 +1,34 @@
-[19:35:35] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
-[19:35:36] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x23a83bd9a20, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
+[11:48:31] [info] VELOCITY: Creating window Velocity Editor Size:(1280,720)
+[11:48:32] [info] VELOCITY: Validation Layer: Validation Information: [ UNASSIGNED-khronos-validation-createinstance-status-message ] Object 0: handle = 0x255fef5e1c0, type = VK_OBJECT_TYPE_INSTANCE; | MessageID = 0xd7fa5f44 | Khronos Validation Layer Active:
     Settings File: None. Default location is C:\dev\Velocity\VelocityEditor\vk_layer_settings.txt.
     Current Enables: None.
     Current Disables: None.
 
-[19:35:36] [info] VELOCITY: Available extensions:
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_device_group_creation
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_display
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_surface
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
-[19:35:36] [trace] VELOCITY: 	 VK_KHR_win32_surface
-[19:35:36] [trace] VELOCITY: 	 VK_EXT_debug_report
-[19:35:36] [trace] VELOCITY: 	 VK_EXT_debug_utils
-[19:35:36] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
-[19:35:36] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
-[19:35:36] [info] VELOCITY: Created Vulkan Instance!
-[19:35:36] [info] VELOCITY: Created debug messenger!
-[19:35:36] [info] VELOCITY: Created window surface!
-[19:35:36] [info] VELOCITY: Selected GPU: GeForce GT 1030
-[19:35:38] [info] VELOCITY: Created Logical device!
-[19:35:38] [info] VELOCITY: Created swapchain with size:(1280,720)
-[19:35:39] [info] VELOCITY: Loaded shaders!
-[19:35:39] [info] VELOCITY: Created graphics pipeline!
-[19:35:39] [info] VELOCITY: Created command pool!
-[19:35:40] [info] VELOCITY: Created framebuffers!
-[19:35:40] [info] VELOCITY: Allocated command buffers!
-[19:35:40] [info] VELOCITY: Created syncronisation primitives!
+[11:48:32] [info] VELOCITY: Available extensions:
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_device_group_creation
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_display
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_external_fence_capabilities
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_external_memory_capabilities
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_external_semaphore_capabilities
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_get_display_properties2
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_get_physical_device_properties2
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_get_surface_capabilities2
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_surface
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_surface_protected_capabilities
+[11:48:32] [trace] VELOCITY: 	 VK_KHR_win32_surface
+[11:48:32] [trace] VELOCITY: 	 VK_EXT_debug_report
+[11:48:32] [trace] VELOCITY: 	 VK_EXT_debug_utils
+[11:48:32] [trace] VELOCITY: 	 VK_EXT_swapchain_colorspace
+[11:48:32] [trace] VELOCITY: 	 VK_NV_external_memory_capabilities
+[11:48:32] [info] VELOCITY: Created Vulkan Instance!
+[11:48:32] [info] VELOCITY: Created debug messenger!
+[11:48:32] [info] VELOCITY: Created window surface!
+[11:48:32] [info] VELOCITY: Selected GPU: GeForce GT 1030
+[11:48:32] [info] VELOCITY: Created Logical device!
+[11:48:32] [info] VELOCITY: Created swapchain with size:(1280,720)
+[11:48:32] [info] VELOCITY: Loaded shaders!
+[11:48:32] [info] VELOCITY: Created graphics pipeline!
+[11:48:32] [info] VELOCITY: Created command pool!
+[11:48:33] [info] VELOCITY: Created framebuffers!
+[11:48:33] [info] VELOCITY: Allocated command buffers!
+[11:48:33] [info] VELOCITY: Created syncronisation primitives!

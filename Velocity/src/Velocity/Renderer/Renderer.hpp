@@ -373,11 +373,28 @@ namespace Velocity {
 			m_BufferManager->Clear();
 			m_Renderables.clear();
 
-			// Leave the first texture
+			// Now loop textures skipping first
 			for (size_t i = 1; i < m_Textures.size(); ++i)
 			{
+				// Cleanup memory
 				delete m_Textures[i].second;
 			}
+
+			// Now optimise the m_Textures array to be 1 big erasing all the previous entries
+			m_Textures.resize(1);
+
+			// Reset and update texture sets to be clean
+			for (auto& info : m_TextureInfos)
+			{
+				info.imageView = m_DefaultBindingTexture->m_ImageView.get();
+			}
+			m_LogicalDevice->waitIdle();
+			for (auto writes : m_DescriptorWrites)
+			{
+				m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(writes.size()), writes.data(), 0, nullptr);
+
+			}
+			
 		}
 
 		// Creates texture inplace from raw data

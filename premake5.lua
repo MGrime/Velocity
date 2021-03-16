@@ -29,10 +29,12 @@ IncludeDir["entt"] = "Velocity/vendor/entt/src"
 IncludeDir["ImGuizmo"] = "Velocity/vendor/ImGuizmo"
 IncludeDir["cereal"] = "Velocity/vendor/cereal/include"
 IncludeDir["zstr"] = "Velocity/vendor/zstr/src"
+IncludeDir["nfd"] = "Velocity/vendor/nfd/include"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
 	include "Velocity/vendor/imgui"
+	include "Velocity/vendor/nfd"
 	
 group ""
 
@@ -71,14 +73,16 @@ project "Velocity"
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.cereal}",
-		"%{IncludeDir.zstr}"
+		"%{IncludeDir.zstr}",
+		"%{IncludeDir.nfd}"
 	}
 	
 	links
 	{
 		"GLFW",
 		vulkanpath .. "/Lib/vulkan-1.lib",
-		"imgui"
+		"imgui",
+		"nfd"
 	}
 	
 	filter "system:windows"
@@ -139,7 +143,8 @@ project "VelocityEditor"
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.entt}",
 		"%{IncludeDir.cereal}",
-		"%{IncludeDir.zstr}"
+		"%{IncludeDir.zstr}",
+		"%{IncludeDir.nfd}"
 	}
 	
 	links
