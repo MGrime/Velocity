@@ -37,9 +37,6 @@ namespace Velocity
 
 		void SetCamera(Camera* newCamera)
 		{
-			// Assert camera in debug
-			VEL_CORE_ASSERT((void*)newCamera, "Camera cannot be null");
-			
 			m_Camera = newCamera;
 		}
 		Camera* GetCamera()	{ return m_Camera; }

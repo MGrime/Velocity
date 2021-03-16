@@ -58,6 +58,8 @@ public:
 
 	static Entity& GetSelectedEntity() { return m_SelectedEntity; }
 
+	static void ClearSelectedEntity() { m_SelectedEntity = {}; }
+
 private:
 	static Entity m_SelectedEntity;
 

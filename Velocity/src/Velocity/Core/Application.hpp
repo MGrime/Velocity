@@ -29,6 +29,7 @@ namespace Velocity
 		void PushLayer(Layer* layer);
 		void PushOverlay(Layer* overlay);
 		
+		
 		// Events
 		bool OnWindowClose(WindowCloseEvent& e);
 		bool OnWindowResize(WindowResizeEvent& e);

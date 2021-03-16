@@ -14,9 +14,6 @@ namespace Velocity
 	{
 	public:
 		Scene();
-
-		Scene(const std::string& sceneFilepath);
-		
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string & name = "New Entity");
@@ -24,6 +21,7 @@ namespace Velocity
 		void SetSkybox(Skybox* skybox) { m_Skybox = skybox; }
 
 		std::vector<Entity>& GetEntities() { return m_Entities; }
+		const std::string& GetSceneName() { return m_SceneName; }
 
 		Camera* GetCamera() const { return m_SceneCamera.get(); }
 
@@ -34,8 +32,36 @@ namespace Velocity
 
 		// Saves out data from given scene
 		void SaveScene(const std::string& saveFilepath);
+
+		// Extracts reference names from filepaths for scene management
+		static std::string GetRefName(const std::string& fullPath)
+		{
+			std::string modifyPath = fullPath;
+			// Find last
+			std::string fileCharacter = "/";
+#ifdef VEL_PLATFORM_WINDOWS
+			fileCharacter = "\\";
+#endif
+
+			// Get just the file name
+			auto lastSlashPos = fullPath.find_last_of(fileCharacter);
+			// Should never miss this but checking just in case
+			if (lastSlashPos != std::string::npos)
+			{
+				// Windows needs to erase one more
+#ifdef VEL_PLATFORM_WINDOWS
+				modifyPath.erase(0, lastSlashPos + 1);
+#elif
+				modifyPath.erase(0, lastSlashPos);
+#endif
+			}
+
+			return modifyPath;
+		}
 	
 	private:
+		std::string m_SceneName;
+		
 		// Collection of entities we have made
 		std::vector<Entity> m_Entities;
 		
@@ -53,6 +79,8 @@ namespace Velocity
 		// Both need access to registry but the end user doesnt
 		friend class Renderer;
 		friend class Entity;
+
+		
 	};
 	
 }

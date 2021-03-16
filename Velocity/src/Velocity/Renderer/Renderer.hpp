@@ -382,6 +382,7 @@ namespace Velocity {
 
 			// Now optimise the m_Textures array to be 1 big erasing all the previous entries
 			m_Textures.resize(1);
+			m_TextureGUIIDs.resize(1);
 
 			// Reset and update texture sets to be clean
 			for (auto& info : m_TextureInfos)

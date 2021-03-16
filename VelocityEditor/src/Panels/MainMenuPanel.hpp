@@ -7,7 +7,7 @@
 class MainMenuPanel
 {
 public:
-	static void Draw(Scene* scene,bool* newSceneLoaded, std::string* newScenePath)
+	static void Draw(Scene* scene,bool* newSceneLoaded, std::string* newScenePath, bool* sceneSaved, bool* sceneClosed)
 	{
 		if (ImGui::BeginMainMenuBar())
 		{
@@ -47,6 +47,7 @@ public:
 								saveLoc += ".velocity";
 							}
 							scene->SaveScene(std::string(saveLoc));
+							*sceneSaved = true;
 							VEL_CORE_INFO("Saved out scene!");
 							break;
 						}
@@ -62,6 +63,11 @@ public:
 						}
 					}
 					
+				}
+
+				if (ImGui::MenuItem("Close Scene",0,(bool*)0,scene !=nullptr))
+				{
+					*sceneClosed = true;
 				}
 
 				ImGui::EndMenu();
@@ -83,33 +89,27 @@ public:
 					if (outFile)
 					{
 						// Construct to string for easier processing
-						std::string refName = std::string(outFile);
+						const std::string fullPath = std::string(outFile);
 
-						// Make a copy
-						std::string fullPath = refName;
-
-						// Find last
-						std::string fileCharacter = "/";
-						#ifdef VEL_PLATFORM_WINDOWS
-						fileCharacter = "\\";
-						#endif
-
-						// Get just the file name
-						auto lastSlashPos = refName.find_last_of(fileCharacter);
-						// Should never miss this but checking just in case
-						if (lastSlashPos != std::string::npos)
-						{
-							// Windows needs to erase one more
-							#ifdef VEL_PLATFORM_WINDOWS
-							refName.erase(0, lastSlashPos + 1);
-							#elif
-							refName.erase(0, lastSlashPos);
-							#endif
-						}
-
+						const std::string refName = Scene::GetRefName(fullPath);
+						
 						// Now create the mesh
 						Renderer::GetRenderer()->LoadMesh(fullPath, refName);
 					}
+				}
+				if (ImGui::MenuItem("Texture"))
+				{
+					nfdchar_t* outFile = OpenFile("jpg,jpeg,png");
+					if (outFile)
+					{
+						const std::string fullPath = std::string(outFile);
+
+						const std::string refName = Scene::GetRefName(fullPath);
+
+						// Now create the texture
+						Renderer::GetRenderer()->CreateTexture(fullPath, refName);
+					}
+					
 				}
 				ImGui::EndMenu();
 			}
@@ -144,4 +144,5 @@ public:
 		}
 		return outPath;
 	}
+
 };

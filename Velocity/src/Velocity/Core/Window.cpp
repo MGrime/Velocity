@@ -21,6 +21,8 @@ namespace Velocity
 	{
 		m_Data.Props = props;
 
+		m_BaseWindowTitle = props.Title;
+
 		VEL_CORE_INFO("Creating window {0} Size:({1},{2})", props.Title, props.Width, props.Height);
 
 		if (!s_GLFWInit)
@@ -35,7 +37,6 @@ namespace Velocity
 
 		m_Window = glfwCreateWindow(static_cast<int>(props.Width), static_cast<int>(props.Height), props.Title.c_str(), nullptr, nullptr);
 		glfwSetWindowUserPointer(m_Window, &m_Data);
-
 
 		// Set callbacks
 
@@ -159,5 +160,9 @@ namespace Velocity
 		glfwSetWindowIcon(m_Window, 1, &newIcon);
 		stbi_image_free(newIcon.pixels);
 
+	}
+	void Window::SetWindowTitle(const std::string& newTitle)
+	{
+		glfwSetWindowTitle(m_Window, newTitle.c_str());
 	}
 }

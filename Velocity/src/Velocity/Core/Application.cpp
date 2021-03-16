@@ -25,7 +25,7 @@ namespace Velocity
 
 		// Push the gui layer
 		m_ImGuiLayer = new ImGuiLayer();
-
+		
 		m_Timer = FrameTimer();
 	}
 

@@ -18,6 +18,8 @@ namespace Velocity
 {
 	Scene::Scene()
 	{
+		m_SceneName = "New Scene";
+		
 		m_Registry.on_construct<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
 		m_Registry.on_destroy<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
 		m_Registry.on_update<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
@@ -48,10 +50,13 @@ namespace Velocity
 		// Allow for this to create a new scene
 		if (!sceneFilepath.empty())
 		{
+			
 			// Load registry from the file. Open in binary
 			std::ifstream is;
 			is.open(sceneFilepath, std::ios::binary | std::fstream::in);
 			cereal::BinaryInputArchive archive(is);
+
+			archive(newScene->m_SceneName);
 
 			// Loads entity data from registry
 			entt::snapshot_loader{ newScene->m_Registry }
@@ -76,7 +81,6 @@ namespace Velocity
 			archive(renderer->m_Renderables);
 
 			// load the raw state of the buffer manager
-			renderer->m_BufferManager->Clear();
 			archive(renderer->m_BufferManager->m_Vertices,renderer->m_BufferManager->m_Indices);
 			renderer->m_BufferManager->Sync();
 
@@ -117,8 +121,17 @@ namespace Velocity
 		}
 		else
 		{
+			auto& renderer = Renderer::GetRenderer();
+			renderer->ClearState();
+
+			// Load the skybox default
+			Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj", "VEL_INTERNAL_Skybox");
+			renderer->m_BufferManager->Sync();
+			
 			// Camera needs to be init at default
 			newScene->m_SceneCamera = std::make_unique<Camera>();
+
+			
 		}
 
 		return newScene;
@@ -131,7 +144,11 @@ namespace Velocity
 		os.open(saveFilepath,std::fstream::out | std::ios::binary);
 		if (os.is_open())
 		{
+			m_SceneName = GetRefName(saveFilepath);
+			
 			cereal::BinaryOutputArchive archive(os);
+
+			archive(m_SceneName);
 
 			// Save registry
 			entt::snapshot{ m_Registry }

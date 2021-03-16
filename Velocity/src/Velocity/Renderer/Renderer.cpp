@@ -72,6 +72,7 @@ namespace Velocity
 	// This is called when you want to start the rendering of a scene!
 	void Renderer::SetScene(Scene* scene)
 	{
+		m_LogicalDevice->waitIdle();
 		m_ActiveScene = scene;
 	}
 
@@ -1766,7 +1767,7 @@ namespace Velocity
 		if (m_Textures.size() == 0)
 		{
 			auto indices = FindQueueFamilies(m_PhysicalDevice);
-			m_Textures.push_back({ "DEFAULT",new Texture("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
+			m_Textures.push_back({ "VEL_INTERNAL_DEFAULT",new Texture("../Velocity/assets/textures/default.png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value()) });
 			m_DefaultBindingTexture = m_Textures.back().second;
 			m_TextureInfos.resize(128);
 			for (auto& info : m_TextureInfos)
