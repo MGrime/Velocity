@@ -118,6 +118,9 @@ namespace Velocity
 
 				sizeIndex += 2;
 			}
+
+			// Read in PBR Materials
+			archive(renderer->m_PBRMaterials);
 		}
 		else
 		{
@@ -196,7 +199,10 @@ namespace Velocity
 			// Archive
 			archive(flattenedTextureMapping);
 			archive(flattenedTextureRaw);
-			archive(flattenedTextureSizes);			
+			archive(flattenedTextureSizes);
+
+			// Archive materials list
+			archive(renderer->m_PBRMaterials);
 		}
 		else
 		{

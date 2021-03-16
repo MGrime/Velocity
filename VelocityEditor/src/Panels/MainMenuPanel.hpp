@@ -3,6 +3,7 @@
 #include "imgui.h"
 #include "../Custom Controls/Controls.hpp"
 #include <nfd.h>
+#include <filesystem>
 
 class MainMenuPanel
 {
@@ -110,6 +111,80 @@ public:
 						Renderer::GetRenderer()->CreateTexture(fullPath, refName);
 					}
 					
+				}
+				// THIS LOGIC MAKES A LOT OF ASSUMPTIONS ABOUT THE FOLDER LAYOUT
+				// BUT ITS JUST A REQUIREMENT TO SIMPLIFY
+				// TODO: MAKE SURE THE SETUP OF FOLDER IS EXPLAINED
+				if (ImGui::MenuItem("Material"))
+				{
+					nfdchar_t* selectedFolder = nullptr;
+
+					// Open a folder selection dialog
+					const nfdresult_t result = NFD_PickFolder(nullptr, &selectedFolder);
+
+					switch(result)
+					{
+						case NFD_OKAY:
+						{
+							// Processing happens later down
+							break;
+						}
+						case NFD_CANCEL:
+						{
+							// Do nothing
+							return;
+						}
+						case NFD_ERROR:
+						{
+							VEL_CORE_ERROR("Error opening file explorer! %s", std::string(NFD_GetError()));
+							return;
+						}
+					}
+
+					// Now we have the folder that should contain the material
+					const auto fileListIterator = std::filesystem::directory_iterator(std::string(selectedFolder));
+					std::vector<std::filesystem::directory_entry> fileList;
+					
+					// Get a list of all files in the folder
+					for (const auto& file: fileListIterator)
+					{
+						fileList.push_back(file);
+					}
+
+					if (fileList.empty())
+					{
+						VEL_CORE_ERROR("Selected folder is empty!");
+						return;
+					}
+
+					// Check for height map
+					bool bHasHeightMap = false;
+					for (auto& file : fileList)
+					{
+						// Found a file with _height in the name. ASSUMPTION
+						if (file.path().generic_string().find("_height") != std::string::npos)
+						{
+							bHasHeightMap = true;
+							break;
+						}
+					}
+
+					// Use first file to extract naming convention as albedo will be alphabetically first
+					auto firstFilepath = fileList.at(0).path().generic_string();
+					auto fileExtension = fileList.at(0).path().extension().generic_string();
+					auto refName = fileList.at(0).path().filename().generic_string();
+
+					// Find where albedo is
+					const auto erasePathPos = firstFilepath.find("_albedo");
+					const auto eraseRefPos = refName.find("_albedo");
+
+					// Erase from that till end
+					firstFilepath.erase(erasePathPos, firstFilepath.length() - erasePathPos);
+					refName.erase(eraseRefPos, refName.length() - eraseRefPos);
+					
+					// firstFilepath now contains the root path
+					
+					Renderer::GetRenderer()->CreatePBRMaterial(firstFilepath, fileExtension, refName,bHasHeightMap);
 				}
 				ImGui::EndMenu();
 			}

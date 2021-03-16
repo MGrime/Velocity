@@ -132,6 +132,12 @@ namespace Velocity {
 			return m_Textures;
 		}
 
+		// Gets the list of textures
+		const std::unordered_map<std::string, PBRComponent>& GetMaterialsList()
+		{
+			return m_PBRMaterials;
+		}
+
 		// Switch the whole imgui pipeline on or off
 		void ToggleGUI()
 		{

@@ -179,7 +179,7 @@ private:
 		if (ImGui::BeginPopup("NewComponent"))
 		{
 			// OPEN POPUP
-			if (ImGui::Button("Transform Component"))
+			if (ImGui::Button("Transform"))
 			{
 				if (m_SelectedEntity.HasComponent<TransformComponent>())
 				{
@@ -194,15 +194,19 @@ private:
 					m_SelectedEntity.AddComponent<TransformComponent>();
 				}
 			}
-			if (ImGui::Button("Mesh Component"))
+			if (ImGui::Button("Mesh"))
 			{
 				ImGui::OpenPopup("NewMeshComponent");
 			}
-			if (ImGui::Button("Texture Component"))
+			if (ImGui::Button("Texture(Non-PBR)"))
 			{
 				ImGui::OpenPopup("NewTextureComponent");
 			}
-			if (ImGui::Button("Point Light Component"))
+			if (ImGui::Button("Material(PBR)"))
+			{
+				ImGui::OpenPopup("NewMaterialComponent");
+			}
+			if (ImGui::Button("Point Light"))
 			{
 				if (m_SelectedEntity.HasComponent<PointLightComponent>())
 				{
@@ -221,7 +225,7 @@ private:
 			// POPUP IMPLEMENTATIONS
 			if (ImGui::BeginPopup("NewMeshComponent"))
 			{
-				auto meshList = Renderer::GetRenderer()->GetMeshList();
+				auto& meshList = Renderer::GetRenderer()->GetMeshList();
 
 				if (ImGui::BeginCombo("Meshes", "..."))
 				{
@@ -251,7 +255,7 @@ private:
 
 			if (ImGui::BeginPopup("NewTextureComponent"))
 			{
-				auto textureList = Renderer::GetRenderer()->GetTexturesList();
+				auto& textureList = Renderer::GetRenderer()->GetTexturesList();
 
 				if (ImGui::BeginCombo("Textures","..."))
 				{
@@ -277,6 +281,42 @@ private:
 				}
 				ImGui::EndPopup();
 			}
+
+			if (ImGui::BeginPopup("NewMaterialComponent"))
+			{
+				auto materialList = Renderer::GetRenderer()->GetMaterialsList();
+
+				if (ImGui::BeginCombo("Materials","..."))
+				{
+					for (auto& material : materialList)
+					{
+						if (material.first.find("VEL_INTERNAL") == std::string::npos)
+						{
+							ImGui::PushID(material.first.c_str());
+							if (ImGui::Selectable(material.first.c_str()))
+							{
+								if (m_SelectedEntity.HasComponent<TextureComponent>())
+								{
+									VEL_CLIENT_WARN("Cannot add a material to a non PBR object. Remove the texture component first!");
+									ImGui::PopID();
+									break;
+								}
+								if (m_SelectedEntity.HasComponent<PBRComponent>())
+								{
+									VEL_CLIENT_WARN("Cannot add a duplicate component!");
+									ImGui::PopID();
+									break;
+								}
+								m_SelectedEntity.AddComponent<PBRComponent>(Renderer::GetRenderer()->GetMaterialsList().at(material.first));
+							}
+							ImGui::PopID();
+						}
+					}
+					ImGui::EndCombo();
+				}
+				ImGui::EndPopup();
+			}
+			
 			// linked to original popup
 			ImGui::EndPopup();
 		}
