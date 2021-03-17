@@ -18,12 +18,14 @@ namespace Velocity
 
 		Entity CreateEntity(const std::string & name = "New Entity");
 
-		void SetSkybox(Skybox* skybox) { m_Skybox = skybox; }
+		void CreateSkybox(const std::string& baseFilepath, const std::string& extension);
+		void RemoveSkybox() { m_Skybox.reset(nullptr); }
 
 		std::vector<Entity>& GetEntities() { return m_Entities; }
 		const std::string& GetSceneName() { return m_SceneName; }
 
 		Camera* GetCamera() const { return m_SceneCamera.get(); }
+		Skybox* GetSkybox() const { if (m_Skybox) { return m_Skybox.get(); } return nullptr; }
 
 		// Static function to load a default scene from a file
 		// Filepath should be relative path with no file extension
@@ -72,7 +74,7 @@ namespace Velocity
 		std::unique_ptr<Camera> m_SceneCamera = nullptr;
 
 		// Scene skybox
-		Skybox* m_Skybox = nullptr;
+		std::unique_ptr <Skybox> m_Skybox = nullptr;
 
 		void OnPointLightChanged(entt::registry& reg, entt::entity entity);
 		

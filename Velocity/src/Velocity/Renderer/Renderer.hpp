@@ -10,6 +10,7 @@
 
 #include "BufferManager.hpp"
 #include "imgui.h"
+#include <ImGuizmo.h>
 #include "Texture.hpp"
 
 
@@ -146,6 +147,9 @@ namespace Velocity {
 
 		// Sets the entity to have a transform gizmo drawn on it
 		void SetGizmoEntity(Entity* entity) { m_GizmoEntity = entity; }
+		// Sets how the gizmo will operate
+		void SetGizmoOperation(ImGuizmo::OPERATION operation) { m_GizmoOperation = operation; }
+		void SetGizmoMode(ImGuizmo::MODE mode) { m_GizmoMode = mode; }
 		
 		#pragma endregion 
 		
@@ -407,7 +411,11 @@ namespace Velocity {
 		// Creates texture inplace from raw data
 		// Only for interal use
 		void CreateTexture(std::unique_ptr<stbi_uc> pixels, int width, int height,const std::string& referenceName);
-		
+
+		Skybox* CreateSkybox(std::array<std::unique_ptr<stbi_uc>, 6>& pixels, int width, int height);
+
+		// Creates skybox from raw data
+
 		#pragma endregion
 
 		#pragma region MEMBER VARIABLES
@@ -532,7 +540,12 @@ namespace Velocity {
 
 		// Image for copy to imgui
 		std::vector<ImTextureID>				m_FramebufferGUIIDs;
+
+		
 		Entity*									m_GizmoEntity;
+		ImGuizmo::OPERATION						m_GizmoOperation;
+		ImGuizmo::MODE							m_GizmoMode;
+		
 
 		bool m_EnableGUI = true;
 		

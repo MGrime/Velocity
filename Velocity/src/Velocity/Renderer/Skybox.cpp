@@ -15,17 +15,56 @@ namespace Velocity
 		r_Device = &device;
 		r_PhysicalDevice = pDevice;
 		r_GraphicsQueueIndex = graphicsQueueIndex;
+		r_CommandPool = pool;
+		
 		#pragma region LOAD IMAGE
 
+		m_IsLoadedByStbi = true;
+		
 		stbi_uc* textures[6];
 		int width, height, channels;	// SHOULD BE SAME FOR ALL IMAGES
 		for (int i = 0; i < 6; ++i)
 		{
 			textures[i] = stbi_load(CalculateFile(basefolder, extension, i).c_str(), &width, &height, &channels,STBI_rgb_alpha);
+			m_RawPixels[i] = std::unique_ptr<stbi_uc>(textures[i]);
 		}
 
+		m_Width = width;
+		m_Height = width;
+
+		Init();
+
+		#pragma endregion
+	}
+
+	// For internal use
+	Skybox::Skybox(std::array<std::unique_ptr<stbi_uc>, 6>& pixels, int width, int height, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex)
+	{
+		r_Device = &device;
+		r_PhysicalDevice = pDevice;
+		r_GraphicsQueueIndex = graphicsQueueIndex;
+		r_CommandPool = pool;
+		m_IsLoadedByStbi = false;
+		
+		size_t index = 0;
+		// Take ownership
+		for (auto& pointer : pixels)
+		{
+			m_RawPixels[index] = std::move(pointer);
+			++index;
+		}
+		
+
+		m_Width = width;
+		m_Height = width;
+
+		Init();
+	}
+	
+	void Skybox::Init()
+	{
 		// Calculate sizes
-		const VkDeviceSize imageSize = width * height * 4 * 6;
+		const VkDeviceSize imageSize = m_Width * m_Height * 4 * 6;
 		const VkDeviceSize layerSize = imageSize / 6;
 
 		// Create staging buffer
@@ -42,8 +81,8 @@ namespace Velocity
 		auto result = r_Device->get().mapMemory(stagingBuffer->Memory.get(), 0, imageSize, vk::MemoryMapFlags{}, &data);
 		if (result != vk::Result::eSuccess)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to map memory)", basefolder);
-			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to map memory)", basefolder);
+			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to map memory)");
+			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to map memory)");
 			return;
 		}
 
@@ -51,28 +90,24 @@ namespace Velocity
 		{
 			// Offset into buffer by the memory size
 			const auto offset = static_cast<char*>(data) + (layerSize * i);
-			
-			memcpy(static_cast<void*>(offset), textures[i], layerSize);
+
+			memcpy(static_cast<void*>(offset), m_RawPixels[i].get(), layerSize);
+
 		}
 
 		r_Device->get().unmapMemory(stagingBuffer->Memory.get());
 
-		for (int i = 0; i < 6; ++i)
-		{
-			stbi_image_free(textures[i]);
-		}
-		
-		#pragma endregion
-		
-		#pragma region CREATE VULKAN IMAGE
+#pragma endregion
+
+#pragma region CREATE VULKAN IMAGE
 
 		//vk::Format::eR32G32B32Sfloat;	// THIS IS THE FORMAT FOR HDRI
-		
+
 		vk::ImageCreateInfo imageInfo = {
 			vk::ImageCreateFlagBits::eCubeCompatible,
 			vk::ImageType::e2D,
 			vk::Format::eR8G8B8A8Srgb,
-			vk::Extent3D{static_cast<uint32_t>(width),static_cast<uint32_t>(height),1},
+			vk::Extent3D{static_cast<uint32_t>(m_Width),static_cast<uint32_t>(m_Height),1},
 			1,
 			6,
 			vk::SampleCountFlagBits::e1,
@@ -90,15 +125,15 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image) Error: {1}", basefolder, e.what());
-			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create image) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox: (Failed to create image) Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to load skybox: (Failed to create image) Error: {0}", e.what());
 			return;
 		}
-		
-		#pragma endregion
 
-		#pragma region ALLOCATE MEMORY
-		
+#pragma endregion
+
+#pragma region ALLOCATE MEMORY
+
 		vk::MemoryRequirements memRequirements = r_Device->get().getImageMemoryRequirements(m_Image);
 
 		vk::MemoryAllocateInfo allocInfo = {
@@ -113,36 +148,36 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load texture file: {0} (Failed to create memory) Error: {1}", basefolder, e.what());
-			VEL_CORE_ASSERT(false, "Failed to load texture file: {0} (Failed to create image memory) Error: {1}", baseFilepath, e.what());
+			VEL_CORE_ERROR("Failed to load texture file: (Failed to create memory) Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to load texture file: (Failed to create image memory) Error: {0}",  e.what());
 			return;
 		}
-		
-		#pragma endregion
+
+#pragma endregion
 
 		// Bind the image memory
 		r_Device->get().bindImageMemory(m_Image, m_ImageMemory, 0);
 
-		#pragma region PROCESS RAW TO VULKAN
+#pragma region PROCESS RAW TO VULKAN
 		{
-			vk::Queue queue = r_Device->get().getQueue(graphicsQueueIndex, 0);
-			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, pool, queue);
+			vk::Queue queue = r_Device->get().getQueue(r_GraphicsQueueIndex, 0);
+			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, r_CommandPool, queue);
 			auto& processBuffer = processBufferWrapper.GetBuffer();
 
 			// Set this image to destination optimal
-			Texture::TransitionImageLayout(processBuffer,m_Image,vk::Format::eR8G8B8A8Srgb,vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal,1, 6);
+			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, 1, 6);
 
 			// Copy buffer
-			Texture::CopyBufferToImage(processBuffer,m_Image, stagingBuffer->Buffer.get(), width, height, 6);
+			Texture::CopyBufferToImage(processBuffer, m_Image, stagingBuffer->Buffer.get(), m_Width, m_Height, 6);
 
 			// Set back to shader sampler
 			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal, 1, 6);
 		}
 
-		
-		#pragma endregion
 
-		#pragma region CREATE IMAGE VIEW
+#pragma endregion
+
+#pragma region CREATE IMAGE VIEW
 		vk::ImageViewCreateInfo viewInfo = {
 			vk::ImageViewCreateFlags{},
 			m_Image,
@@ -154,22 +189,22 @@ namespace Velocity
 				0,1,0,6
 			}
 		};
-		
+
 		try
 		{
 			m_ImageView = r_Device->get().createImageView(viewInfo);
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create image view) Error: {1}", basefolder, e.what());
-			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create image view) Error: {1}", filepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox:(Failed to create image view) Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to load skybox: (Failed to create image view) Error: {0}", e.what());
 			return;
 		}
-		
-		
-		#pragma endregion
 
-		#pragma region CREATE SAMPLER
+
+#pragma endregion
+
+#pragma region CREATE SAMPLER
 
 		vk::SamplerCreateInfo sampler = {
 			vk::SamplerCreateFlags{},
@@ -196,8 +231,8 @@ namespace Velocity
 		}
 		catch (vk::SystemError& e)
 		{
-			VEL_CORE_ERROR("Failed to load skybox: {0} (Failed to create sampler) Error: {1}", basefolder, e.what());
-			VEL_CORE_ASSERT(false, "Failed to load skybox: {0} (Failed to create sampler) Error: {1}", filepath, e.what());
+			VEL_CORE_ERROR("Failed to load skybox: (Failed to create sampler) Error: {0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to load skybox: (Failed to create sampler) Error: {0}",  e.what());
 			return;
 		}
 
@@ -226,11 +261,11 @@ namespace Velocity
 		{
 			Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj", "VEL_INTERNAL_Skybox");
 		}
-		
-		m_SphereMesh = MeshComponent{"VEL_INTERNAL_Skybox"};
-		
-		#pragma endregion
-		
+
+		m_SphereMesh = MeshComponent{ "VEL_INTERNAL_Skybox" };
+
+#pragma endregion
+
 	}
 	
 	Skybox::~Skybox()
@@ -239,6 +274,16 @@ namespace Velocity
 		r_Device->get().destroyImage(m_Image);
 		r_Device->get().destroySampler(m_Sampler);
 		r_Device->get().freeMemory(m_ImageMemory);
+
+		if (m_IsLoadedByStbi)
+		{
+			for (auto& pixels : m_RawPixels)
+			{
+				stbi_image_free(pixels.get());
+				pixels.release();
+			}
+
+		}
 	}
 
 	

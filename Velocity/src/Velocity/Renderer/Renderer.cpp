@@ -21,6 +21,7 @@
 #include "Velocity/ECS/Entity.hpp"
 
 #include <glm/gtc/type_ptr.hpp>
+#include <glm/gtx/matrix_decompose.hpp>
 
 #include "imgui.h"
 #include <Velocity/ImGui/fonts/roboto.cpp>	// I know this is really odd but its how its done
@@ -29,9 +30,6 @@
 #include <backends/imgui_impl_glfw.h>
 
 #include "Velocity/Utility/Input.hpp"
-
-// TODO: REMOVE
-#include <ImGuizmo.h>
 
 #include "IBLMap.hpp"
 
@@ -2392,10 +2390,10 @@ namespace Velocity
 		auto dstSize = ImGui::GetWindowContentRegionMax();
 
 		// Work out the scale between the two
-		float scale = glm::min(dstSize.x / sourceSize.y, dstSize.y / sourceSize.y);
+		float imagescale = glm::min(dstSize.x / sourceSize.y, dstSize.y / sourceSize.y);
 		
 		// Scale the source size
-		ImVec2 finalSize = { sourceSize.x * scale, sourceSize.y * scale };
+		ImVec2 finalSize = { sourceSize.x * imagescale, sourceSize.y * imagescale };
 
 		// Calculate and set central pos in window
 		ImVec2 halfCursorPos = { (ImGui::GetWindowContentRegionMax().x - finalSize.x) * 0.5f,(ImGui::GetWindowContentRegionMax().y - finalSize.y) * 0.5f };
@@ -2434,12 +2432,54 @@ namespace Velocity
 				glm::mat4 transform = tc.GetTransform();
 
 				// Draw a gizmo
-				Manipulate(value_ptr(cameraView), value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, ImGuizmo::LOCAL,value_ptr(transform));
+				Manipulate(value_ptr(cameraView), value_ptr(cameraProjection), m_GizmoOperation, m_GizmoMode,value_ptr(transform));
 
 				if (ImGuizmo::IsUsing())
 				{
-					tc.Translation = transform[3];
+					glm::vec3 translation, scale, skew;
+					glm::quat rotation;
+					glm::vec4 perspective;
+					decompose(transform, scale, rotation, translation, skew, perspective);
+
+					glm::vec3 eulerRotation = 0.0f - eulerAngles(rotation);
+					glm::vec3 deltaRotation = eulerRotation - tc.Rotation;
+					
+					tc.Translation = translation;
+					tc.Rotation += deltaRotation;
+					tc.Scale = scale;
+					
+					
 				} 
+			}
+			// Point light components only store position for effiency on vulkan code
+			if (m_GizmoEntity->HasComponent<PointLightComponent>())
+			{
+				// Set parameters
+				ImGuizmo::SetOrthographic(false);	// Normal view
+				ImGuizmo::SetDrawlist();			// Marks window for use
+
+				// Set viewport size
+				const auto windowWidth = static_cast<float>(ImGui::GetWindowWidth());
+				const auto windowHeight = static_cast<float>(ImGui::GetWindowHeight());
+				ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
+
+				// Get camera parameters
+				auto camera = m_ActiveScene->GetCamera();
+				glm::mat4 cameraView = camera->GetViewMatrix();
+				glm::mat4 cameraProjection = camera->GetProjectionMatrix();
+				cameraProjection[1][1] *= -1.0f;
+
+				// Construct temp transform
+				glm::mat4 tempTransform = glm::translate(glm::mat4(1.0f), m_GizmoEntity->GetComponent<PointLightComponent>().Position);
+
+				// Draw gizmo ignoring the user operation and forcing translate
+				Manipulate(value_ptr(cameraView), value_ptr(cameraProjection), ImGuizmo::OPERATION::TRANSLATE, m_GizmoMode, value_ptr(tempTransform));
+
+				if (ImGuizmo::IsUsing())
+				{
+					m_GizmoEntity->GetComponent<PointLightComponent>().Position = tempTransform[3];
+				}
+				
 			}
 		}
 		
@@ -2712,6 +2752,13 @@ namespace Velocity
 		m_TextureGUIIDs.push_back((ImTextureID)ImGui_ImplVulkan_AddTexture(m_TextureSampler.get(), m_Textures.back().second->m_ImageView.get(), (VkImageLayout)m_Textures.back().second->m_CurrentLayout));
 
 
+	}
+
+	Skybox* Renderer::CreateSkybox(std::array<std::unique_ptr<stbi_uc>, 6>& pixels, int width, int height)
+	{
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		return new Skybox(pixels, width, height, m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+		
 	}
 
 	

@@ -9,6 +9,8 @@
 #include <cereal/types/memory.hpp>
 #include <cereal/types/vector.hpp>
 
+#include <snappy.h>
+
 #include "Components.hpp"
 #include "Entity.hpp"
 
@@ -19,6 +21,7 @@ namespace Velocity
 	Scene::Scene()
 	{
 		m_SceneName = "New Scene";
+		m_Skybox = nullptr;
 		
 		m_Registry.on_construct<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
 		m_Registry.on_destroy<PointLightComponent>().connect<&Scene::OnPointLightChanged>(this);
@@ -32,6 +35,11 @@ namespace Velocity
 		tag.Tag = name.empty() ? "New Entity" : name;
 		m_Entities.push_back(entity);
 		return entity;
+	}
+	void Scene::CreateSkybox(const std::string& baseFilepath, const std::string& extension)
+	{
+		m_Skybox = std::unique_ptr<Skybox>(Renderer::GetRenderer()->CreateSkybox(baseFilepath, extension));
+
 	}
 	
 	void Scene::OnPointLightChanged(entt::registry& reg, entt::entity entity)
@@ -54,7 +62,28 @@ namespace Velocity
 			// Load registry from the file. Open in binary
 			std::ifstream is;
 			is.open(sceneFilepath, std::ios::binary | std::fstream::in);
-			cereal::BinaryInputArchive archive(is);
+
+			// Create string streams for compression processing
+			std::string isUncompressed;
+
+			// Read in file
+			// go to end of file
+			is.seekg(0, std::ios::end);
+			// Allocate
+			size_t size = is.tellg();
+			std::string isCompressed(size,' ');
+			// Go back to start
+			is.seekg(0);
+			is.read(&isCompressed[0], size);
+		
+			// Uncompress
+			
+			snappy::Uncompress(isCompressed.data(), isCompressed.size(), &isUncompressed);
+
+			
+			std::stringstream uncompressed{ isUncompressed };
+			
+			cereal::BinaryInputArchive archive(uncompressed);
 
 			archive(newScene->m_SceneName);
 
@@ -121,6 +150,42 @@ namespace Velocity
 
 			// Read in PBR Materials
 			archive(renderer->m_PBRMaterials);
+
+			// Check for skybox marker
+			bool bHasSkybox = false;
+			archive(bHasSkybox);
+
+			if (bHasSkybox)
+			{
+				// Read in width/height
+				uint32_t width, height;
+				archive(width);
+				archive(height);
+
+				// read in pixels
+				std::vector<stbi_uc> rawPixels;
+				archive(rawPixels);
+
+				// split into 6 layers
+				std::array<std::unique_ptr<stbi_uc>,6> layerPointers;
+				rawOffset = 0;
+				for (size_t i = 0; i < 6; ++i)
+				{
+					const VkDeviceSize layerSize = width * height * 4;
+					
+					void* backedPixels = new stbi_uc[layerSize];
+					memcpy(backedPixels, &rawPixels[rawOffset], layerSize);
+
+					std::unique_ptr<stbi_uc> wrappedLayer = std::unique_ptr<stbi_uc>(static_cast<stbi_uc*>(backedPixels));
+					layerPointers.at(i) = std::move(wrappedLayer);
+
+					rawOffset += layerSize;
+					
+				}
+
+				newScene->m_Skybox = std::unique_ptr<Skybox>(Renderer::GetRenderer()->CreateSkybox(layerPointers, width, height));
+				
+			}
 		}
 		else
 		{
@@ -143,10 +208,14 @@ namespace Velocity
 	void Scene::SaveScene(const std::string& saveFilepath)
 	{
 		// Open registry file
-		std::ofstream os;
-		os.open(saveFilepath,std::fstream::out | std::ios::binary);
-		if (os.is_open())
+		std::ofstream finalOutput;
+		finalOutput.open(saveFilepath,std::fstream::out | std::ios::binary);
+		
+		if (finalOutput.is_open())
 		{
+			// Create a string stream for the uncompressed data
+			std::stringstream os;
+			
 			m_SceneName = GetRefName(saveFilepath);
 			
 			cereal::BinaryOutputArchive archive(os);
@@ -203,6 +272,52 @@ namespace Velocity
 
 			// Archive materials list
 			archive(renderer->m_PBRMaterials);
+
+			// Archive skybox if exists
+			bool bHasSkybox = false;
+			if (m_Skybox)
+			{
+				// Archive a boolean
+				bHasSkybox = true;
+			}
+			archive(bHasSkybox);
+			if (bHasSkybox)
+			{
+				// Archive the actual skybox because the marker for it is in the scene file
+
+				// Archive the width / height
+				archive(m_Skybox->m_Width);
+				archive(m_Skybox->m_Height);
+
+				// Archive the pixels
+				std::vector<stbi_uc> rawPixels;
+				for (size_t i = 0; i < 6; ++i)
+				{
+					const VkDeviceSize layerSize = m_Skybox->m_Width * m_Skybox->m_Height * 4;
+					for (size_t j = 0; j < layerSize; ++j)
+					{
+						// Traverse the pointer
+						rawPixels.push_back(m_Skybox->m_RawPixels.at(i).get()[j]);
+					}
+				}
+
+				archive(rawPixels);
+			}
+
+			// Now os contains the uncompressed string stream
+
+			// Prepare a stream to store compressed data
+			std::string osCompressed;
+
+			// Compress
+			snappy::Compress(os.str().data(), os.str().size(), &osCompressed);
+
+			// Output to file
+			finalOutput << osCompressed;
+
+			// Close
+			finalOutput.close();
+			
 		}
 		else
 		{

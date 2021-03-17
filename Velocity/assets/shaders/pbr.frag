@@ -147,7 +147,7 @@ void main() {
 		PointLight light = pointLights.Lights[i];
 
 		// Covert color into higher space
-		light.Color = light.Color * 255.0f;
+		light.Color = light.Color * 1000.0f;
 
 		// Calculate radiance for light 
 		vec3 L = normalize(light.Position - fragPosition);

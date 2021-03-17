@@ -28,3 +28,6 @@
 [submodule "Velocity/vendor/nfd"]
 	path = Velocity/vendor/nfd
 	url = https://github.com/MGrime/nativefiledialog
+[submodule "Velocity/vendor/snappy"]
+	path = Velocity/vendor/snappy
+	url = https://github.com/google/snappy

@@ -4,6 +4,9 @@
 #include <glm/glm.hpp>
 #include <glm/ext/matrix_transform.hpp>
 
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/quaternion.hpp>
+
 #include <cereal/archives/binary.hpp>
 #include <cereal/types/array.hpp>
 #include <cereal/types/string.hpp>
@@ -46,17 +49,7 @@ namespace Velocity
 
 		glm::mat4 GetTransform()
 		{
-			glm::mat4 output = glm::mat4(1.0f);
-
-			output *= scale(glm::mat4(1.0f), Scale);
-
-			output *= rotate(glm::mat4(1.0f), glm::radians(Rotation.y), { 0.0f,1.0f,0.0f })
-					* rotate(glm::mat4(1.0f), glm::radians(Rotation.x), { 1.0f,0.0f,0.0f })
-					*rotate(glm::mat4(1.0f), glm::radians(Rotation.z), { 0.0f,0.0f,1.0f });
-
-			output *= translate(glm::mat4(1.0f), Translation);
-
-			return output;
+			return translate(glm::mat4(1.0f), Translation) * toMat4(glm::quat(Rotation)) * scale(glm::mat4(1.0f),Scale);
 		}
 
 		template<class Archive>

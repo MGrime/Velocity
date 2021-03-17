@@ -1,5 +1,6 @@
 #pragma once
 
+#include <stb_image.h>
 #include <glm/vec3.hpp>
 #include <vulkan/vulkan.hpp>
 
@@ -12,12 +13,19 @@ namespace Velocity
 	class Skybox
 	{
 		friend class Renderer;
+		
+		// Scene needs to know about texture workings for serialisation
+		friend class Scene;
 	public:
 		// Assumes 6 images with name format "baseFilepath_front.extension" etc
         Skybox(const std::string& basefolder, const std::string& extension, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
 
         ~Skybox();  
 	private:
+		Skybox(std::array<std::unique_ptr<stbi_uc>, 6>& pixels, int width, int height, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
+
+		void Init();
+		
 		vk::Image			    m_Image;
 		vk::ImageView		    m_ImageView;
 		vk::DeviceMemory	    m_ImageMemory;
@@ -29,9 +37,16 @@ namespace Velocity
 
 		MeshComponent			m_SphereMesh;
 
+		// Storing for serilisation purposes
+		uint32_t								m_Width;
+		uint32_t								m_Height;
+		std::array<std::unique_ptr<stbi_uc>,6>	m_RawPixels;
+		bool m_IsLoadedByStbi;
+
         // References
         vk::UniqueDevice* r_Device;
         vk::PhysicalDevice r_PhysicalDevice;
+		vk::CommandPool r_CommandPool;
         uint32_t r_GraphicsQueueIndex;
 
 		// Helper functions

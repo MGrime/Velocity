@@ -121,70 +121,138 @@ public:
 
 					// Open a folder selection dialog
 					const nfdresult_t result = NFD_PickFolder(nullptr, &selectedFolder);
-
+					bool bUseable = false;
 					switch(result)
 					{
 						case NFD_OKAY:
 						{
 							// Processing happens later down
+							bUseable = true;
 							break;
 						}
 						case NFD_CANCEL:
 						{
-							// Do nothing
-							return;
+							// Do nothinh
+							break;
 						}
 						case NFD_ERROR:
 						{
 							VEL_CORE_ERROR("Error opening file explorer! %s", std::string(NFD_GetError()));
-							return;
-						}
-					}
-
-					// Now we have the folder that should contain the material
-					const auto fileListIterator = std::filesystem::directory_iterator(std::string(selectedFolder));
-					std::vector<std::filesystem::directory_entry> fileList;
-					
-					// Get a list of all files in the folder
-					for (const auto& file: fileListIterator)
-					{
-						fileList.push_back(file);
-					}
-
-					if (fileList.empty())
-					{
-						VEL_CORE_ERROR("Selected folder is empty!");
-						return;
-					}
-
-					// Check for height map
-					bool bHasHeightMap = false;
-					for (auto& file : fileList)
-					{
-						// Found a file with _height in the name. ASSUMPTION
-						if (file.path().generic_string().find("_height") != std::string::npos)
-						{
-							bHasHeightMap = true;
 							break;
 						}
 					}
+					if (bUseable)
+					{
+						// Now we have the folder that should contain the material
+						const auto fileListIterator = std::filesystem::directory_iterator(std::string(selectedFolder));
+						std::vector<std::filesystem::directory_entry> fileList;
 
-					// Use first file to extract naming convention as albedo will be alphabetically first
-					auto firstFilepath = fileList.at(0).path().generic_string();
-					auto fileExtension = fileList.at(0).path().extension().generic_string();
-					auto refName = fileList.at(0).path().filename().generic_string();
+						// Get a list of all files in the folder
+						for (const auto& file : fileListIterator)
+						{
+							fileList.push_back(file);
+						}
 
-					// Find where albedo is
-					const auto erasePathPos = firstFilepath.find("_albedo");
-					const auto eraseRefPos = refName.find("_albedo");
+						if (fileList.empty())
+						{
+							VEL_CORE_ERROR("Selected folder is empty!");
+							return;
+						}
 
-					// Erase from that till end
-					firstFilepath.erase(erasePathPos, firstFilepath.length() - erasePathPos);
-					refName.erase(eraseRefPos, refName.length() - eraseRefPos);
+						// Check for height map
+						bool bHasHeightMap = false;
+						for (auto& file : fileList)
+						{
+							// Found a file with _height in the name. ASSUMPTION
+							if (file.path().generic_string().find("_height") != std::string::npos)
+							{
+								bHasHeightMap = true;
+								break;
+							}
+						}
+
+						// Use first file to extract naming convention as albedo will be alphabetically first
+						auto firstFilepath = fileList.at(0).path().generic_string();
+						auto fileExtension = fileList.at(0).path().extension().generic_string();
+						auto refName = fileList.at(0).path().filename().generic_string();
+
+						// Find where albedo is
+						const auto erasePathPos = firstFilepath.find("_albedo");
+						const auto eraseRefPos = refName.find("_albedo");
+
+						// Erase from that till end
+						firstFilepath.erase(erasePathPos, firstFilepath.length() - erasePathPos);
+						refName.erase(eraseRefPos, refName.length() - eraseRefPos);
+
+						// firstFilepath now contains the root path
+
+						Renderer::GetRenderer()->CreatePBRMaterial(firstFilepath, fileExtension, refName, bHasHeightMap);
+					}
 					
-					// firstFilepath now contains the root path
+				}
+				if (ImGui::MenuItem("Skybox"))
+				{
+					nfdchar_t* selectedFolder = nullptr;
+
+					// Open a folder selection dialog
+					const nfdresult_t result = NFD_PickFolder(nullptr, &selectedFolder);
+					bool bUseable = false;
+					switch (result)
+					{
+					case NFD_OKAY:
+					{
+						// Processing happens later down
+						bUseable = true;
+						break;
+					}
+					case NFD_CANCEL:
+					{
+						// Do nothing
+						
+						break;
+					}
+					case NFD_ERROR:
+					{
+						
+						VEL_CORE_ERROR("Error opening file explorer! %s", std::string(NFD_GetError()));
+						break;
+					}
+					}
+					if (bUseable)
+					{
+						// Folder should contain the skybox
+						auto folderpath = std::filesystem::path(std::string(selectedFolder));
+						
+						// Extract extension from first file
+						const auto fileListIterator = std::filesystem::directory_iterator(std::string(selectedFolder));
+						std::filesystem::directory_entry firstFile = {};
+
+						// Get a list of all files in the folder
+						for (const auto& file : fileListIterator)
+						{
+							firstFile = file;
+							break;
+						}
+
+						if (!firstFile.exists())
+						{
+							VEL_CORE_ERROR("Selected folder is empty!");
+							return;
+						}
+
+						// Check first file for extension
+						auto extension = firstFile.path().extension();
+
+						// release current skybox if one
+						if (scene->GetSkybox())
+						{
+							scene->RemoveSkybox();
+						}
+
+						scene->CreateSkybox(folderpath.string(), extension.string());
+					}
 					
-					Renderer::GetRenderer()->CreatePBRMaterial(firstFilepath, fileExtension, refName,bHasHeightMap);
+					
 				}
 				ImGui::EndMenu();
 			}

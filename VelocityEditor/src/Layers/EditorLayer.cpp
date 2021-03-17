@@ -2,6 +2,7 @@
 
 
 #include "../Panels/CameraStatePanel.hpp"
+#include "../Panels/GizmoControlPanel.hpp"
 #include "../Panels/SceneViewPanel.hpp"
 #include "../Panels/MainMenuPanel.hpp"
 #include "Velocity/Utility/Input.hpp"
@@ -24,9 +25,6 @@ void EditorLayer::OnGuiRender()
 		
 		// Shift the camera controller to the new scene camera
 		m_CameraController->SetCamera(newScene->GetCamera());
-
-		// Set skybox
-		m_Scene->SetSkybox(m_Skybox.get());
 
 		// Set to render
 		// TODO: Check if this could be moved to load logic itself
@@ -70,15 +68,17 @@ void EditorLayer::OnGuiRender()
 	
 	SceneViewPanel::Draw(m_Scene.get());
 	CameraStatePanel::Draw(m_CameraController->GetCamera());
+	GizmoControlPanel::Draw();
 }
 
 void EditorLayer::OnAttach()
 {
-	auto& renderer = Renderer::GetRenderer();
-
-	m_Skybox = std::unique_ptr<Skybox>(renderer->CreateSkybox("assets/textures/skyboxes/Buddha",".jpg"));
-
 	m_CameraController = std::make_unique<DefaultCameraController>(nullptr);
+
+	// Set up gizmo
+	GizmoControlPanel::Init();
+	Renderer::GetRenderer()->SetGizmoMode(ImGuizmo::MODE::WORLD);
+	Renderer::GetRenderer()->SetGizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
 
 }
 
@@ -90,12 +90,6 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(Timestep deltaTime)
 {
 	m_CameraController->OnUpdate(deltaTime);
-
-	// Orbit light
-	static float orbitTime = 0.0f;
-	orbitTime += deltaTime * 0.8f;
-	
-	//m_Light.GetComponent<PointLightComponent>().Position = glm::vec3{} + glm::vec3(cos(orbitTime) * 8.0f, 0.0f, sin(orbitTime) * 8.0f);
 }
 
 void EditorLayer::OnEvent(Event& event)

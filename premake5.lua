@@ -30,12 +30,19 @@ IncludeDir["ImGuizmo"] = "Velocity/vendor/ImGuizmo"
 IncludeDir["cereal"] = "Velocity/vendor/cereal/include"
 IncludeDir["zstr"] = "Velocity/vendor/zstr/src"
 IncludeDir["nfd"] = "Velocity/vendor/nfd/include"
+IncludeDir["snappy"] = "Velocity/vendor/snappy"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
 	include "Velocity/vendor/imgui"
 	include "Velocity/vendor/nfd"
-	
+	externalproject "snappy"
+		location "Velocity/vendor/snappy/build"
+		uuid "CAAF7771-5F91-322C-BCF8-FB0B33F69BB6"
+		kind "StaticLib"
+		language "C++"
+		staticruntime "on"
+
 group ""
 
 project "Velocity"
@@ -74,7 +81,8 @@ project "Velocity"
 		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.cereal}",
 		"%{IncludeDir.zstr}",
-		"%{IncludeDir.nfd}"
+		"%{IncludeDir.nfd}",
+		"%{IncludeDir.snappy}"
 	}
 	
 	links
@@ -82,7 +90,8 @@ project "Velocity"
 		"GLFW",
 		vulkanpath .. "/Lib/vulkan-1.lib",
 		"imgui",
-		"nfd"
+		"nfd",
+		"snappy"
 	}
 	
 	filter "system:windows"
@@ -142,9 +151,11 @@ project "VelocityEditor"
 		"%{IncludeDir.imgui}",
 		"%{IncludeDir.assimp}",
 		"%{IncludeDir.entt}",
+		"%{IncludeDir.ImGuizmo}",
 		"%{IncludeDir.cereal}",
 		"%{IncludeDir.zstr}",
-		"%{IncludeDir.nfd}"
+		"%{IncludeDir.nfd}",
+		"%{IncludeDir.snappy}"
 	}
 	
 	links
