@@ -260,13 +260,13 @@ namespace Velocity
 			nullptr
 		};
 
-		auto& loadedMeshes = Renderer::GetRenderer()->GetMeshList();
+		//auto& loadedMeshes = Renderer::GetRenderer()->GetMeshList();
 
-		// Dont load it twice
-		if (loadedMeshes.find("VEL_INTERNAL_Skybox") != loadedMeshes.end())
-		{
-			Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj", "VEL_INTERNAL_Skybox");
-		}
+		//// Dont load it twice
+		//if (loadedMeshes.find("VEL_INTERNAL_Skybox") != loadedMeshes.end())
+		//{
+		//	Renderer::GetRenderer()->LoadMesh("../Velocity/assets/models/sphere.obj", "VEL_INTERNAL_Skybox");
+		//}
 
 		m_SphereMesh = MeshComponent{ "VEL_INTERNAL_Skybox" };
 

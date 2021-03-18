@@ -889,7 +889,7 @@ namespace Velocity
 		vk::PushConstantRange pbrConstantRange = {
 			vk::ShaderStageFlagBits::eFragment,
 			0,
-			sizeof(glm::mat4) + (sizeof(uint32_t) * 5) + sizeof(glm::vec3)
+			sizeof(glm::mat4) + (sizeof(uint32_t) * 5) + sizeof(glm::vec3) + (sizeof(bool) * 4)
 		};
 
 
@@ -1194,15 +1194,23 @@ namespace Velocity
 		};
 
 		// And for skybox
-		vk::DescriptorSetLayoutBinding skyboxLayoutBinding = {
+		vk::DescriptorSetLayoutBinding skyboxLayoutBindingNorm = {
 			1,
 			vk::DescriptorType::eCombinedImageSampler,
 			1,
 			vk::ShaderStageFlagBits::eFragment,
 			nullptr
 		};
+		vk::DescriptorSetLayoutBinding skyboxLayoutBindingPBR = {
+			2,
+			vk::DescriptorType::eCombinedImageSampler,
+			1,
+			vk::ShaderStageFlagBits::eFragment,
+			nullptr
+		};
 
-		const std::vector<vk::DescriptorSetLayoutBinding> skyboxDescriptorBindings = { vpLayoutBinding, skyboxLayoutBinding };
+
+		const std::vector<vk::DescriptorSetLayoutBinding> skyboxDescriptorBindings = { vpLayoutBinding, skyboxLayoutBindingNorm };
 
 		vk::DescriptorSetLayoutCreateInfo skyboxDescriptorSetLayoutInfo = {
 			vk::DescriptorSetLayoutCreateFlags{},
@@ -1210,8 +1218,16 @@ namespace Velocity
 			skyboxDescriptorBindings.data()
 		};
 
+		const std::vector<vk::DescriptorSetLayoutBinding> pbrDescriptorBindings = { vpLayoutBinding, textureLayoutBinding, skyboxLayoutBindingPBR, pointLightLayoutBinding };
+
+		vk::DescriptorSetLayoutCreateInfo pbrDescriptorSetLayoutInfo = {
+			vk::DescriptorSetLayoutCreateFlags{},
+			static_cast<uint32_t>(pbrDescriptorBindings.size()),
+			pbrDescriptorBindings.data()
+		};
+
 		m_TexturedPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pipelineInfo, pipelineLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
-		m_PBRPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pbrPipelineInfo, pbrLayoutInfo, renderPassInfo, descriptorSetLayoutInfo);
+		m_PBRPipeline = std::make_unique<Pipeline>(m_LogicalDevice, pbrPipelineInfo, pbrLayoutInfo, renderPassInfo, pbrDescriptorSetLayoutInfo);
 		m_SkyboxPipeline = std::make_unique<Pipeline>(m_LogicalDevice, skyboxPipelineInfo, skyboxPipelineLayoutInfo, renderPassInfo, skyboxDescriptorSetLayoutInfo);
 
 		VEL_CORE_INFO("Created graphics pipeline!");
@@ -1726,8 +1742,9 @@ namespace Velocity
 	void Renderer::CreateDescriptorSets()
 	{
 		// For each pipeline we have made we need to create a descriptor set for each frame that matches its layout
-		// Right now we only have one pipeline
 		std::vector<vk::DescriptorSetLayout> layouts(m_Swapchain->GetImages().size(), m_TexturedPipeline->GetDescriptorSetLayout().get());
+
+		std::vector<vk::DescriptorSetLayout> pbrLayouts(m_Swapchain->GetImages().size(), m_PBRPipeline->GetDescriptorSetLayout().get());
 
 		std::vector<vk::DescriptorSetLayout> skyboxLayouts(m_Swapchain->GetImages().size(), m_SkyboxPipeline->GetDescriptorSetLayout().get());
 
@@ -1747,6 +1764,17 @@ namespace Velocity
 			VEL_CORE_ASSERT(false, "Failed to create descriptor sets! Error:{0}", e.what());
 		}
 
+		allocInfo.pSetLayouts = pbrLayouts.data();
+		try
+		{
+			m_PBRDescriptorSets = m_LogicalDevice->allocateDescriptorSets(allocInfo);
+		}
+		catch (vk::SystemError& e)
+		{
+			VEL_CORE_INFO("Failed to create pbr descriptor sets! Error:{0}", e.what());
+			VEL_CORE_ASSERT(false, "Failed to create pbr descriptor sets! Error:{0}", e.what());
+		}
+		
 		allocInfo.pSetLayouts = skyboxLayouts.data();
 		try
 		{
@@ -1781,6 +1809,16 @@ namespace Velocity
 			m_DescriptorWrites.resize(m_Swapchain->GetImages().size());
 		}
 
+		// Now we need to default the skybox
+		auto indices = FindQueueFamilies(m_PhysicalDevice);
+		m_DefaultBindingSkybox = new Skybox("../Velocity/assets/textures/skyboxes/default", ".png", m_LogicalDevice, m_PhysicalDevice, m_CommandPool.get(), indices.GraphicsFamily.value());
+
+		vk::DescriptorImageInfo pbrSkyboxBindingInfo = vk::DescriptorImageInfo{
+			m_TextureSampler.get(),
+			m_DefaultBindingSkybox->m_ImageView,
+			vk::ImageLayout::eShaderReadOnlyOptimal
+		};
+		
 		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
 		{
 			m_ViewProjectionBufferInfo = vk::DescriptorBufferInfo{
@@ -1829,6 +1867,34 @@ namespace Velocity
 			};
 
 			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_DescriptorWrites.at(i).size()), m_DescriptorWrites.at(i).data(), 0, nullptr);
+
+			// 
+			m_PBRDescriptorWrites.resize(m_Swapchain->GetImages().size());
+			m_PBRDescriptorWrites.at(i) = {
+		m_DescriptorWrites.at(i).at(0),
+				m_DescriptorWrites.at(i).at(1),
+				// Insert the skybox descriptor
+		{
+					m_PBRDescriptorSets.at(i),
+					2,
+					0,
+					1,
+					vk::DescriptorType::eCombinedImageSampler,
+					&pbrSkyboxBindingInfo,
+					nullptr,
+					nullptr
+				},
+		m_DescriptorWrites.at(i).at(2),
+			};
+
+			// Loop and switch descriptro set reference
+			for (auto& write : m_PBRDescriptorWrites.at(i))
+			{
+				write.dstSet = m_PBRDescriptorSets.at(i);
+			}
+
+			m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_PBRDescriptorWrites.at(i).size()), m_PBRDescriptorWrites.at(i).data(), 0, nullptr);
+			
 		}
 		
 	}
@@ -2163,10 +2229,23 @@ namespace Velocity
 		}
 
 		// PBR TIME
-		m_PBRPipeline->Bind(cmdBuffer, 1, 0, m_DescriptorSets.at(m_CurrentImage));
-		
+	
 		if (m_ActiveScene)
 		{
+			// Check for skybox to see if we need to update the IBL binding
+			if (m_ActiveScene->m_Skybox)
+			{
+				m_PBRDescriptorWrites.at(m_CurrentImage).at(2) = m_ActiveScene->m_Skybox->m_WriteSet;
+				
+				m_PBRDescriptorWrites.at(m_CurrentImage).at(2).dstSet = m_PBRDescriptorSets.at(m_CurrentImage);
+				m_PBRDescriptorWrites.at(m_CurrentImage).at(2).dstBinding = 2;
+
+				m_LogicalDevice->updateDescriptorSets(static_cast<uint32_t>(m_PBRDescriptorWrites.at(m_CurrentImage).size()), m_PBRDescriptorWrites.at(m_CurrentImage).data(), 0, nullptr);
+			}
+
+			
+			m_PBRPipeline->Bind(cmdBuffer, 1, 0, m_PBRDescriptorSets.at(m_CurrentImage));
+
 			auto view = m_ActiveScene->m_Registry.view<TransformComponent, MeshComponent, PBRComponent>();
 			for (auto[entity, transform, mesh, pbr] : view.each())
 			{
@@ -2181,6 +2260,12 @@ namespace Velocity
 				// Camera now pushed later in constant range
 				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5), sizeof(glm::vec3), value_ptr(m_ActiveScene->m_SceneCamera->GetPosition()));
 
+				// Push if skybox has been set
+				bool hasSkybox[4] = { false,false,false,false };
+				hasSkybox[0] = m_ActiveScene->GetSkybox() ? true : false;
+				
+				cmdBuffer->pushConstants(m_PBRPipeline->GetLayout().get(), vk::ShaderStageFlagBits::eFragment, sizeof(glm::mat4) + (sizeof(uint32_t) * 5) + sizeof(glm::vec3), (sizeof(bool) * 4), &hasSkybox[0]);
+				
 				cmdBuffer->drawIndexed(renderable.IndexCount, 1, renderable.IndexStart, renderable.VertexOffset, 0);
 
 			}

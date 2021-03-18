@@ -501,8 +501,14 @@ namespace Velocity {
 		// Also need to cache the writes for when we update textures
 		std::vector<std::array<vk::WriteDescriptorSet,3>>	m_DescriptorWrites;
 
+		// Same for PBR
+		std::vector<std::array<vk::WriteDescriptorSet, 4>>  m_PBRDescriptorWrites;
+
 		// Store the actualy sets
 		std::vector<vk::DescriptorSet>						m_DescriptorSets;
+
+		// Store sets for PBR pass
+		std::vector<vk::DescriptorSet>						m_PBRDescriptorSets;
 
 		// Store sets for skybox pass
 		std::vector<vk::DescriptorSet>						m_SkyboxDescriptorSets;
@@ -512,6 +518,9 @@ namespace Velocity {
 
 		// Limitation of wanting to stick to no extensions, I need a texture to bind to by default
 		Texture*											m_DefaultBindingTexture;
+
+		// Another extension limitation
+		Skybox* m_DefaultBindingSkybox;
 
 		// List of textures loaded by the user
 		// This cannot be a map as it links by index to a renderer specific thing

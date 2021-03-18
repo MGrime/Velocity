@@ -23,12 +23,15 @@ layout(push_constant) uniform PushConstants {
 	layout(offset = 84) float cameraPosX;
 	layout(offset = 88) float cameraPosY;
 	layout(offset = 92) float cameraPosZ;
+	layout(offset = 96) bool hasSkybox;
 } pc;
 
 layout(binding = 1) uniform PointLightData {
 	uint			Count;
 	PointLight[128]	Lights;
 } pointLights;
+
+layout(binding = 2) uniform samplerCube skybox;
 
 layout(binding = 16) uniform sampler2D texSampler[128];
 
@@ -179,8 +182,30 @@ void main() {
 		Lo += (kD * albedo / PI + specular) * radiance * NdotL;
 	}
 
-	// Calculate ambient
+	// Calculate ambient. Check for Skybox
 	vec3 ambient = vec3(0.03) * albedo;
+
+	// Ambient is different with skybox cause it uses IBL
+	if (pc.hasSkybox)
+	{
+		// Calculate reflection vector
+		vec3 reflectionVector = reflect(-V,N);
+
+		// Sample diffuse and specular of skybox
+
+		// Appromation to increase diffuse level
+		vec3 enviromentDiffuse = textureLod(skybox,N,9.0f).rgb * 2.0f;
+
+		float roughnessMip = 8.0f * log2(roughness + 1);
+
+		vec3 enviromentSpecular = textureLod(skybox,reflectionVector,roughnessMip).rgb;
+
+		// Calculate fresnel for IBL
+		vec3 fresnelIBL = F0 + (1-F0) * pow(max(1.0f - dot(N,V),0.0f),5.0f);
+
+		// Get ibl colour
+		ambient = (albedo * enviromentDiffuse * (1 - fresnelIBL * (1 - roughness))) + (fresnelIBL * (1 - roughness) * enviromentSpecular);
+	}
 
 	// Final color in linear space
 	vec3 color = ambient + Lo;
