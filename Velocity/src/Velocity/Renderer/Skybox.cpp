@@ -63,6 +63,9 @@ namespace Velocity
 	
 	void Skybox::Init()
 	{
+		// Calculate mips
+		m_MipLevels = static_cast<uint32_t>(std::floor(std::log2(std::max<int>(m_Width, m_Height)))) + 1;
+		
 		// Calculate sizes
 		const VkDeviceSize imageSize = m_Width * m_Height * 4 * 6;
 		const VkDeviceSize layerSize = imageSize / 6;
@@ -108,11 +111,11 @@ namespace Velocity
 			vk::ImageType::e2D,
 			vk::Format::eR8G8B8A8Srgb,
 			vk::Extent3D{static_cast<uint32_t>(m_Width),static_cast<uint32_t>(m_Height),1},
-			1,
+			m_MipLevels,
 			6,
 			vk::SampleCountFlagBits::e1,
 			vk::ImageTiling::eOptimal,
-			vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled,
+			vk::ImageUsageFlagBits::eTransferDst | vk::ImageUsageFlagBits::eSampled | vk::ImageUsageFlagBits::eTransferSrc,
 			vk::SharingMode::eExclusive,
 			{},
 			{},
@@ -165,15 +168,18 @@ namespace Velocity
 			auto& processBuffer = processBufferWrapper.GetBuffer();
 
 			// Set this image to destination optimal
-			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, 1, 6);
+			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, m_MipLevels, 6);
 
 			// Copy buffer
-			Texture::CopyBufferToImage(processBuffer, m_Image, stagingBuffer->Buffer.get(), m_Width, m_Height, 6);
-
-			// Set back to shader sampler
-			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eTransferDstOptimal, vk::ImageLayout::eShaderReadOnlyOptimal, 1, 6);
+			Texture::CopyBufferToImage(processBuffer, m_Image, stagingBuffer->Buffer.get(), m_Width, m_Height, 6);	
 		}
-
+		{
+			vk::Queue queue = r_Device->get().getQueue(r_GraphicsQueueIndex, 0);
+			TemporaryCommandBuffer processBufferWrapper = TemporaryCommandBuffer(*r_Device, r_CommandPool, queue);
+			auto& processBuffer = processBufferWrapper.GetBuffer();
+			// Mipmap (also transfers to shader layout)
+			GenerateMipmaps(processBuffer);
+		}
 
 #pragma endregion
 
@@ -186,7 +192,7 @@ namespace Velocity
 			{},
 			{
 				vk::ImageAspectFlagBits::eColor,
-				0,1,0,6
+				0,m_MipLevels,0,6
 			}
 		};
 
@@ -220,7 +226,7 @@ namespace Velocity
 			VK_FALSE,
 			vk::CompareOp::eNever,
 			0.0f,
-			1.0f,
+			1000.0f,
 			vk::BorderColor::eFloatOpaqueWhite,
 			VK_FALSE
 		};
@@ -267,7 +273,120 @@ namespace Velocity
 #pragma endregion
 
 	}
-	
+
+	void Skybox::GenerateMipmaps(vk::CommandBuffer& cmdBuffer)
+	{
+		// Check for comp
+		vk::FormatProperties formatProperties = r_PhysicalDevice.getFormatProperties(vk::Format::eR8G8B8A8Srgb);
+
+		if (!(formatProperties.optimalTilingFeatures & vk::FormatFeatureFlagBits::eSampledImageFilterLinear))
+		{
+			VEL_CORE_ERROR("Skybox doesn't support mipmap generation!");
+			VEL_CORE_ASSERT(false, "Skybox doesn't support mipmap generation!");
+			return;
+		}
+
+		// Setup barrier
+		vk::ImageMemoryBarrier barrier = {
+			vk::AccessFlags{},
+			vk::AccessFlags{},
+			vk::ImageLayout::eUndefined,
+			vk::ImageLayout::eUndefined,
+			VK_QUEUE_FAMILY_IGNORED,
+			VK_QUEUE_FAMILY_IGNORED,
+			m_Image,
+			vk::ImageSubresourceRange{
+				vk::ImageAspectFlagBits::eColor,
+				0,
+				1,0,6
+			}
+		};
+
+		int mipWidth = m_Width;
+		int mipHeight = m_Height;
+
+		for (uint32_t i = 1; i < m_MipLevels; ++i)
+		{
+			// 1. Transition level i-1 to transfer src
+			barrier.subresourceRange.baseMipLevel = i - 1;
+			barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+			barrier.newLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferWrite;
+			barrier.dstAccessMask = vk::AccessFlagBits::eTransferRead;
+			cmdBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::DependencyFlags{},
+				0, nullptr,
+				0, nullptr,
+				1, &barrier
+			);
+
+			// 2. Blit from i-1 -> i with half size each time
+			vk::ImageBlit blit{};
+			
+			blit.srcOffsets[0] = vk::Offset3D{ 0, 0, 0 };
+			blit.srcOffsets[1] = vk::Offset3D{ mipWidth,mipHeight, 1 };
+			blit.srcSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.srcSubresource.mipLevel = i - 1;
+			blit.srcSubresource.baseArrayLayer = 0;
+			blit.srcSubresource.layerCount = 6;
+			blit.dstOffsets[0] = vk::Offset3D{ 0,0,0 };
+			blit.dstOffsets[1] = vk::Offset3D{
+				mipWidth > 1 ? mipWidth / 2 : 1,
+				mipHeight > 1 ? mipHeight / 2 : 1,
+				1
+			};
+			blit.dstSubresource.aspectMask = vk::ImageAspectFlagBits::eColor;
+			blit.dstSubresource.mipLevel = i;
+			blit.dstSubresource.baseArrayLayer = 0;
+			blit.dstSubresource.layerCount = 6;
+
+			cmdBuffer.blitImage(
+				m_Image,
+				vk::ImageLayout::eTransferSrcOptimal,
+				m_Image,
+				vk::ImageLayout::eTransferDstOptimal,
+				1,
+				&blit,
+				vk::Filter::eLinear
+			);
+
+			barrier.oldLayout = vk::ImageLayout::eTransferSrcOptimal;
+			barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+			barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+			barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+			cmdBuffer.pipelineBarrier(
+				vk::PipelineStageFlagBits::eTransfer,
+				vk::PipelineStageFlagBits::eFragmentShader,
+				vk::DependencyFlags{},
+				0, nullptr,
+				0, nullptr,
+				1, &barrier
+			);
+
+			if (mipWidth > 1) mipWidth /= 2;
+			if (mipHeight > 1) mipHeight /= 2;
+		}
+		// Transition the final stage
+		barrier.subresourceRange.baseMipLevel = m_MipLevels - 1;
+		barrier.oldLayout = vk::ImageLayout::eTransferDstOptimal;
+		barrier.newLayout = vk::ImageLayout::eShaderReadOnlyOptimal;
+		barrier.srcAccessMask = vk::AccessFlagBits::eTransferRead;
+		barrier.dstAccessMask = vk::AccessFlagBits::eShaderRead;
+
+		cmdBuffer.pipelineBarrier(
+			vk::PipelineStageFlagBits::eTransfer,
+			vk::PipelineStageFlagBits::eFragmentShader,
+			vk::DependencyFlags{},
+			0, nullptr,
+			0, nullptr,
+			1, &barrier
+		);
+
+	}
+
 	Skybox::~Skybox()
 	{
 		r_Device->get().destroyImageView(m_ImageView);

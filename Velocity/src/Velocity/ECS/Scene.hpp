@@ -58,6 +58,10 @@ namespace Velocity
 #endif
 			}
 
+			// Also need to erase .velocity
+			auto velocityPos = modifyPath.find(".velocity");
+			modifyPath.erase(velocityPos, modifyPath.length() - 1); 
+
 			return modifyPath;
 		}
 	

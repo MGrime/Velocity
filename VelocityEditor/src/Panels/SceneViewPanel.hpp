@@ -14,10 +14,20 @@ class SceneViewPanel
 public:
 	static void Draw(Scene* scene)
 	{
-		ImGui::Begin("Scene Hierarchy");
+		ImGui::Begin("Scene Details");
 
 		if (scene)
 		{
+			// Output the scene details
+			ImGui::Text("Name: %s", scene->GetSceneName().c_str());
+			ImGui::Text("Entity count: %d", scene->GetEntities().size());
+			
+			const std::string skyboxState = scene->GetSkybox() ? "Yes" : "No";
+			ImGui::Text("Skybox loaded: %s", skyboxState.c_str());
+
+			ImGui::Separator();
+			ImGui::Text("Entities");
+			
 			// Loop all entities
 			for (auto& entity : scene->GetEntities())
 			{

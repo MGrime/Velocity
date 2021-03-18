@@ -25,10 +25,13 @@ namespace Velocity
 		Skybox(std::array<std::unique_ptr<stbi_uc>, 6>& pixels, int width, int height, vk::UniqueDevice& device, vk::PhysicalDevice& pDevice, vk::CommandPool& pool, uint32_t& graphicsQueueIndex);
 
 		void Init();
+
+		void GenerateMipmaps(vk::CommandBuffer& cmdBuffer);
 		
 		vk::Image			    m_Image;
 		vk::ImageView		    m_ImageView;
 		vk::DeviceMemory	    m_ImageMemory;
+		uint32_t				m_MipLevels;
 
 		vk::Sampler		        m_Sampler;
 
