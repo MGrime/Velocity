@@ -394,6 +394,8 @@ namespace Velocity {
 			m_Textures.resize(1);
 			m_TextureGUIIDs.resize(1);
 
+			m_PBRMaterials.clear();
+
 			// Reset and update texture sets to be clean
 			for (auto& info : m_TextureInfos)
 			{

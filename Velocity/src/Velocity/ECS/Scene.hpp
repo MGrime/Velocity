@@ -17,6 +17,7 @@ namespace Velocity
 		~Scene() = default;
 
 		Entity CreateEntity(const std::string & name = "New Entity");
+		void RemoveEntity(Entity& entity);
 
 		void CreateSkybox(const std::string& baseFilepath, const std::string& extension);
 		void RemoveSkybox() { m_Skybox.reset(nullptr); }

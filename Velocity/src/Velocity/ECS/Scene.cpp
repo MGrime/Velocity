@@ -36,6 +36,20 @@ namespace Velocity
 		m_Entities.push_back(entity);
 		return entity;
 	}
+
+	void Scene::RemoveEntity(Entity& entity)
+	{
+		m_Registry.destroy(entity.m_EntityHandle);
+
+		auto iterator = m_Entities.begin();
+		for (auto it = m_Entities.begin(); it < m_Entities.end(); ++it)
+		{
+			if (*it == entity)
+			{
+				m_Entities.erase(it);
+			}
+		}
+	}
 	void Scene::CreateSkybox(const std::string& baseFilepath, const std::string& extension)
 	{
 		m_Skybox = std::unique_ptr<Skybox>(Renderer::GetRenderer()->CreateSkybox(baseFilepath, extension));
@@ -79,7 +93,6 @@ namespace Velocity
 			// Uncompress
 			
 			snappy::Uncompress(isCompressed.data(), isCompressed.size(), &isUncompressed);
-
 			
 			std::stringstream uncompressed{ isUncompressed };
 			

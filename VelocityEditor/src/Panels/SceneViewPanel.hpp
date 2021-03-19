@@ -56,10 +56,15 @@ public:
 
 			if (m_SelectedEntity)
 			{
-				DrawEntityProps(m_SelectedEntity);
-				DrawEntityAddComponent();
-
+				auto result = DrawEntityProps(scene, m_SelectedEntity);
+				// Could have been removed during that function call
+				if (result)
+				{
+					DrawEntityAddComponent();
+					
+				}
 			}
+			
 		}
 		
 		
@@ -93,7 +98,7 @@ private:
 		}
 	}
 
-	static void DrawEntityProps(Entity entity)
+	static bool DrawEntityProps(Scene* scene,Entity entity)
 	{
 		if (entity.HasComponent<TagComponent>())
 		{
@@ -105,6 +110,18 @@ private:
 			if (ImGui::InputText("##Tag", buffer, sizeof(buffer)))
 			{
 				tag = std::string(buffer);
+			}
+
+			ImGui::SameLine();
+			// Remove button
+			if (ImGui::Button("Remove"))
+			{
+				// Remove all references to entity
+				scene->RemoveEntity(m_SelectedEntity);
+				m_SelectedEntity = {};
+				Renderer::GetRenderer()->SetGizmoEntity(nullptr);
+				// Exit out as handle is invalid
+				return false;
 			}
 		}
 
@@ -161,7 +178,7 @@ private:
 
 
 			});
-
+		return true;
 		
 	}
 

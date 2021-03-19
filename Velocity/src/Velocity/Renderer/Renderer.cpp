@@ -1905,7 +1905,7 @@ namespace Velocity
 		// Create the buffers for camera data (view and projection matrix)
 		VkDeviceSize bufferSize = sizeof(ViewProjection);
 
-		// One copy per swapchain image (e.g. framebuffer)
+		// One copy per   swapchain image (e.g. framebuffer)
 		m_ViewProjectionBuffers.resize(m_Swapchain->GetImages().size());
 
 		for (size_t i = 0; i < m_Swapchain->GetImages().size(); ++i)
@@ -2134,7 +2134,7 @@ namespace Velocity
 		
 		// Set magenta clear color
 		std::array<float, 4> clearColor = {
-			1.0f, 0.0f, 1.0f, 1.0f
+			0.2f, 0.2f, 0.2f, 1.0f
 		};
 		std::array<float, 4> depthClear = {
 		1.0f, 0.0f, 0.0f, 0.0f

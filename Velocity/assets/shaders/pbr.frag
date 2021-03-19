@@ -125,6 +125,7 @@ void main() {
 
 	// World space
 	vec3 N = getNormalFromMap(offsetUV);	
+	//N.y = -N.y;
 
 	// World space
 	vec3 cameraPos = vec3(pc.cameraPosX,pc.cameraPosY,pc.cameraPosZ);
@@ -194,17 +195,18 @@ void main() {
 		// Sample diffuse and specular of skybox
 
 		// Appromation to increase diffuse level
-		vec3 enviromentDiffuse = textureLod(skybox,N,9.0f).rgb * 2.0f;
+		vec3 enviromentDiffuse = textureLod(skybox,N,8.0f).rgb * 5.0f;
 
 		float roughnessMip = 8.0f * log2(roughness + 1);
 
-		vec3 enviromentSpecular = textureLod(skybox,reflectionVector,roughnessMip).rgb;
+		vec3 enviromentSpecular = textureLod(skybox,reflectionVector,roughnessMip).rgb * 0.5f;
 
 		// Calculate fresnel for IBL
-		vec3 fresnelIBL = F0 + (1-F0) * pow(max(1.0f - dot(N,V),0.0f),5.0f);
+		float nDotV = max(dot(N,V),0.001f);
+		vec3 fresnelIBL = F0 + (1-F0) * pow(max(1.0f - nDotV,0.0f),5.0f);
 
 		// Get ibl colour
-		ambient = (albedo * enviromentDiffuse * (1 - fresnelIBL * (1 - roughness))) + (fresnelIBL * (1 - roughness) * enviromentSpecular);
+		ambient = albedo * enviromentDiffuse + (1-roughness) * fresnelIBL * enviromentSpecular;
 	}
 
 	// Final color in linear space
