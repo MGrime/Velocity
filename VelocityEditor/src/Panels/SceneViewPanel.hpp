@@ -150,6 +150,7 @@ private:
 		ImGui::DrawComponent<PointLightComponent>("Point Light", entity, [](PointLightComponent& component)
 			{
 				ImGui::DrawVec3Control("Position", component.Position);
+				ImGui::SliderFloat("Intensity", &component.Intensity, 100.0f, 10000.0f);
 				ImGui::Separator();
 				ImGui::ColorPicker3("Color", &component.Color.x);
 			});

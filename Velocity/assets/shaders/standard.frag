@@ -3,6 +3,7 @@
 struct PointLight
 {
 	vec3 Position;
+	float Intensity;
 	vec3 Color;
 };
 

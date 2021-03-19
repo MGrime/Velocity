@@ -116,7 +116,8 @@ namespace Velocity
 	struct PointLightComponent
 	{
 		glm::vec3 Position = glm::vec3(0.0f,0.0f,0.0f);
-		alignas(16) glm::vec3 Color = glm::vec3(1.0f,1.0f,1.0f);
+		float	  Intensity = 1000.0f;
+		glm::vec3 Color = glm::vec3(1.0f,1.0f,1.0f);
 
 		PointLightComponent() = default;
 		PointLightComponent(const PointLightComponent&) = default;
@@ -125,7 +126,7 @@ namespace Velocity
 		template <class Archive>
 		void save(Archive& ar) const
 		{
-			ar(Position.x,Position.y,Position.z,Color.x,Color.y,Color.z);
+			ar(Position.x,Position.y,Position.z,Intensity,Color.x,Color.y,Color.z);
 		}
 
 		template <class Archive>

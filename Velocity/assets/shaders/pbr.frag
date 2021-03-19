@@ -3,6 +3,7 @@
 struct PointLight
 {
 	vec3 Position;
+	float Intensity;
 	vec3 Color;
 };
 
@@ -151,7 +152,7 @@ void main() {
 		PointLight light = pointLights.Lights[i];
 
 		// Covert color into higher space
-		light.Color = light.Color * 1000.0f;
+		light.Color = light.Color * light.Intensity;
 
 		// Calculate radiance for light 
 		vec3 L = normalize(light.Position - fragPosition);
