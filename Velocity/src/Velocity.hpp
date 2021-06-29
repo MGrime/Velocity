@@ -27,6 +27,7 @@
 #include "Velocity/Renderer/Skybox.hpp"
 #include "Velocity/Renderer/IBLMap.hpp"
 
+#include "imgui_internal.h"
 #include "imgui/imgui.h"
 
 // Utility includes

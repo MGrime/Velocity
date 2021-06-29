@@ -1,11 +1,9 @@
 #include "EditorLayer.hpp"
 
-
 #include "../Panels/CameraStatePanel.hpp"
 #include "../Panels/GizmoControlPanel.hpp"
 #include "../Panels/SceneViewPanel.hpp"
 #include "../Panels/MainMenuPanel.hpp"
-#include "Velocity/Utility/Input.hpp"
 
 void EditorLayer::OnGuiRender()
 {

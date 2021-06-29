@@ -2,7 +2,6 @@
 
 #include <Velocity/Utility/DefaultCameraController.hpp>
 
-#include "imgui.h"
 #include "../Custom Controls/Controls.hpp"
 
 class CameraStatePanel

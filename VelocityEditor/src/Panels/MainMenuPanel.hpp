@@ -1,7 +1,5 @@
 #pragma once
 
-#include "imgui.h"
-#include "../Custom Controls/Controls.hpp"
 #include <nfd.h>
 #include <filesystem>
 
