@@ -1,6 +1,6 @@
 workspace "Velocity"
 	architecture "x64"
-	startproject "VelocityEditor"
+	startproject "VelocityDemo"
 	
 	configurations
 	{
@@ -122,8 +122,8 @@ project "Velocity"
 			"Velocity/vendor/assimp/Release/assimp-vc142-mt.lib"
 		}
 	
-project "VelocityEditor"
-	location "VelocityEditor"
+project "VelocityDemo"
+	location "VelocityDemo"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -177,7 +177,7 @@ project "VelocityEditor"
 		}
 		postbuildcommands
 		{
-			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Debug\\assimp-vc142-mtd.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityEditor\\")
+			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Debug\\assimp-vc142-mtd.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityDemo\\")
 		}
 
 		
@@ -191,7 +191,7 @@ project "VelocityEditor"
 		}
 		postbuildcommands
 		{
-			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Release\\assimp-vc142-mt.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityEditor\\")
+			("{COPY} " .. _WORKING_DIR .. "\\Velocity\\vendor\\assimp\\Release\\assimp-vc142-mt.dll " .. _WORKING_DIR ..  "\\bin\\" .. outputdir .. "\\VelocityDemo\\")
 		}
 
 		
