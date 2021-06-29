@@ -2,7 +2,6 @@
 
 #include <Velocity.hpp>
 
-
 class EditorLayer : public Velocity::Layer
 {
 public:

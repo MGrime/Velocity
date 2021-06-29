@@ -1,9 +1,11 @@
 #pragma once
 
-
+#include <Velocity.hpp>
 #include <glm/gtc/type_ptr.hpp>
 
+
 #include "../Custom Controls/Controls.hpp"
+#include "ImGuizmo/ImGuizmo.h"
 
 using namespace Velocity;
 

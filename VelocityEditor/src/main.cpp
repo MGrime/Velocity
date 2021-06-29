@@ -1,3 +1,4 @@
+#include "Velocity/Core/EntryPoint.hpp"	
 #include "Layers/EditorLayer.hpp"
 
 using namespace Velocity;
