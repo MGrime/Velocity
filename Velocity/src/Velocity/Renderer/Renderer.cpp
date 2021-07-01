@@ -32,6 +32,7 @@
 #include "Velocity/Utility/Input.hpp"
 
 #include "IBLMap.hpp"
+#include <imgui_internal.h>
 
 namespace Velocity
 {
@@ -2466,6 +2467,13 @@ namespace Velocity
 		// Setup style vars for this window
 		ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2(1.0f, 1.0f));   // Reduced padding for nicer fill on viewport
 
+		if (m_SeemlessViewport)
+		{
+			ImGuiWindowClass window_class;
+			window_class.DockNodeFlagsOverrideSet = ImGuiDockNodeFlags_NoTabBar;
+			ImGui::SetNextWindowClass(&window_class);
+		}
+
 		ImGui::Begin("Viewport");
 		
 		
@@ -2572,6 +2580,7 @@ namespace Velocity
 		ImGui::End();
 		
 		ImGui::PopStyleVar();
+		//ImGui::PopStyleVar();
 	}
 
 	#pragma endregion 

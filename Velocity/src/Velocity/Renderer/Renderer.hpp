@@ -145,6 +145,12 @@ namespace Velocity {
 			m_EnableGUI = !m_EnableGUI;
 		}
 
+		// Allow viewport to be created without a viewport
+		void ToggleSeamlessViewport(bool state)
+		{
+			m_SeemlessViewport = state;
+		}
+
 		// Sets the entity to have a transform gizmo drawn on it
 		void SetGizmoEntity(Entity* entity) { m_GizmoEntity = entity; }
 		// Sets how the gizmo will operate
@@ -559,6 +565,7 @@ namespace Velocity {
 		
 
 		bool m_EnableGUI = true;
+		bool m_SeemlessViewport = true;
 		
 		// Store all loaded meshes in a map so they can accessed easily
 		std::unordered_map<std::string, BufferManager::MeshIndexer> m_Renderables;
