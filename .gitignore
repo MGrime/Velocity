@@ -10,3 +10,5 @@ bin-init/
 *.filters
 *.log
 *.log
+*.log
+VelocityEditor/Velocity.log
