@@ -31,3 +31,6 @@
 [submodule "Velocity/vendor/snappy"]
 	path = Velocity/vendor/snappy
 	url = https://github.com/google/snappy
+[submodule "Velocity\\vendor\\cute_headers"]
+	path = Velocity\\vendor\\cute_headers
+	url = https://github.com/RandyGaul/cute_headers

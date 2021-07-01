@@ -80,6 +80,14 @@ void EditorLayer::OnAttach()
 	Renderer::GetRenderer()->SetGizmoMode(ImGuizmo::MODE::WORLD);
 	Renderer::GetRenderer()->SetGizmoOperation(ImGuizmo::OPERATION::TRANSLATE);
 
+	// Setup sound
+	AudioManager::GetManager();
+
+	m_SoundClip = AudioManager::GetManager()->LoadSound("assets/sounds/test_sound.wav");
+
+	m_SoundClip.SetVolume(0.3f);
+	m_SoundClip.SetPan(0.0f);
+
 }
 
 void EditorLayer::OnDetach()
@@ -90,6 +98,7 @@ void EditorLayer::OnDetach()
 void EditorLayer::OnUpdate(Timestep deltaTime)
 {
 	m_CameraController->OnUpdate(deltaTime);
+	//m_SoundClip.Play();
 }
 
 void EditorLayer::OnEvent(Event& event)

@@ -21,4 +21,7 @@ private:
 
 	// Use a default camera
 	std::unique_ptr<Velocity::DefaultCameraController> m_CameraController;
+
+	// Load a sound clip to test
+	Velocity::AudioManager::SoundClip m_SoundClip;
 };

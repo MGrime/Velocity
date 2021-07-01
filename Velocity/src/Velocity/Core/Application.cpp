@@ -5,6 +5,7 @@
 
 
 #include "imgui.h"
+#include "Velocity/Audio/AudioManager.hpp"
 #include "Velocity/Core/Events/ApplicationEvent.hpp"
 #include "Velocity/Core/Log.hpp"
 
@@ -40,6 +41,9 @@ namespace Velocity
 			{
 				layer->OnUpdate(time);
 			}
+
+			// Play any sounds that have been set to play
+			AudioManager::GetManager()->process();
 
 			// TODO: safely disable this code when gui rendering disabled
 
