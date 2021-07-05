@@ -31,6 +31,7 @@ IncludeDir["cereal"] = "Velocity/vendor/cereal/include"
 IncludeDir["zstr"] = "Velocity/vendor/zstr/src"
 IncludeDir["nfd"] = "Velocity/vendor/nfd/include"
 IncludeDir["snappy"] = "Velocity/vendor/snappy"
+IncludeDir["cuteheaders"] = "Velocity/vendor/cute_headers"
 
 group "Dependencies"
 	include "Velocity/vendor/GLFW"
@@ -82,7 +83,8 @@ project "Velocity"
 		"%{IncludeDir.cereal}",
 		"%{IncludeDir.zstr}",
 		"%{IncludeDir.nfd}",
-		"%{IncludeDir.snappy}"
+		"%{IncludeDir.snappy}",
+		"%{IncludeDir.cuteheaders}"
 	}
 	
 	links
@@ -155,7 +157,8 @@ project "VelocityDemo"
 		"%{IncludeDir.cereal}",
 		"%{IncludeDir.zstr}",
 		"%{IncludeDir.nfd}",
-		"%{IncludeDir.snappy}"
+		"%{IncludeDir.snappy}",
+		"%{IncludeDir.cuteheaders}"
 	}
 	
 	links
