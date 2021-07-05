@@ -60,6 +60,9 @@ void GameLayer::OnAttach()
 
 	m_LaserSound = AudioManager::GetManager()->LoadSound("assets/music/laser.wav");
 	m_LaserSound.SetLoop(false);
+
+	m_ExplodeSound = AudioManager::GetManager()->LoadSound("assets/music/explode.wav");
+	m_ExplodeSound.SetLoop(false);
 }
 
 void GameLayer::OnDetach()
@@ -217,6 +220,37 @@ void GameLayer::ProcessBullets(Timestep deltaTime)
 
 			movement.Life -= deltaTime;
 			transform.Translation += glm::vec3(0.0f, 0.0f, movement.MoveSpeed * deltaTime);
+
+			// Collision check with enemies
+			for (auto& possibleEnemy : m_GameScene->GetEntities())
+			{
+				if (possibleEnemy.HasComponent<EnemyComponent>())
+				{
+					auto& enemyTransform = possibleEnemy.GetComponent<TransformComponent>();
+
+					const auto distance = glm::distance(transform.Translation,enemyTransform.Translation);
+
+					// Hit
+					if (distance < 1.5f)
+					{
+						// Kill enemy
+						m_GameScene->RemoveEntity(possibleEnemy);
+
+						if (!m_ExplodeSound.IsPlaying())
+						{
+							m_ExplodeSound.Play();
+						}
+
+						// Mark bullet to die
+						movement.Life = -1.0f;
+
+						break;
+					}
+					
+					
+				}
+			}
+			
 		}
 	}
 
@@ -243,11 +277,15 @@ void GameLayer::ProcessEnemies(Timestep deltaTime)
 	} direction = left;
 
 	bool hasCrossed = false;
+
+	bool enemiesDead = true;
 	
 	for (auto& entity : m_GameScene->GetEntities())
 	{
 		if (entity.HasComponent<EnemyComponent>())
 		{
+			enemiesDead = false;
+			
 			auto& enemy = entity.GetComponent<EnemyComponent>();
 			auto& transform = entity.GetComponent<TransformComponent>();
 			float moveAmountX;
@@ -276,6 +314,12 @@ void GameLayer::ProcessEnemies(Timestep deltaTime)
 				}
 			}
 		}
+	}
+
+	if (enemiesDead)
+	{
+		m_IsGameOver = true;
+		m_DidWin = true;
 	}
 
 	// If this is true the current "row" has reached the end so move in Y

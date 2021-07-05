@@ -44,10 +44,11 @@ private:
 	Entity						m_PlayerEntityHandle;
 	std::unique_ptr<DefaultCameraController> m_SceneCamera;
 	
-	// Loaded music
+	// Loaded music and sounds
 	AudioManager::SoundClip		m_BackgroundMusic;
 	AudioManager::SoundClip		m_ThrustSound;
 	AudioManager::SoundClip		m_LaserSound;
+	AudioManager::SoundClip		m_ExplodeSound;
 	
 	// Create an new bullet entity at position
 	Entity CreateBullet(glm::vec3 position);
