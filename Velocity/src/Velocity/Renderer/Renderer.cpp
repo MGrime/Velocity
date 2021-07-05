@@ -1679,11 +1679,11 @@ namespace Velocity
 		std::array<vk::DescriptorPoolSize,2> poolSizes = {
 		vk::DescriptorPoolSize{
 					vk::DescriptorType::eUniformBuffer,
-					static_cast<uint32_t>(512)
+					static_cast<uint32_t>(2048)
 			},
 		vk::DescriptorPoolSize{
 					vk::DescriptorType::eCombinedImageSampler,
-					static_cast<uint32_t>(512)
+					static_cast<uint32_t>(2048)
 			}
 		};
 
