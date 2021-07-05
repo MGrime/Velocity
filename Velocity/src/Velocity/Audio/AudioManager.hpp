@@ -67,6 +67,11 @@ namespace Velocity
 				return m_RawSoundClip.looped;
 			}
 
+			// check play state
+			bool IsPlaying()
+			{
+				return cs_is_active(&m_RawSoundClip);
+			}
 		private:
 			cs_playing_sound_t m_RawSoundClip{};
 		};

@@ -11,7 +11,10 @@ void GameLayer::OnDetach()
 
 void GameLayer::OnUpdate(Timestep deltaTime)
 {
-	m_TestSound.Play();
+	if (!m_TestSound.IsPlaying())
+	{
+		m_TestSound.Play();
+	}
 }
 
 void GameLayer::OnGuiRender()
