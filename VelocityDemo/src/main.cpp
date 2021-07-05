@@ -1,6 +1,9 @@
 #include "Velocity/Core/EntryPoint.hpp"
 #include "Velocity.hpp"
 
+
+#include "Layers/GameLayer.hpp"
+
 using namespace Velocity;
 
 class VelocityDemo : public Application
@@ -11,10 +14,11 @@ public:
 		// Set the editor icon
 		GetWindow()->SetWindowIcon("assets/textures/logo.png");
 
-		Renderer::GetRenderer()->ToggleGUI();
+		// Add game layer
+		PushLayer(new GameLayer());
 	}
 
-	~VelocityDemo() = default;
+	~VelocityDemo() override = default;
 
 };
 

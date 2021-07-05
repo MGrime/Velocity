@@ -1,7 +1,7 @@
 #pragma once
 #include "imgui.h"
 #include "ImGuizmo.h"
-#include "../Custom Controls/Controls.hpp"
+#include "../../Custom Controls/Controls.hpp"
 
 class GizmoControlPanel
 {
