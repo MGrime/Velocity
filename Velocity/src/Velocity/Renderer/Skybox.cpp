@@ -106,10 +106,12 @@ namespace Velocity
 
 		//vk::Format::eR32G32B32Sfloat;	// THIS IS THE FORMAT FOR HDRI
 
+		static auto skyboxFormat = vk::Format::eR8G8B8A8Srgb;
+
 		vk::ImageCreateInfo imageInfo = {
 			vk::ImageCreateFlagBits::eCubeCompatible,
 			vk::ImageType::e2D,
-			vk::Format::eR8G8B8A8Srgb,
+			skyboxFormat,
 			vk::Extent3D{static_cast<uint32_t>(m_Width),static_cast<uint32_t>(m_Height),1},
 			m_MipLevels,
 			6,
@@ -168,7 +170,7 @@ namespace Velocity
 			auto& processBuffer = processBufferWrapper.GetBuffer();
 
 			// Set this image to destination optimal
-			Texture::TransitionImageLayout(processBuffer, m_Image, vk::Format::eR8G8B8A8Srgb, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, m_MipLevels, 6);
+			Texture::TransitionImageLayout(processBuffer, m_Image, skyboxFormat, vk::ImageLayout::eUndefined, vk::ImageLayout::eTransferDstOptimal, m_MipLevels, 6);
 
 			// Copy buffer
 			Texture::CopyBufferToImage(processBuffer, m_Image, stagingBuffer->Buffer.get(), m_Width, m_Height, 6);	
@@ -188,7 +190,7 @@ namespace Velocity
 			vk::ImageViewCreateFlags{},
 			m_Image,
 			vk::ImageViewType::eCube,
-			vk::Format::eR8G8B8A8Srgb,
+			skyboxFormat,
 			{},
 			{
 				vk::ImageAspectFlagBits::eColor,
