@@ -44,9 +44,10 @@ namespace Velocity
 		auto iterator = m_Entities.begin();
 		for (auto it = m_Entities.begin(); it < m_Entities.end(); ++it)
 		{
-			if (*it == entity)
+			if (it->m_EntityHandle == entity.m_EntityHandle)
 			{
 				m_Entities.erase(it);
+				break;
 			}
 		}
 	}
