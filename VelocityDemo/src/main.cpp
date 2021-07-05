@@ -9,11 +9,8 @@ using namespace Velocity;
 class VelocityDemo : public Application
 {
 public:
-	VelocityDemo() : Application("Velocity Demo", 1280u, 720u)
+	VelocityDemo() : Application("Velocity Demo Game - Space Invaders", 1280u, 720u)
 	{
-		// Set the editor icon
-		GetWindow()->SetWindowIcon("assets/textures/logo.png");
-
 		// Add game layer
 		PushLayer(new GameLayer());
 	}

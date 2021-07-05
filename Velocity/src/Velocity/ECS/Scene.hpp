@@ -25,8 +25,6 @@ namespace Velocity
 		std::vector<Entity>& GetEntities() { return m_Entities; }
 		const std::string& GetSceneName() { return m_SceneName; }
 
-		entt::registry& GetEntityRegistry(){ return m_Registry; }
-
 		Camera* GetCamera() const { return m_SceneCamera.get(); }
 		Skybox* GetSkybox() const { if (m_Skybox) { return m_Skybox.get(); } return nullptr; }
 

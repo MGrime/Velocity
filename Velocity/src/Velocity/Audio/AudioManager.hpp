@@ -72,6 +72,11 @@ namespace Velocity
 			{
 				return cs_is_active(&m_RawSoundClip);
 			}
+
+			void Stop()
+			{
+				cs_stop_sound(&m_RawSoundClip);
+			}
 		private:
 			cs_playing_sound_t m_RawSoundClip{};
 		};
