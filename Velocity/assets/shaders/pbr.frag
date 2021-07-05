@@ -207,7 +207,7 @@ void main() {
 		vec3 fresnelIBL = F0 + (1-F0) * pow(max(1.0f - nDotV,0.0f),5.0f);
 
 		// Get ibl colour
-		ambient = albedo * enviromentDiffuse + (1-roughness) * fresnelIBL * enviromentSpecular;
+		ambient = mix(albedo,albedo * enviromentDiffuse + (1-roughness) * fresnelIBL * enviromentSpecular,0.7f);
 	}
 
 	// Final color in linear space

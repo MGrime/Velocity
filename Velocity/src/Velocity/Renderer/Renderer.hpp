@@ -53,10 +53,6 @@ namespace Velocity {
 
 		#pragma region USER API
 
-		// Scenes are returned as a raw pointer as they arent owned by the renderer directly
-		// You are responsible as the user for the memory management.
-		// Please note however, this function will modify the contents of the buffer manager and texture arrays.
-		Scene* LoadScene(const std::string& sceneFilepath);
 		
 		// This is called when you want to set the active scene
 		void SetScene(Scene* scene);

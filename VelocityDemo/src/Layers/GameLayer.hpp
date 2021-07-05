@@ -12,7 +12,8 @@ public:
 	void OnUpdate(Timestep deltaTime) override;
 	void OnGuiRender() override;
 	void OnEvent(Event& event) override;
-
 private:
-	AudioManager::SoundClip m_TestSound{};
+	std::unique_ptr<Scene> m_GameScene;
+
+	std::unique_ptr<DefaultCameraController> m_Camera;
 };
