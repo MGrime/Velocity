@@ -81,18 +81,31 @@ void GameLayer::OnUpdate(Timestep deltaTime)
 
 void GameLayer::OnGuiRender()
 {
-	// Init flags
-	const ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
-
-	// Set state
-	ImGui::SetNextWindowPos(ImVec2(ImGui::GetIO().ViewportImageSize.x * 0.5f, ImGui::GetIO().ViewportImageSize.y * 0.5f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
-	ImGui::SetNextWindowBgAlpha(0.35f);
-
-	if (ImGui::Begin("Game Overlay", nullptr, window_flags))
+	if (m_IsGameOver)
 	{
-		
+		// Init flags
+		const ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoMove | ImGuiWindowFlags_NoDecoration | ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_AlwaysAutoResize | ImGuiWindowFlags_NoSavedSettings | ImGuiWindowFlags_NoFocusOnAppearing | ImGuiWindowFlags_NoNav;
+
+		// Set state
+		const auto& window = Application::GetWindow();
+		ImGui::SetNextWindowPos(ImVec2(window->GetXPos() + static_cast<float>(window->GetWidth()) / 2.0f, window->GetYPos() + static_cast<float>(window->GetHeight()) / 2.0f), ImGuiCond_Always, ImVec2(0.5f, 0.5f));
+		ImGui::SetNextWindowBgAlpha(0.35f);
+
+		if (ImGui::Begin("Game Overlay", nullptr, window_flags))
+		{
+			if (m_DidWin)
+			{
+				ImGui::Text("You Win! Congratulations~~");
+			}
+			else
+			{
+				ImGui::Text("You Lose! That makes me sad~~");
+			}
+
+			ImGui::Text("Rerun the game to try again!");
+		}
+		ImGui::End();
 	}
-	ImGui::End();
 }
 
 void GameLayer::OnEvent(Event& event)
@@ -320,6 +333,8 @@ void GameLayer::ProcessEnemies(Timestep deltaTime)
 	{
 		m_IsGameOver = true;
 		m_DidWin = true;
+
+		m_ThrustSound.Stop();
 	}
 
 	// If this is true the current "row" has reached the end so move in Y
@@ -339,6 +354,7 @@ void GameLayer::ProcessEnemies(Timestep deltaTime)
 				{
 					m_IsGameOver = true;
 					m_DidWin = false;
+					m_ThrustSound.Stop();
 				}
 			}
 		}
