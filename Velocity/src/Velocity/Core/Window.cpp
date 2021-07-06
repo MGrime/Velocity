@@ -153,6 +153,20 @@ namespace Velocity
 		glfwPollEvents();
 	}
 
+	float Window::GetXPos() const
+	{
+		int xpos, ypos;
+		glfwGetWindowPos(m_Window, &xpos, &ypos);
+		return static_cast<float>(xpos);
+	}
+
+	float Window::GetYPos() const
+	{
+		int xpos, ypos;
+		glfwGetWindowPos(m_Window, &xpos, &ypos);
+		return static_cast<float>(ypos);
+	}
+
 	void Window::SetWindowIcon(const std::string& imagePath)
 	{
 		GLFWimage newIcon;

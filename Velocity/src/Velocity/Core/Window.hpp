@@ -32,6 +32,10 @@ namespace Velocity
 
 		uint32_t GetWidth() const { return m_Data.Props.Width; }
 		uint32_t GetHeight() const { return m_Data.Props.Height; }
+
+		float GetXPos() const;
+		float GetYPos() const;
+		
 		GLFWwindow* GetNative() const { return m_Window; }
 		const std::string& GetBaseTitle() const { return m_BaseWindowTitle; }
 
