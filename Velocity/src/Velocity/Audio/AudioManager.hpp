@@ -66,6 +66,10 @@ namespace Velocity
 			{
 				return m_RawSoundClip.looped;
 			}
+			void Stop()
+			{
+				cs_stop_sound(&m_RawSoundClip);
+			}
 		
 		private:
 			cs_playing_sound_t m_RawSoundClip{};
